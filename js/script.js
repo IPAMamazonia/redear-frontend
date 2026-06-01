@@ -4,7 +4,7 @@ const AQI_CORES = [
   { max: 80, cor: '#FFFF00', label: 'Moderado', texto: '#000000' },
   { max: 120, cor: '#FF7E00', label: 'Ruim', texto: '#000000' },
   { max: 200, cor: '#FF0000', label: 'Muito Ruim', texto: '#FFFFFF' },
-  { max: 500, cor: '#8B0000', label: 'Péssimo', texto: '#FFFFFF' }
+  { max: 500, cor: '#8B0000', label: 'Péssimo', texto: '#FFFFFF' },
 ];
 
 function getCorAQI(aqi) {
@@ -19,70 +19,206 @@ function getLabelAQI(aqi) {
 
 // ===== DADOS DOS SENSORES =====
 const SENSORES = [
-  { id: 1, nome: 'Manaus - Centro', cidade: 'Manaus', estado: 'AM', lat: -3.1190, lon: -60.0217, aqi: 42, pm25: 12.5, pm10: 28.3 },
-  { id: 2, nome: 'Belém - Guamá', cidade: 'Belém', estado: 'PA', lat: -1.4558, lon: -48.4902, aqi: 58, pm25: 18.2, pm10: 35.1 },
-  { id: 3, nome: 'Porto Velho - Centro', cidade: 'Porto Velho', estado: 'RO', lat: -8.7612, lon: -63.9039, aqi: 85, pm25: 28.7, pm10: 52.4 },
-  { id: 4, nome: 'Rio Branco - Estação', cidade: 'Rio Branco', estado: 'AC', lat: -9.9740, lon: -67.8078, aqi: 72, pm25: 22.3, pm10: 44.8 },
-  { id: 5, nome: 'Cuiabá - Aeroporto', cidade: 'Cuiabá', estado: 'MT', lat: -15.6010, lon: -56.0974, aqi: 95, pm25: 32.1, pm10: 58.6 },
-  { id: 6, nome: 'São Luís - Ponta d\'Areia', cidade: 'São Luís', estado: 'MA', lat: -2.5297, lon: -44.2528, aqi: 48, pm25: 14.8, pm10: 30.2 },
-  { id: 7, nome: 'Palmas - Plano Diretor', cidade: 'Palmas', estado: 'TO', lat: -10.1667, lon: -48.3333, aqi: 38, pm25: 10.5, pm10: 22.1 },
-  { id: 8, nome: 'Boa Vista - Centro', cidade: 'Boa Vista', estado: 'RR', lat: 2.8197, lon: -60.6733, aqi: 28, pm25: 7.2, pm10: 16.5 },
-  { id: 9, nome: 'Macapá - Orla', cidade: 'Macapá', estado: 'AP', lat: 0.0330, lon: -51.0500, aqi: 32, pm25: 8.9, pm10: 18.7 },
-  { id: 10, nome: 'Santarém - Aldeia', cidade: 'Santarém', estado: 'PA', lat: -2.4431, lon: -54.7083, aqi: 45, pm25: 13.1, pm10: 26.9 },
-  { id: 11, nome: 'Altamira - Transamazônica', cidade: 'Altamira', estado: 'PA', lat: -3.2033, lon: -52.2044, aqi: 52, pm25: 16.4, pm10: 33.7 },
-  { id: 12, nome: 'São Gabriel da Cachoeira', cidade: 'São Gabriel da Cachoeira', estado: 'AM', lat: -0.1333, lon: -67.0833, aqi: 22, pm25: 5.8, pm10: 12.4 }
+  {
+    id: 1,
+    nome: 'Manaus - Centro',
+    cidade: 'Manaus',
+    estado: 'AM',
+    lat: -3.119,
+    lon: -60.0217,
+    aqi: 42,
+    pm25: 12.5,
+    pm10: 28.3,
+  },
+  {
+    id: 2,
+    nome: 'Belém - Guamá',
+    cidade: 'Belém',
+    estado: 'PA',
+    lat: -1.4558,
+    lon: -48.4902,
+    aqi: 58,
+    pm25: 18.2,
+    pm10: 35.1,
+  },
+  {
+    id: 3,
+    nome: 'Porto Velho - Centro',
+    cidade: 'Porto Velho',
+    estado: 'RO',
+    lat: -8.7612,
+    lon: -63.9039,
+    aqi: 85,
+    pm25: 28.7,
+    pm10: 52.4,
+  },
+  {
+    id: 4,
+    nome: 'Rio Branco - Estação',
+    cidade: 'Rio Branco',
+    estado: 'AC',
+    lat: -9.974,
+    lon: -67.8078,
+    aqi: 72,
+    pm25: 22.3,
+    pm10: 44.8,
+  },
+  {
+    id: 5,
+    nome: 'Cuiabá - Aeroporto',
+    cidade: 'Cuiabá',
+    estado: 'MT',
+    lat: -15.601,
+    lon: -56.0974,
+    aqi: 95,
+    pm25: 32.1,
+    pm10: 58.6,
+  },
+  {
+    id: 6,
+    nome: "São Luís - Ponta d'Areia",
+    cidade: 'São Luís',
+    estado: 'MA',
+    lat: -2.5297,
+    lon: -44.2528,
+    aqi: 48,
+    pm25: 14.8,
+    pm10: 30.2,
+  },
+  {
+    id: 7,
+    nome: 'Palmas - Plano Diretor',
+    cidade: 'Palmas',
+    estado: 'TO',
+    lat: -10.1667,
+    lon: -48.3333,
+    aqi: 38,
+    pm25: 10.5,
+    pm10: 22.1,
+  },
+  {
+    id: 8,
+    nome: 'Boa Vista - Centro',
+    cidade: 'Boa Vista',
+    estado: 'RR',
+    lat: 2.8197,
+    lon: -60.6733,
+    aqi: 28,
+    pm25: 7.2,
+    pm10: 16.5,
+  },
+  {
+    id: 9,
+    nome: 'Macapá - Orla',
+    cidade: 'Macapá',
+    estado: 'AP',
+    lat: 0.033,
+    lon: -51.05,
+    aqi: 32,
+    pm25: 8.9,
+    pm10: 18.7,
+  },
+  {
+    id: 10,
+    nome: 'Santarém - Aldeia',
+    cidade: 'Santarém',
+    estado: 'PA',
+    lat: -2.4431,
+    lon: -54.7083,
+    aqi: 45,
+    pm25: 13.1,
+    pm10: 26.9,
+  },
+  {
+    id: 11,
+    nome: 'Altamira - Transamazônica',
+    cidade: 'Altamira',
+    estado: 'PA',
+    lat: -3.2033,
+    lon: -52.2044,
+    aqi: 52,
+    pm25: 16.4,
+    pm10: 33.7,
+  },
+  {
+    id: 12,
+    nome: 'São Gabriel da Cachoeira',
+    cidade: 'São Gabriel da Cachoeira',
+    estado: 'AM',
+    lat: -0.1333,
+    lon: -67.0833,
+    aqi: 22,
+    pm25: 5.8,
+    pm10: 12.4,
+  },
 ];
 
 // ===== DADOS PARA FILTRO DO GRÁFICO =====
 const ESTADOS = [
-  { id: 'amazonas', nome: 'Amazonas', aqiBase: 42, municipios: [
-    { id: 'manaus', nome: 'Manaus', aqiBase: 42 },
-    { id: 'saogabriel', nome: 'São Gabriel da Cachoeira', aqiBase: 22 },
-    { id: 'parintins', nome: 'Parintins', aqiBase: 35 }
-  ]},
-  { id: 'para', nome: 'Pará', aqiBase: 55, municipios: [
-    { id: 'belem', nome: 'Belém', aqiBase: 58 },
-    { id: 'santarem', nome: 'Santarém', aqiBase: 45 },
-    { id: 'altamira', nome: 'Altamira', aqiBase: 52 }
-  ]},
-  { id: 'matogrosso', nome: 'Mato Grosso', aqiBase: 78, municipios: [
-    { id: 'cuiaba', nome: 'Cuiabá', aqiBase: 95 }
-  ]},
-  { id: 'rondonia', nome: 'Rondônia', aqiBase: 85, municipios: [
-    { id: 'portovelho', nome: 'Porto Velho', aqiBase: 85 }
-  ]},
-  { id: 'acre', nome: 'Acre', aqiBase: 68, municipios: [
-    { id: 'riobranco', nome: 'Rio Branco', aqiBase: 72 }
-  ]},
-  { id: 'roraima', nome: 'Roraima', aqiBase: 32, municipios: [
-    { id: 'boavista', nome: 'Boa Vista', aqiBase: 28 }
-  ]},
-  { id: 'amapa', nome: 'Amapá', aqiBase: 30, municipios: [
-    { id: 'macapa', nome: 'Macapá', aqiBase: 32 }
-  ]},
-  { id: 'tocantins', nome: 'Tocantins', aqiBase: 54, municipios: [
-    { id: 'palmas', nome: 'Palmas', aqiBase: 38 }
-  ]},
-  { id: 'maranhao', nome: 'Maranhão', aqiBase: 62, municipios: [
-    { id: 'saoluis', nome: 'São Luís', aqiBase: 48 }
-  ]}
+  {
+    id: 'amazonas',
+    nome: 'Amazonas',
+    aqiBase: 42,
+    municipios: [
+      { id: 'manaus', nome: 'Manaus', aqiBase: 42 },
+      { id: 'saogabriel', nome: 'São Gabriel da Cachoeira', aqiBase: 22 },
+      { id: 'parintins', nome: 'Parintins', aqiBase: 35 },
+    ],
+  },
+  {
+    id: 'para',
+    nome: 'Pará',
+    aqiBase: 55,
+    municipios: [
+      { id: 'belem', nome: 'Belém', aqiBase: 58 },
+      { id: 'santarem', nome: 'Santarém', aqiBase: 45 },
+      { id: 'altamira', nome: 'Altamira', aqiBase: 52 },
+    ],
+  },
+  { id: 'matogrosso', nome: 'Mato Grosso', aqiBase: 78, municipios: [{ id: 'cuiaba', nome: 'Cuiabá', aqiBase: 95 }] },
+  {
+    id: 'rondonia',
+    nome: 'Rondônia',
+    aqiBase: 85,
+    municipios: [{ id: 'portovelho', nome: 'Porto Velho', aqiBase: 85 }],
+  },
+  { id: 'acre', nome: 'Acre', aqiBase: 68, municipios: [{ id: 'riobranco', nome: 'Rio Branco', aqiBase: 72 }] },
+  { id: 'roraima', nome: 'Roraima', aqiBase: 32, municipios: [{ id: 'boavista', nome: 'Boa Vista', aqiBase: 28 }] },
+  { id: 'amapa', nome: 'Amapá', aqiBase: 30, municipios: [{ id: 'macapa', nome: 'Macapá', aqiBase: 32 }] },
+  { id: 'tocantins', nome: 'Tocantins', aqiBase: 54, municipios: [{ id: 'palmas', nome: 'Palmas', aqiBase: 38 }] },
+  { id: 'maranhao', nome: 'Maranhão', aqiBase: 62, municipios: [{ id: 'saoluis', nome: 'São Luís', aqiBase: 48 }] },
 ];
 
 const TIPOS_TERRITORIO = [
-  { id: 'terras_indigenas', nome: 'Terras Indígenas', aqiBase: 24, territorios: [
-    { id: 'ti_yanomami', nome: 'T.I. Yanomami', aqiBase: 22 },
-    { id: 'ti_xingu', nome: 'T.I. Xingu', aqiBase: 28 },
-    { id: 'ti_alto_rio_negro', nome: 'T.I. Alto Rio Negro', aqiBase: 20 }
-  ]},
-  { id: 'unidades_conservacao', nome: 'Unidades de Conservação', aqiBase: 30, territorios: [
-    { id: 'uc_flona_amazonia', nome: 'FLONA da Amazônia', aqiBase: 26 },
-    { id: 'uc_parna_chapada', nome: 'P.N. Chapada dos Guimarães', aqiBase: 35 },
-    { id: 'uc_resex_chico', nome: 'RESEX Chico Mendes', aqiBase: 30 }
-  ]},
-  { id: 'quilombos', nome: 'Quilombos', aqiBase: 40, territorios: [
-    { id: 'quilombo_rio_macacos', nome: 'Quilombo Rio dos Macacos', aqiBase: 38 },
-    { id: 'quilombo_kalunga', nome: 'Quilombo Kalunga', aqiBase: 42 }
-  ]}
+  {
+    id: 'terras_indigenas',
+    nome: 'Terras Indígenas',
+    aqiBase: 24,
+    territorios: [
+      { id: 'ti_yanomami', nome: 'T.I. Yanomami', aqiBase: 22 },
+      { id: 'ti_xingu', nome: 'T.I. Xingu', aqiBase: 28 },
+      { id: 'ti_alto_rio_negro', nome: 'T.I. Alto Rio Negro', aqiBase: 20 },
+    ],
+  },
+  {
+    id: 'unidades_conservacao',
+    nome: 'Unidades de Conservação',
+    aqiBase: 30,
+    territorios: [
+      { id: 'uc_flona_amazonia', nome: 'FLONA da Amazônia', aqiBase: 26 },
+      { id: 'uc_parna_chapada', nome: 'P.N. Chapada dos Guimarães', aqiBase: 35 },
+      { id: 'uc_resex_chico', nome: 'RESEX Chico Mendes', aqiBase: 30 },
+    ],
+  },
+  {
+    id: 'quilombos',
+    nome: 'Quilombos',
+    aqiBase: 40,
+    territorios: [
+      { id: 'quilombo_rio_macacos', nome: 'Quilombo Rio dos Macacos', aqiBase: 38 },
+      { id: 'quilombo_kalunga', nome: 'Quilombo Kalunga', aqiBase: 42 },
+    ],
+  },
 ];
 
 function getAQIBase(id) {
@@ -109,18 +245,38 @@ function gerarDadosHistorico(localId, periodo) {
 
   let pontos;
   switch (periodo) {
-    case '1D': pontos = 24; break;
-    case '5D': pontos = 5; break;
-    case '1M': pontos = 30; break;
-    case '6M': pontos = 26; break;
-    case 'YTD': pontos = new Date().getMonth() + 1; break;
-    case '1A': pontos = 12; break;
-    case '5A': pontos = 5; break;
-    case 'Max': pontos = 10; break;
-    default: pontos = 24;
+    case '1D':
+      pontos = 24;
+      break;
+    case '5D':
+      pontos = 5;
+      break;
+    case '1M':
+      pontos = 30;
+      break;
+    case '6M':
+      pontos = 26;
+      break;
+    case 'YTD':
+      pontos = new Date().getMonth() + 1;
+      break;
+    case '1A':
+      pontos = 12;
+      break;
+    case '5A':
+      pontos = 5;
+      break;
+    case 'Max':
+      pontos = 10;
+      break;
+    default:
+      pontos = 24;
   }
 
-  const labels = [], valores = [], pm25 = [], pm10 = [];
+  const labels = [],
+    valores = [],
+    pm25 = [],
+    pm10 = [];
   let current = baseAQI;
   const hoje = new Date();
 
@@ -156,7 +312,7 @@ function gerarDadosHistorico(localId, periodo) {
       }
       case '6M': {
         const d = new Date(hoje);
-        d.setDate(hoje.getDate() - (i * 7));
+        d.setDate(hoje.getDate() - i * 7);
         labels.push(d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' }));
         break;
       }
@@ -179,7 +335,8 @@ function gerarDadosHistorico(localId, periodo) {
         labels.push(d.getFullYear().toString().slice(-2) + "'");
         break;
       }
-      default: labels.push(i.toString());
+      default:
+        labels.push(i.toString());
     }
   }
 
@@ -204,20 +361,33 @@ function initSlider() {
     current = index;
   }
 
-  function nextSlide() { goTo((current + 1) % slides.length); }
-  function prevSlide() { goTo((current - 1 + slides.length) % slides.length); }
+  function nextSlide() {
+    goTo((current + 1) % slides.length);
+  }
+  function prevSlide() {
+    goTo((current - 1 + slides.length) % slides.length);
+  }
 
   function resetInterval() {
     clearInterval(interval);
     interval = setInterval(nextSlide, 10000);
   }
 
-  if (prevBtn) prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
-  if (nextBtn) nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
-  dots.forEach(dot => {
+  if (prevBtn)
+    prevBtn.addEventListener('click', () => {
+      prevSlide();
+      resetInterval();
+    });
+  if (nextBtn)
+    nextBtn.addEventListener('click', () => {
+      nextSlide();
+      resetInterval();
+    });
+  dots.forEach((dot) => {
     dot.addEventListener('click', () => {
       const idx = parseInt(dot.dataset.index);
-      goTo(idx); resetInterval();
+      goTo(idx);
+      resetInterval();
     });
   });
 
@@ -240,7 +410,9 @@ function initChart() {
   if (!ctx) return;
 
   if (typeof ChartZoom !== 'undefined') {
-    try { Chart.register(ChartZoom); } catch (e) {}
+    try {
+      Chart.register(ChartZoom);
+    } catch (e) {}
   }
 
   const dados = gerarDadosHistorico(getLocalAtual(), periodoAtual);
@@ -249,18 +421,20 @@ function initChart() {
     type: 'line',
     data: {
       labels: dados.labels,
-      datasets: [{
-        label: 'AQI',
-        data: dados.valores,
-        borderColor: '#2c3e50',
-        borderWidth: 2.5,
-        pointRadius: 0,
-        pointHoverRadius: 6,
-        pointHoverBackgroundColor: '#2c3e50',
-        fill: true,
-        tension: 0.3,
-        spanGaps: true
-      }]
+      datasets: [
+        {
+          label: 'AQI',
+          data: dados.valores,
+          borderColor: '#2c3e50',
+          borderWidth: 2.5,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: '#2c3e50',
+          fill: true,
+          tension: 0.3,
+          spanGaps: true,
+        },
+      ],
     },
     options: {
       responsive: true,
@@ -275,22 +449,22 @@ function initChart() {
           padding: 12,
           cornerRadius: 8,
           callbacks: {
-            label: function(ctx) {
+            label: function (ctx) {
               const idx = ctx.dataIndex;
               const d = gerarDadosHistorico(getLocalAtual(), periodoAtual);
               const cor = getCorAQI(d.valores[idx]);
               return [
                 ` AQI: ${d.valores[idx]}  (${getLabelAQI(d.valores[idx])})`,
                 ` PM2.5: ${d.pm25[idx]} µg/m³`,
-                ` PM10: ${d.pm10[idx]} µg/m³`
+                ` PM10: ${d.pm10[idx]} µg/m³`,
               ];
             },
-            labelColor: function(ctx) {
+            labelColor: function (ctx) {
               const d = gerarDadosHistorico(getLocalAtual(), periodoAtual);
               const cor = getCorAQI(d.valores[ctx.dataIndex]);
               return { borderColor: cor.cor, backgroundColor: cor.cor };
-            }
-          }
+            },
+          },
         },
         zoom: {
           pan: { enabled: true, mode: 'x' },
@@ -298,67 +472,70 @@ function initChart() {
             wheel: { enabled: true, speed: 0.05 },
             drag: { enabled: true, mode: 'x', backgroundColor: 'rgba(255,126,0,0.1)', borderColor: '#FF7E00' },
             mode: 'x',
-            onZoomComplete: function() {
+            onZoomComplete: function () {
               mainChart.update('none');
-            }
-          }
-        }
+            },
+          },
+        },
       },
       scales: {
         x: {
           grid: { display: false },
-          ticks: { maxTicksLimit: 10, font: { size: 11 }, color: '#999' }
+          ticks: { maxTicksLimit: 10, font: { size: 11 }, color: '#999' },
         },
         y: {
           beginAtZero: true,
           max: 250,
           grid: { color: 'rgba(0,0,0,0.05)' },
-          ticks: { font: { size: 11 }, color: '#999' }
-        }
-      }
+          ticks: { font: { size: 11 }, color: '#999' },
+        },
+      },
     },
-    plugins: [{
-      id: 'gradientFill',
-      beforeDraw: function(chart) {
-        const { ctx, chartArea } = chart;
-        if (!chartArea) return;
-        const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-        gradient.addColorStop(0, 'rgba(139,0,0,0.25)');
-        gradient.addColorStop(0.3, 'rgba(255,0,0,0.2)');
-        gradient.addColorStop(0.5, 'rgba(255,126,0,0.15)');
-        gradient.addColorStop(0.7, 'rgba(255,255,0,0.1)');
-        gradient.addColorStop(1, 'rgba(0,228,0,0.08)');
-        chart.data.datasets[0].backgroundColor = gradient;
-      }
-    }, {
-      id: 'aqiZones',
-      beforeDraw: function(chart) {
-        const { ctx, chartArea, scales } = chart;
-        if (!chartArea || !scales.y) return;
-        const zonas = [
-          { max: 40, cor: 'rgba(0,228,0,0.05)' },
-          { max: 80, cor: 'rgba(255,255,0,0.04)' },
-          { max: 120, cor: 'rgba(255,126,0,0.04)' },
-          { max: 200, cor: 'rgba(255,0,0,0.04)' },
-          { max: 250, cor: 'rgba(139,0,0,0.05)' }
-        ];
-        let prevY = chartArea.bottom;
-        zonas.forEach(z => {
-          const y = scales.y.getPixelForValue(z.max);
-          ctx.fillStyle = z.cor;
-          ctx.fillRect(chartArea.left, y, chartArea.right - chartArea.left, prevY - y);
-          ctx.strokeStyle = z.cor.replace('0.0', '0.15');
-          ctx.lineWidth = 1;
-          ctx.setLineDash([4, 4]);
-          ctx.beginPath();
-          ctx.moveTo(chartArea.left, y);
-          ctx.lineTo(chartArea.right, y);
-          ctx.stroke();
-          ctx.setLineDash([]);
-          prevY = y;
-        });
-      }
-    }]
+    plugins: [
+      {
+        id: 'gradientFill',
+        beforeDraw: function (chart) {
+          const { ctx, chartArea } = chart;
+          if (!chartArea) return;
+          const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+          gradient.addColorStop(0, 'rgba(139,0,0,0.25)');
+          gradient.addColorStop(0.3, 'rgba(255,0,0,0.2)');
+          gradient.addColorStop(0.5, 'rgba(255,126,0,0.15)');
+          gradient.addColorStop(0.7, 'rgba(255,255,0,0.1)');
+          gradient.addColorStop(1, 'rgba(0,228,0,0.08)');
+          chart.data.datasets[0].backgroundColor = gradient;
+        },
+      },
+      {
+        id: 'aqiZones',
+        beforeDraw: function (chart) {
+          const { ctx, chartArea, scales } = chart;
+          if (!chartArea || !scales.y) return;
+          const zonas = [
+            { max: 40, cor: 'rgba(0,228,0,0.05)' },
+            { max: 80, cor: 'rgba(255,255,0,0.04)' },
+            { max: 120, cor: 'rgba(255,126,0,0.04)' },
+            { max: 200, cor: 'rgba(255,0,0,0.04)' },
+            { max: 250, cor: 'rgba(139,0,0,0.05)' },
+          ];
+          let prevY = chartArea.bottom;
+          zonas.forEach((z) => {
+            const y = scales.y.getPixelForValue(z.max);
+            ctx.fillStyle = z.cor;
+            ctx.fillRect(chartArea.left, y, chartArea.right - chartArea.left, prevY - y);
+            ctx.strokeStyle = z.cor.replace('0.0', '0.15');
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(chartArea.left, y);
+            ctx.lineTo(chartArea.right, y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            prevY = y;
+          });
+        },
+      },
+    ],
   });
 }
 
@@ -377,18 +554,18 @@ function initChartControls() {
   const nivel2 = document.getElementById('filtroNivel2');
   const tabs = document.querySelectorAll('.filtro-tab');
 
-  botoes.forEach(btn => {
+  botoes.forEach((btn) => {
     btn.addEventListener('click', () => {
-      botoes.forEach(b => b.classList.remove('active'));
+      botoes.forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       periodoAtual = btn.dataset.periodo;
       updateChart();
     });
   });
 
-  tabs.forEach(tab => {
+  tabs.forEach((tab) => {
     tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
+      tabs.forEach((t) => t.classList.remove('active'));
       tab.classList.add('active');
       filtroModo = tab.dataset.modo;
       nivel1Id = null;
@@ -431,7 +608,7 @@ function populateNivel1() {
   sel.innerHTML = '';
   if (filtroModo === 'estado') {
     sel.innerHTML = '<option value="">Selecione um estado</option>';
-    ESTADOS.forEach(e => {
+    ESTADOS.forEach((e) => {
       const opt = document.createElement('option');
       opt.value = e.id;
       opt.textContent = e.nome;
@@ -439,7 +616,7 @@ function populateNivel1() {
     });
   } else {
     sel.innerHTML = '<option value="">Selecione um tipo</option>';
-    TIPOS_TERRITORIO.forEach(t => {
+    TIPOS_TERRITORIO.forEach((t) => {
       const opt = document.createElement('option');
       opt.value = t.id;
       opt.textContent = t.nome;
@@ -461,20 +638,26 @@ function populateNivel2() {
   sel.innerHTML = '';
 
   if (filtroModo === 'estado') {
-    const estado = ESTADOS.find(e => e.id === nivel1Id);
-    if (!estado || !estado.municipios.length) { resetNivel2(); return; }
+    const estado = ESTADOS.find((e) => e.id === nivel1Id);
+    if (!estado || !estado.municipios.length) {
+      resetNivel2();
+      return;
+    }
     sel.innerHTML = '<option value="">Todos os municípios</option>';
-    estado.municipios.forEach(m => {
+    estado.municipios.forEach((m) => {
       const opt = document.createElement('option');
       opt.value = m.id;
       opt.textContent = m.nome;
       sel.appendChild(opt);
     });
   } else {
-    const tipo = TIPOS_TERRITORIO.find(t => t.id === nivel1Id);
-    if (!tipo || !tipo.territorios.length) { resetNivel2(); return; }
+    const tipo = TIPOS_TERRITORIO.find((t) => t.id === nivel1Id);
+    if (!tipo || !tipo.territorios.length) {
+      resetNivel2();
+      return;
+    }
     sel.innerHTML = '<option value="">Todos os territórios</option>';
-    tipo.territorios.forEach(ter => {
+    tipo.territorios.forEach((ter) => {
       const opt = document.createElement('option');
       opt.value = ter.id;
       opt.textContent = ter.nome;
@@ -492,18 +675,16 @@ function initMap() {
     center: ol.proj.fromLonLat([-56.0, -5.0]),
     zoom: 4.5,
     minZoom: 3,
-    maxZoom: 12
+    maxZoom: 12,
   });
 
   const map = new ol.Map({
     target: target,
-    layers: [
-      new ol.layer.Tile({ source: new ol.source.OSM() })
-    ],
-    view: view
+    layers: [new ol.layer.Tile({ source: new ol.source.OSM() })],
+    view: view,
   });
 
-  const features = SENSORES.map(s => {
+  const features = SENSORES.map((s) => {
     const aqiInfo = getCorAQI(s.aqi);
     return new ol.Feature({
       geometry: new ol.geom.Point(ol.proj.fromLonLat([s.lon, s.lat])),
@@ -516,7 +697,7 @@ function initMap() {
       pm10: s.pm10,
       cor: aqiInfo.cor,
       texto: aqiInfo.texto,
-      label: aqiInfo.label
+      label: aqiInfo.label,
     });
   });
 
@@ -524,7 +705,7 @@ function initMap() {
 
   const vectorLayer = new ol.layer.Vector({
     source: vectorSource,
-    style: function(feature) {
+    style: function (feature) {
       const cor = feature.get('cor');
       const texto = feature.get('texto');
       return new ol.style.Style({
@@ -533,17 +714,17 @@ function initMap() {
           fill: new ol.style.Fill({ color: cor }),
           stroke: new ol.style.Stroke({
             color: 'white',
-            width: 3
-          })
+            width: 3,
+          }),
         }),
         text: new ol.style.Text({
           text: feature.get('aqi').toString(),
           font: '10px sans-serif',
           fill: new ol.style.Fill({ color: texto }),
-          offsetY: 1
-        })
+          offsetY: 1,
+        }),
       });
-    }
+    },
   });
 
   map.addLayer(vectorLayer);
@@ -564,12 +745,12 @@ function initMap() {
     element: popupEl,
     positioning: 'bottom-center',
     offset: [0, -15],
-    autoPan: { animation: { duration: 250 } }
+    autoPan: { animation: { duration: 250 } },
   });
   map.addOverlay(overlay);
 
   if (popupCloser) {
-    popupCloser.addEventListener('click', function(e) {
+    popupCloser.addEventListener('click', function (e) {
       e.preventDefault();
       overlay.setPosition(undefined);
       popupEl.style.display = 'none';
@@ -581,12 +762,15 @@ function initMap() {
   let miniChart = null;
 
   function destroyMiniChart() {
-    if (miniChart) { miniChart.destroy(); miniChart = null; }
+    if (miniChart) {
+      miniChart.destroy();
+      miniChart = null;
+    }
     const container = document.getElementById('miniChartContainer');
     if (container) container.style.display = 'none';
   }
 
-  window.showSensorChart = function(sensorId) {
+  window.showSensorChart = function (sensorId) {
     const container = document.getElementById('miniChartContainer');
     const canvas = document.getElementById('miniChart');
     if (!container || !canvas) return;
@@ -594,7 +778,7 @@ function initMap() {
     destroyMiniChart();
     container.style.display = 'block';
 
-    const sensor = SENSORES.find(s => s.id === sensorId);
+    const sensor = SENSORES.find((s) => s.id === sensorId);
     if (!sensor) return;
 
     const ctx = canvas.getContext('2d');
@@ -616,16 +800,18 @@ function initMap() {
       type: 'line',
       data: {
         labels: labels,
-        datasets: [{
-          data: valores,
-          borderColor: '#2c3e50',
-          borderWidth: 1.5,
-          pointRadius: 0,
-          pointHoverRadius: 4,
-          fill: true,
-          backgroundColor: 'rgba(0,228,0,0.1)',
-          tension: 0.3
-        }]
+        datasets: [
+          {
+            data: valores,
+            borderColor: '#2c3e50',
+            borderWidth: 1.5,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            fill: true,
+            backgroundColor: 'rgba(0,228,0,0.1)',
+            tension: 0.3,
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -634,22 +820,30 @@ function initMap() {
           legend: { display: false },
           tooltip: {
             callbacks: {
-              label: function(ctx) {
+              label: function (ctx) {
                 return `AQI: ${ctx.parsed.y} (${getLabelAQI(ctx.parsed.y)})`;
-              }
-            }
-          }
+              },
+            },
+          },
         },
         scales: {
           x: { display: true, ticks: { maxTicksLimit: 7, font: { size: 9 }, color: '#999' }, grid: { display: false } },
-          y: { display: true, beginAtZero: true, max: 250, ticks: { font: { size: 9 }, color: '#999' }, grid: { color: 'rgba(0,0,0,0.04)' } }
-        }
-      }
+          y: {
+            display: true,
+            beginAtZero: true,
+            max: 250,
+            ticks: { font: { size: 9 }, color: '#999' },
+            grid: { color: 'rgba(0,0,0,0.04)' },
+          },
+        },
+      },
     });
   };
 
-  map.on('click', function(evt) {
-    const feature = map.forEachFeatureAtPixel(evt.pixel, function(f) { return f; });
+  map.on('click', function (evt) {
+    const feature = map.forEachFeatureAtPixel(evt.pixel, function (f) {
+      return f;
+    });
     destroyMiniChart();
 
     if (feature) {
@@ -684,7 +878,7 @@ function initMap() {
     }
   });
 
-  map.on('pointermove', function(evt) {
+  map.on('pointermove', function (evt) {
     const hit = map.hasFeatureAtPixel(evt.pixel);
     target.style.cursor = hit ? 'pointer' : '';
   });
@@ -692,18 +886,21 @@ function initMap() {
   // Legend
   const legendEl = document.createElement('div');
   legendEl.className = 'map-legend';
-  legendEl.innerHTML = '<h4>Qualidade do Ar</h4>' +
-    AQI_CORES.map(c => `<div class="legend-item"><span class="legend-color" style="background:${c.cor}"></span>${c.label}</div>`).join('');
+  legendEl.innerHTML =
+    '<h4>Qualidade do Ar</h4>' +
+    AQI_CORES.map(
+      (c) => `<div class="legend-item"><span class="legend-color" style="background:${c.cor}"></span>${c.label}</div>`
+    ).join('');
   document.getElementById('map-container').appendChild(legendEl);
 }
 
 // ===== FAQ =====
 function initFAQ() {
-  document.querySelectorAll('.faq-question').forEach(btn => {
+  document.querySelectorAll('.faq-question').forEach((btn) => {
     btn.addEventListener('click', () => {
       const item = btn.closest('.faq-item');
       const isActive = item.classList.contains('active');
-      document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.faq-item').forEach((el) => el.classList.remove('active'));
       if (!isActive) item.classList.add('active');
     });
   });
@@ -711,8 +908,8 @@ function initFAQ() {
 
 // ===== SCROLL SUAVE =====
 function initSmoothScroll() {
-  document.querySelectorAll('a[href^="#"]').forEach(link => {
-    link.addEventListener('click', function(e) {
+  document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener('click', function (e) {
       e.preventDefault();
       const target = document.querySelector(this.getAttribute('href'));
       if (target) {
@@ -745,22 +942,25 @@ function initNavbar() {
 
 // ===== SCROLL ANIMATIONS =====
 function initScrollAnimations() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.15 });
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    },
+    { threshold: 0.15 }
+  );
 
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  document.querySelectorAll('.fade-up').forEach((el) => observer.observe(el));
 }
 
 // ===== FORMULÁRIO =====
 function initForm() {
   const form = document.getElementById('contatoForm');
   if (!form) return;
-  form.addEventListener('submit', function(e) {
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
     const nome = document.getElementById('formNome').value.trim();
     const email = document.getElementById('formEmail').value.trim();
@@ -779,7 +979,7 @@ function initForm() {
 }
 
 // ===== INICIALIZAÇÃO =====
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   initSlider();
   initChart();
   initChartControls();
