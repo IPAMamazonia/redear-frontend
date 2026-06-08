@@ -6,7 +6,7 @@ import { ESTADOS, TIPOS_TERRITORIO } from '@/mocks/sensors';
 
 Chart.register(ChartZoom);
 
-export default function Grafico() {
+export function AQIChart() {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
   const [periodo, setPeriodo] = useState('1A');
@@ -192,7 +192,7 @@ export default function Grafico() {
   return (
     <section
       id="grafico"
-      className="px-[5%] py-[100px] max-[480px]:py-[60px] max-[480px]:px-[4%] bg-white/50 backdrop-blur"
+      className="AQIChart px-[5%] py-[100px] max-[480px]:py-[60px] max-[480px]:px-[4%] bg-white/50 backdrop-blur"
     >
       <h2 className="text-center text-[2.2rem] max-md:text-[1.8rem] max-[480px]:text-[1.5rem] font-extrabold mb-[0.6rem] text-[#1a2e3c] tracking-tight">
         <span className="bg-gradient-to-r from-[#00E676] to-[#FF6D00] bg-clip-text text-transparent">

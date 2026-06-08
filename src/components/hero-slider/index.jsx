@@ -18,7 +18,7 @@ const SLIDES = [
   },
 ];
 
-export default function HeroSlider() {
+export function HeroSlider() {
   const [current, setCurrent] = useState(0);
   const intervalRef = useRef(null);
 
@@ -60,7 +60,7 @@ export default function HeroSlider() {
   };
 
   return (
-    <section id="hero" style={{ marginTop: '72px' }}>
+    <section id="hero" className="HeroSliderComponent mt-[72px]">
       <div className="relative overflow-hidden h-[85vh] min-h-[520px] max-md:h-[65vh] max-md:min-h-[420px] max-[480px]:h-[60vh] max-[480px]:min-h-[360px]">
         <div
           className="absolute inset-0 pointer-events-none z-[1]"

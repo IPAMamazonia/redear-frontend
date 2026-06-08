@@ -30,7 +30,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 h-[72px] flex items-center justify-between px-[5%]
+      className={`NavbarComponent fixed top-0 left-0 right-0 z-50 h-[72px] flex items-center justify-between px-[5%]
         transition-all duration-[0.35s] ease-out
         ${scrolled ? 'bg-white/85 shadow-[0_1px_30px_rgba(0,0,0,0.08)]' : 'bg-white/70'}
         backdrop-blur-xl backdrop-saturate-150 border-b border-white/25`}

@@ -35,7 +35,7 @@ const FAQ_ITEMS = [
   },
 ];
 
-export default function FAQ() {
+export function FAQ() {
   const [activeIndex, setActiveIndex] = useState(null);
 
   const toggle = (idx) => {
@@ -45,7 +45,7 @@ export default function FAQ() {
   return (
     <section
       id="faq"
-      className="px-[5%] py-[100px] max-[480px]:py-[60px] max-[480px]:px-[4%] bg-white/50 backdrop-blur"
+      className="FAQComponent px-[5%] py-[100px] max-[480px]:py-[60px] max-[480px]:px-[4%] bg-white/50 backdrop-blur"
     >
       <h2 className="text-center text-[2.2rem] max-md:text-[1.8rem] max-[480px]:text-[1.5rem] font-extrabold mb-[0.6rem] text-[#1a2e3c] tracking-tight">
         Perguntas{' '}

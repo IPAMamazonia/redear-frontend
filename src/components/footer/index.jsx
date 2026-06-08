@@ -1,6 +1,6 @@
-export default function Footer() {
+export function Footer() {
   return (
-    <footer className="bg-[#0f2a1e] text-white px-[5%] pt-16 pb-6 relative">
+    <footer className="FooterComponent bg-[#0f2a1e] text-white px-[5%] pt-16 pb-6 relative">
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#00E676] to-[#FF6D00]" />
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-10 max-w-[1100px] mx-auto mb-10">

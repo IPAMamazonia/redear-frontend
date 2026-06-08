@@ -35,11 +35,11 @@ const PARCEIROS = [
   { icon: 'fa-hand-holding-heart', nome: 'RedeAr' },
 ];
 
-export default function Parceiros() {
+export function Partners() {
   return (
     <section
       id="parceiros"
-      className="px-[5%] py-[100px] max-[480px]:py-[60px] max-[480px]:px-[4%] bg-white/50 backdrop-blur"
+      className="PartnersComponent px-[5%] py-[100px] max-[480px]:py-[60px] max-[480px]:px-[4%] bg-white/50 backdrop-blur"
     >
       <h2 className="text-center text-[2.2rem] max-md:text-[1.8rem] max-[480px]:text-[1.5rem] font-extrabold mb-[0.6rem] text-[#1a2e3c] tracking-tight">
         Instituições{' '}

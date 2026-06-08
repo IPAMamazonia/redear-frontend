@@ -1,14 +1,6 @@
-import Navbar from '@/components/Navbar';
-import HeroSlider from '@/components/HeroSlider';
-import Sobre from '@/components/Sobre';
-import Grafico from '@/components/Grafico';
-import Mapa from '@/components/Mapa';
-import FAQ from '@/components/FAQ';
-import Contato from '@/components/Contato';
-import Parceiros from '@/components/Parceiros';
-import Footer from '@/components/Footer';
+import { Navbar, HeroSlider, About, AQIChart, MapView, FAQ, Contact, Partners, Footer } from '@/components';
 
-export default function Home() {
+export function HomePage() {
   return (
     <div
       className="min-h-screen font-sans text-[#1a2e3c] leading-relaxed"
@@ -20,12 +12,12 @@ export default function Home() {
     >
       <Navbar />
       <HeroSlider />
-      <Sobre />
-      <Grafico />
-      <Mapa />
+      <About />
+      <AQIChart />
+      <MapView />
       <FAQ />
-      <Contato />
-      <Parceiros />
+      <Contact />
+      <Partners />
       <Footer />
     </div>
   );

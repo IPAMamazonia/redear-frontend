@@ -34,7 +34,7 @@ function gerarMiniChartData(sensor) {
   return { labels, valores };
 }
 
-export default function Mapa() {
+export function MapView() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const popupRef = useRef(null);
@@ -253,7 +253,7 @@ export default function Mapa() {
   }
 
   return (
-    <section id="mapa" className="px-[5%] py-[100px] max-[480px]:py-[60px] max-[480px]:px-[4%]">
+    <section id="mapa" className="MapViewComponent px-[5%] py-[100px] max-[480px]:py-[60px] max-[480px]:px-[4%]">
       <h2 className="text-center text-[2.2rem] max-md:text-[1.8rem] max-[480px]:text-[1.5rem] font-extrabold mb-[0.6rem] text-[#1a2e3c] tracking-tight">
         Mapa de{' '}
         <span className="bg-gradient-to-r from-[#00E676] to-[#FF6D00] bg-clip-text text-transparent">Sensores</span>
