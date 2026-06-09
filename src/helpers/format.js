@@ -10,6 +10,42 @@ export function getLabelAQI(aqi) {
   return AQI_CORES[AQI_CORES.length - 1].label;
 }
 
+const EPA_BP_PM25 = [
+  { cLow: 0, cHigh: 12.0, iLow: 0, iHigh: 50 },
+  { cLow: 12.1, cHigh: 35.4, iLow: 51, iHigh: 100 },
+  { cLow: 35.5, cHigh: 55.4, iLow: 101, iHigh: 150 },
+  { cLow: 55.5, cHigh: 150.4, iLow: 151, iHigh: 200 },
+  { cLow: 150.5, cHigh: 250.4, iLow: 201, iHigh: 300 },
+  { cLow: 250.5, cHigh: 500.4, iLow: 301, iHigh: 500 },
+];
+
+const EPA_BP_PM10 = [
+  { cLow: 0, cHigh: 54, iLow: 0, iHigh: 50 },
+  { cLow: 55, cHigh: 154, iLow: 51, iHigh: 100 },
+  { cLow: 155, cHigh: 254, iLow: 101, iHigh: 150 },
+  { cLow: 255, cHigh: 354, iLow: 151, iHigh: 200 },
+  { cLow: 355, cHigh: 424, iLow: 201, iHigh: 300 },
+  { cLow: 425, cHigh: 604, iLow: 301, iHigh: 500 },
+];
+
+function concToAQI(conc, breakpoints) {
+  if (conc == null || conc < 0) return null;
+  for (const bp of breakpoints) {
+    if (conc >= bp.cLow && conc <= bp.cHigh) {
+      return Math.round(
+        ((bp.iHigh - bp.iLow) / (bp.cHigh - bp.cLow)) * (conc - bp.cLow) + bp.iLow
+      );
+    }
+  }
+  return 500;
+}
+
+export function calcAQI(pm25, pm10) {
+  const aqi25 = pm25 != null ? concToAQI(pm25, EPA_BP_PM25) : 0;
+  const aqi10 = pm10 != null ? concToAQI(pm10, EPA_BP_PM10) : 0;
+  return Math.max(aqi25, aqi10);
+}
+
 export function getAQIBase(id) {
   if (!id) return 55;
   for (const e of ESTADOS) {

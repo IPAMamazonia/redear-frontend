@@ -7,3 +7,4 @@ export * from './hero-slider';
 export * from './map-view';
 export * from './navbar';
 export * from './partners';
+export * from './text';
