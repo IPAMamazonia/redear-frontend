@@ -38,18 +38,21 @@ class APIService {
 
   // ─── Sensor Methods ──────────────────────────────────────────────────────
 
-  async fetchSensores() {
-    return this._fetchJson(`${baseBackEnd}/sensores`, {
+  async fetchSensors() {
+    return this._fetchJson(`${baseBackEnd}/v1/sensors`, {
       method: 'GET',
       headers: this._headers('application/json'),
     });
   }
 
-  async fetchHistoricData(sensorId, periodo) {
-    return this._fetchJson(`${baseBackEnd}/sensores/${sensorId}/historico?periodo=${periodo}`, {
-      method: 'GET',
-      headers: this._headers('application/json'),
-    });
+  async fetchSensorReadings(sensorId, interval, startDate, endDate, limit, offset) {
+    return this._fetchJson(
+      `${baseBackEnd}/v1/sensors/${sensorId}/readings?interval=${interval}&startDate=${startDate}&endDate=${endDate}&limit=${limit}&offset=${offset}`,
+      {
+        method: 'GET',
+        headers: this._headers('application/json'),
+      }
+    );
   }
 }
 
