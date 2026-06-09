@@ -11,7 +11,7 @@ const LINKS = [
   { href: '#parceiros', label: 'Parceiros' },
 ];
 
-export default function Navbar() {
+export function Navbar() {
   const { mobileMenuOpen, scrolled } = useSelector((s) => s.ui);
   const dispatch = useDispatch();
 
