@@ -1,6 +1,12 @@
 import { useRef, useEffect } from 'react';
 
-export default function useScrollReveal() {
+/**
+ * Hook que retorna uma ref para aplicar animação de fade-up via IntersectionObserver.
+ * Adiciona a classe "visible" ao elemento quando ele entra na viewport.
+ *
+ * @returns {React.RefObject} ref a ser atribuída ao elemento alvo.
+ */
+export function useScrollReveal() {
   const ref = useRef(null);
 
   useEffect(() => {

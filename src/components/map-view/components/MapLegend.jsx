@@ -1,8 +1,11 @@
 import { FAIXAS_PM25 } from '@/rules/qualidadeAr';
 
+/**
+ * Legenda do mapa exibindo as faixas de PM2.5 com cores.
+ */
 export function MapLegend() {
   return (
-    <div className="absolute bottom-7 right-1 z-10 bg-card backdrop-blur-xl border border-white/35 rounded shadow-glass text-sm max-md:hidden">
+    <div className="MapLegendComponent absolute bottom-7 right-1 z-10 bg-card backdrop-blur-xl border border-white/35 rounded shadow-glass text-sm max-md:hidden">
       <div className="p-4">
         <h4 className="mb-2 text-sm">PM2.5 (µg/m³)</h4>
         {FAIXAS_PM25.map((f) => (

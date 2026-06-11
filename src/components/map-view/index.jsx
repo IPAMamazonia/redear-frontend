@@ -1,9 +1,9 @@
 import { fetchSensors, selectSensors, selectSensorsError, selectSensorsLoading } from '@/store/slices/sensorsSlice';
 import { ErrorBanner, LoadingOverlay, MapLegend, SensorPopup } from './components';
+import { Section, SectionHeading, GradientText } from '@/components';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPM25Color } from '@/rules/qualidadeAr';
-import { GradientText } from '@/components';
 import { RecenterControl } from './classes';
 import { VIEW_CONFIG } from './rules';
 
@@ -50,13 +50,15 @@ function styleSensor(feature) {
   });
 }
 
+/**
+ * Mapa interativo com sensores, popup de detalhes e controles de zoom/recenter.
+ */
 export function MapView() {
   const dispatch = useDispatch();
   const sensors = useSelector(selectSensors);
   const loading = useSelector(selectSensorsLoading);
   const error = useSelector(selectSensorsError);
 
-  //refs
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const vectorSourceRef = useRef(null);
@@ -65,7 +67,6 @@ export function MapView() {
   const sensorsRef = useRef(sensors);
   sensorsRef.current = sensors;
 
-  //states
   const [popupId, setPopupId] = useState(null);
   const [chartKey, setChartKey] = useState(0);
 
@@ -87,7 +88,6 @@ export function MapView() {
         const pm25 = get_pm25(s);
         const online = s.is_online ?? false;
         const faixa = online ? getPM25Color(pm25) : { cor: '#9e9e9e', texto: '#ffffff', label: 'Offline' };
-        //console.log(`PM2.5: ${pm25} - Sensor ${s.name} - Cor: ${faixa.cor}`);
         return new Feature({
           geometry: new Point(fromLonLat([s.gps.coordinates[0], s.gps.coordinates[1]])),
           sensor_id: s.id,
@@ -105,12 +105,10 @@ export function MapView() {
     vectorSourceRef.current.addFeatures(features);
   }, []);
 
-  // fetch sensors on mount
   useEffect(() => {
     dispatch(fetchSensors());
   }, [dispatch]);
 
-  // map creation (runs once)
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
@@ -160,19 +158,15 @@ export function MapView() {
     };
   }, []);
 
-  // rebuild features when sensors data changes
   useEffect(() => {
     buildFeatures(sensors);
   }, [sensors, buildFeatures]);
 
   return (
-    <section id="mapa" className="px-[5%] py-[100px] max-[480px]:py-[60px] max-[480px]:px-[4%]">
-      <h2 className="text-center text-[2.2rem] max-md:text-[1.8rem] max-[480px]:text-[1.5rem] font-extrabold mb-[0.6rem] text-text-dark tracking-tight">
-        Mapa de <GradientText> Sensores </GradientText>
-      </h2>
-      <p className="text-center text-text-light mb-[3.5rem] text-lg max-w-[600px] mx-auto">
-        Clique nos sensores para ver detalhes da qualidade do ar em todo o Brasil
-      </p>
+    <Section id="mapa" className="MapViewComponent">
+      <SectionHeading subtitle="Clique nos sensores para ver detalhes da qualidade do ar em todo o Brasil">
+        Mapa de <GradientText>Sensores</GradientText>
+      </SectionHeading>
 
       <div className="max-w-[1400px] mx-auto bg-card backdrop-blur-xl border border-white/35 rounded shadow-glass relative">
         <LoadingOverlay loading={loading} />
@@ -189,6 +183,6 @@ export function MapView() {
           {popupSensor && <SensorPopup key={chartKey} sensor={popupSensor} onClose={closePopup} />}
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

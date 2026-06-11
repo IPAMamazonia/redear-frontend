@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Section, SectionHeading, GlassCard, GradientText } from '@/components';
 
 const FAQ_ITEMS = [
   {
@@ -35,6 +36,9 @@ const FAQ_ITEMS = [
   },
 ];
 
+/**
+ * Seção de Perguntas Frequentes (FAQ) com accordion.
+ */
 export function FAQ() {
   const [activeIndex, setActiveIndex] = useState(null);
 
@@ -43,27 +47,17 @@ export function FAQ() {
   };
 
   return (
-    <section
-      id="faq"
-      className="FAQComponent px-[5%] py-[100px] max-[480px]:py-[60px] max-[480px]:px-[4%] bg-white/50 backdrop-blur"
-    >
-      <h2 className="text-center text-[2.2rem] max-md:text-[1.8rem] max-[480px]:text-[1.5rem] font-extrabold mb-[0.6rem] text-[#1a2e3c] tracking-tight">
-        Perguntas{' '}
-        <span className="bg-gradient-to-r from-[#00E676] to-[#FF6D00] bg-clip-text text-transparent">Frequentes</span>
-      </h2>
-      <p className="text-center text-[#5a6d7a] mb-[3.5rem] text-lg max-w-[600px] mx-auto">
-        Tire suas dúvidas sobre o projeto e a qualidade do ar
-      </p>
+    <Section id="faq" alt className="FAQComponent">
+      <SectionHeading subtitle="Tire suas dúvidas sobre o projeto e a qualidade do ar">
+        Perguntas <GradientText>Frequentes</GradientText>
+      </SectionHeading>
 
       <div className="max-w-[1100px] mx-auto">
         {FAQ_ITEMS.map((item, idx) => (
-          <div
-            key={idx}
-            className={`bg-[rgba(255,255,255,0.75)] backdrop-blur-xl border border-[rgba(255,255,255,0.35)] rounded-[10px] mb-3 shadow-[0_8px_32px_rgba(0,0,0,0.06)] overflow-hidden transition-all duration-[0.35s] ease-out hover:shadow-[0_12px_40px_rgba(0,0,0,0.14)] hover:-translate-y-[2px]`}
-          >
+          <GlassCard key={idx} sm className="mb-3 overflow-hidden card-lift">
             <button
               onClick={() => toggle(idx)}
-              className="w-full px-6 py-[1.2rem] text-left bg-transparent border-none text-base font-semibold text-[#1a2e3c] cursor-pointer flex justify-between items-center gap-4"
+              className="w-full px-6 py-[1.2rem] text-left bg-transparent border-none text-base font-semibold text-text-dark cursor-pointer flex justify-between items-center gap-4"
             >
               {item.q}
               <span
@@ -75,15 +69,15 @@ export function FAQ() {
               </span>
             </button>
             <div
-              className={`text-[#5a6d7a] leading-relaxed transition-all duration-[0.4s] ease-out overflow-hidden ${
+              className={`text-text-light leading-relaxed transition-all duration-[0.4s] ease-out overflow-hidden ${
                 activeIndex === idx ? 'max-h-[300px] px-6 pb-5' : 'max-h-0 px-6'
               }`}
             >
               {item.a}
             </div>
-          </div>
+          </GlassCard>
         ))}
       </div>
-    </section>
+    </Section>
   );
 }

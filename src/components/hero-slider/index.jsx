@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
+import { useInterval } from '@/hooks/useInterval';
 
 const SLIDES = [
   {
@@ -18,45 +19,45 @@ const SLIDES = [
   },
 ];
 
+/**
+ * Slider/carrossel full-screen com transição automática, navegação por setas e dots.
+ *
+ * As imagens iniciam em scale(1.05) e reduzem para scale(1) ao passar o mouse (group-hover).
+ */
 export function HeroSlider() {
   const [current, setCurrent] = useState(0);
-  const intervalRef = useRef(null);
+  const [paused, setPaused] = useState(false);
 
   const goTo = useCallback((index) => {
     setCurrent(index);
   }, []);
 
   const next = useCallback(() => {
-    goTo((current + 1) % SLIDES.length);
-  }, [current, goTo]);
+    setCurrent((c) => (c + 1) % SLIDES.length);
+  }, []);
 
   const prev = useCallback(() => {
-    goTo((current - 1 + SLIDES.length) % SLIDES.length);
-  }, [current, goTo]);
+    setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length);
+  }, []);
 
-  const resetInterval = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(next, 10000);
-  }, [next]);
-
-  useEffect(() => {
-    intervalRef.current = setInterval(next, 10000);
-    return () => clearInterval(intervalRef.current);
-  }, [next]);
+  useInterval(next, paused ? null : 10000);
 
   const handleDot = (idx) => {
     goTo(idx);
-    resetInterval();
+    setPaused(true);
+    setTimeout(() => setPaused(false), 10000);
   };
 
   const handlePrev = () => {
     prev();
-    resetInterval();
+    setPaused(true);
+    setTimeout(() => setPaused(false), 10000);
   };
 
   const handleNext = () => {
     next();
-    resetInterval();
+    setPaused(true);
+    setTimeout(() => setPaused(false), 10000);
   };
 
   return (
@@ -71,7 +72,7 @@ export function HeroSlider() {
         />
         <div className="relative w-full h-full">
           <div
-            className="flex h-full transition-transform duration-[0.9s] ease-[cubic-bezier(0.65,0,0.35,1)]"
+            className="flex h-full transition-transform duration-[0.9s] ease-[cubic-bezier(0.65,0,0.35,1)] group"
             style={{ transform: `translateX(-${current * 100}%)` }}
           >
             {SLIDES.map((slide, i) => (
@@ -80,8 +81,7 @@ export function HeroSlider() {
                   src={slide.img}
                   alt=""
                   loading="lazy"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-[6s] ease-out group-hover:scale-100"
-                  style={{ transform: 'scale(1.05)' }}
+                  className="absolute inset-0 w-full h-full object-cover scale-105 transition-transform duration-[6s] ease-out group-hover:scale-100"
                 />
                 <div
                   className="absolute inset-0 z-[1]"

@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import plugin from 'tailwindcss/plugin';
+
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
@@ -38,5 +40,40 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addComponents }) => {
+      addComponents({
+        '.glass-card': {
+          background: 'rgba(255, 255, 255, 0.75)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.35)',
+          borderRadius: '16px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.06)',
+          transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        },
+        '.glass-sm': {
+          background: 'rgba(255, 255, 255, 0.75)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.35)',
+          borderRadius: '10px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.06)',
+          transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        },
+        '.card-lift': {
+          '&:hover': {
+            transform: 'translateY(-6px)',
+            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.14)',
+          },
+        },
+        '.section-padding': {
+          padding: '100px 5%',
+          '@media (max-width: 480px)': {
+            padding: '60px 4%',
+          },
+        },
+      });
+    }),
+  ],
 };

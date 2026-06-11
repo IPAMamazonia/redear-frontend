@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { getPM25Color } from '@/rules/qualidadeAr';
 import { SensorMiniChart } from './SensorMiniChart';
 
+/**
+ * Popup de detalhes do sensor com indicador PM2.5, datas e gráfico opcional.
+ *
+ * @param {object}   props.sensor  - Dados do sensor selecionado.
+ * @param {function} props.onClose - Callback para fechar o popup.
+ */
 export function SensorPopup({ sensor, onClose }) {
   const [showChart, setShowChart] = useState(false);
 
@@ -12,7 +18,7 @@ export function SensorPopup({ sensor, onClose }) {
   const faixa = online ? getPM25Color(pm25) : { cor: '#9e9e9e', texto: '#ffffff', label: 'Offline' };
 
   return (
-    <div className="sensor-popup relative">
+    <div className="SensorPopupComponent relative">
       <a
         href="#"
         className="absolute top-0 right-0 no-underline text-lg text-text-light leading-none hover:text-text-dark"

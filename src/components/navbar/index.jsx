@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { toggleMobileMenu, closeMobileMenu, setScrolled } from '@/store/slices/uiSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { GradientText } from '@/components';
+import { useEffect } from 'react';
 
 const LINKS = [
   { href: '#sobre', label: 'Sobre' },
@@ -11,6 +12,11 @@ const LINKS = [
   { href: '#parceiros', label: 'Parceiros' },
 ];
 
+/**
+ * Barra de navegação fixa no topo com menu mobile, links de âncora e efeito de scroll.
+ *
+ * Estados globais usados: ui.mobileMenuOpen, ui.scrolled.
+ */
 export function Navbar() {
   const { mobileMenuOpen, scrolled } = useSelector((s) => s.ui);
   const dispatch = useDispatch();
@@ -30,8 +36,7 @@ export function Navbar() {
 
   return (
     <nav
-      className={`NavbarComponent fixed top-0 left-0 right-0 z-50 h-[72px] flex items-center justify-between px-[5%]
-        transition-all duration-[0.35s] ease-out
+      className={`NavbarComponent fixed top-0 left-0 right-0 z-50 h-[72px] flex items-center justify-between px-[5%] transition-all duration-[0.35s] ease-out
         ${scrolled ? 'bg-white/85 shadow-[0_1px_30px_rgba(0,0,0,0.08)]' : 'bg-white/70'}
         backdrop-blur-xl backdrop-saturate-150 border-b border-white/25`}
     >
@@ -39,14 +44,8 @@ export function Navbar() {
         href="#hero"
         onClick={(e) => handleNav(e, '#hero')}
         className="text-2xl font-black tracking-tighter no-underline"
-        style={{
-          background: 'linear-gradient(135deg, #00E676, #FF6D00)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-        }}
       >
-        RedeAr
+        <GradientText>RedeAr</GradientText>
       </a>
 
       <button
@@ -55,17 +54,17 @@ export function Navbar() {
         aria-label="Menu"
       >
         <span
-          className={`block w-[26px] h-[2.5px] bg-[#1a2e3c] rounded transition-all duration-[0.35s] ease-out ${
+          className={`block w-[26px] h-[2.5px] bg-text-dark rounded transition-all duration-[0.35s] ease-out ${
             mobileMenuOpen ? 'rotate-45 translate-y-[7.5px]' : ''
           }`}
         />
         <span
-          className={`block w-[26px] h-[2.5px] bg-[#1a2e3c] rounded transition-all duration-[0.35s] ease-out ${
+          className={`block w-[26px] h-[2.5px] bg-text-dark rounded transition-all duration-[0.35s] ease-out ${
             mobileMenuOpen ? 'opacity-0' : ''
           }`}
         />
         <span
-          className={`block w-[26px] h-[2.5px] bg-[#1a2e3c] rounded transition-all duration-[0.35s] ease-out ${
+          className={`block w-[26px] h-[2.5px] bg-text-dark rounded transition-all duration-[0.35s] ease-out ${
             mobileMenuOpen ? '-rotate-45 -translate-y-[7.5px]' : ''
           }`}
         />
@@ -85,7 +84,7 @@ export function Navbar() {
             <a
               href={href}
               onClick={(e) => handleNav(e, href)}
-              className="no-underline text-[#1a2e3c] text-sm font-medium transition-colors duration-[0.35s] ease-out relative py-1
+              className="no-underline text-text-dark text-sm font-medium transition-colors duration-[0.35s] ease-out relative py-1
                 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2.5px]
                 after:bg-gradient-to-r after:from-[#00E676] after:to-[#FF6D00] after:rounded after:transition-all after:duration-[0.35s]
                 hover:text-[#FF6D00] hover:after:w-full"

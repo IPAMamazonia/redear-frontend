@@ -1,6 +1,11 @@
 import { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 
+/**
+ * Mini gráfico de linha exibindo as leituras PMS1 e PMS2 de um sensor.
+ *
+ * @param {Array} props.readings - Array de leituras do sensor.
+ */
 export function SensorMiniChart({ readings }) {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
@@ -91,14 +96,14 @@ export function SensorMiniChart({ readings }) {
 
   if (!readings || readings.length < 2) {
     return (
-      <div className="h-[160px] flex items-center justify-center text-xs text-text-light">
+      <div className="SensorMiniChartComponent h-[160px] flex items-center justify-center text-xs text-text-light">
         Dados insuficientes para o gráfico
       </div>
     );
   }
 
   return (
-    <div className="h-[160px]">
+    <div className="SensorMiniChartComponent h-[160px]">
       <canvas ref={canvasRef} />
     </div>
   );

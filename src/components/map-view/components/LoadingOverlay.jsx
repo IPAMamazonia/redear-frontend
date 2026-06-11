@@ -1,7 +1,12 @@
+/**
+ * Overlay de carregamento com spinner, exibido enquanto os sensores são buscados.
+ *
+ * @param {boolean} props.loading - Se true, exibe o overlay.
+ */
 export function LoadingOverlay({ loading }) {
   if (!loading) return null;
   return (
-    <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded">
+    <div className="LoadingOverlayComponent absolute inset-0 z-20 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded">
       <div className="flex items-center gap-3 text-text-dark font-semibold">
         <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />

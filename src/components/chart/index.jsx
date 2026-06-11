@@ -1,11 +1,15 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import Chart from 'chart.js/auto';
-import ChartZoom from 'chartjs-plugin-zoom';
+import { Section, SectionHeading, GlassCard, GradientText, SegmentedControl } from '@/components';
 import { gerarDadosHistorico, getCorAQI, getLabelAQI } from '@/helpers/format';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { ESTADOS, TIPOS_TERRITORIO } from '@/mocks/sensors';
+import ChartZoom from 'chartjs-plugin-zoom';
+import Chart from 'chart.js/auto';
 
 Chart.register(ChartZoom);
 
+/**
+ * Gráfico AQI com seleção de período, filtro por estado/território e zoom interativo.
+ */
 export function AQIChart() {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
@@ -175,34 +179,22 @@ export function AQIChart() {
   }, [createChart]);
 
   const handlePeriodo = (val) => setPeriodo(val);
-
   const handleModo = (m) => {
     setModo(m);
     setNivel1('');
     setNivel2('');
   };
-
   const handleNivel1 = (val) => {
     setNivel1(val);
     setNivel2('');
   };
-
   const handleNivel2 = (val) => setNivel2(val);
 
   return (
-    <section
-      id="grafico"
-      className="AQIChart px-[5%] py-[100px] max-[480px]:py-[60px] max-[480px]:px-[4%] bg-white/50 backdrop-blur"
-    >
-      <h2 className="text-center text-[2.2rem] max-md:text-[1.8rem] max-[480px]:text-[1.5rem] font-extrabold mb-[0.6rem] text-[#1a2e3c] tracking-tight">
-        <span className="bg-gradient-to-r from-[#00E676] to-[#FF6D00] bg-clip-text text-transparent">
-          Qualidade do Ar
-        </span>{' '}
-        ao Longo do Tempo
-      </h2>
-      <p className="text-center text-[#5a6d7a] mb-[3.5rem] text-lg max-w-[600px] mx-auto">
-        Acompanhe a evolução dos índices com filtros de período e localização
-      </p>
+    <Section id="grafico" alt className="AQIChartComponent">
+      <SectionHeading subtitle="Acompanhe a evolução dos índices com filtros de período e localização">
+        <GradientText>Qualidade do Ar</GradientText> ao Longo do Tempo
+      </SectionHeading>
 
       <div className="flex flex-wrap gap-4 max-w-[1280px] mx-auto mb-8 justify-between items-center max-md:flex-col max-md:items-stretch">
         <div className="flex gap-0 flex-wrap bg-white/60 backdrop-blur rounded-[10px] p-[0.35rem] border border-white/50">
@@ -214,7 +206,7 @@ export function AQIChart() {
                 ${
                   periodo === p.value
                     ? 'text-[#FF6D00] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] after:content-[""] after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-[60%] after:h-[3px] after:rounded after:bg-[#FF6D00]'
-                    : 'text-[#5a6d7a] hover:text-[#FF6D00]'
+                    : 'text-text-light hover:text-[#FF6D00]'
                 }`}
               title={p.label.replace(' ', '')}
             >
@@ -224,24 +216,20 @@ export function AQIChart() {
         </div>
 
         <div className="flex items-center gap-3 max-md:flex-col max-md:items-stretch">
-          <div className="flex gap-0 bg-white/50 backdrop-blur rounded-[10px] p-1 border border-white/40">
-            {['estado', 'territorio'].map((m) => (
-              <button
-                key={m}
-                onClick={() => handleModo(m)}
-                className={`px-[1.1rem] py-[0.45rem] border-none bg-transparent cursor-pointer text-sm font-semibold rounded-lg transition-all duration-[0.35s] ease-out
-                  ${modo === m ? 'text-[#1a2e3c] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'text-[#5a6d7a] hover:text-[#FF6D00]'}`}
-              >
-                {m === 'estado' ? 'Estado' : 'Território'}
-              </button>
-            ))}
-          </div>
+          <SegmentedControl
+            options={[
+              { value: 'estado', label: 'Estado' },
+              { value: 'territorio', label: 'Território' },
+            ]}
+            value={modo}
+            onChange={handleModo}
+          />
 
           <div className="flex gap-2 items-center max-md:flex-col">
             <select
               value={nivel1}
               onChange={(e) => handleNivel1(e.target.value)}
-              className="px-3 py-2 border border-black/10 rounded-[10px] text-sm text-[#1a2e3c] bg-[rgba(255,255,255,0.75)] backdrop-blur cursor-pointer min-w-[160px] max-md:w-full focus:outline-none focus:border-[#FF6D00] transition-colors duration-[0.35s]"
+              className="px-3 py-2 border border-black/10 rounded-[10px] text-sm text-text-dark bg-card backdrop-blur cursor-pointer min-w-[160px] max-md:w-full focus:outline-none focus:border-[#FF6D00] transition-colors duration-[0.35s]"
               style={{ width: '220px' }}
               aria-label="Selecionar"
             >
@@ -257,7 +245,7 @@ export function AQIChart() {
               value={nivel2}
               onChange={(e) => handleNivel2(e.target.value)}
               disabled={!hasChildren}
-              className="px-3 py-2 border border-black/10 rounded-[10px] text-sm text-[#1a2e3c] bg-[rgba(255,255,255,0.75)] backdrop-blur cursor-pointer min-w-[160px] max-md:w-full focus:outline-none focus:border-[#FF6D00] transition-colors duration-[0.35s] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 border border-black/10 rounded-[10px] text-sm text-text-dark bg-card backdrop-blur cursor-pointer min-w-[160px] max-md:w-full focus:outline-none focus:border-[#FF6D00] transition-colors duration-[0.35s] disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ width: '240px' }}
               aria-label="Detalhe"
             >
@@ -273,15 +261,17 @@ export function AQIChart() {
         </div>
       </div>
 
-      <div className="max-w-[1280px] mx-auto bg-[rgba(255,255,255,0.75)] backdrop-blur-xl border border-[rgba(255,255,255,0.35)] p-6 rounded-[16px] shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
-        <div className="h-[420px]">
-          <canvas ref={canvasRef} id="aqiChart"></canvas>
-        </div>
-        <p className="text-center mt-3 text-sm text-[#5a6d7a]">
-          <i className="fas fa-info-circle"></i> Arraste para zoom, role para ampliar. Passe o mouse sobre os pontos
-          para detalhes.
-        </p>
+      <div className="max-w-[1280px] mx-auto">
+        <GlassCard className="p-6">
+          <div className="h-[420px]">
+            <canvas ref={canvasRef} id="aqiChart"></canvas>
+          </div>
+          <p className="text-center mt-3 text-sm text-text-light">
+            <i className="fas fa-info-circle"></i> Arraste para zoom, role para ampliar. Passe o mouse sobre os pontos
+            para detalhes.
+          </p>
+        </GlassCard>
       </div>
-    </section>
+    </Section>
   );
 }
