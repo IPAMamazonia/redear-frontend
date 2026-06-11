@@ -126,7 +126,7 @@ export function MapView() {
     const overlay = new Overlay({
       element: popupRef.current,
       positioning: 'bottom-center',
-      offset: [-100, -200],
+      offset: [-190, -200],
     });
     map.addOverlay(overlay);
     overlayRef.current = overlay;
@@ -178,7 +178,7 @@ export function MapView() {
 
         <div
           ref={popupRef}
-          className="absolute bg-card backdrop-blur-xl border border-white/35 p-5 rounded shadow-hover min-w-[260px] max-w-[340px]"
+          className="absolute bg-card backdrop-blur-xl border border-white/35 p-5 rounded shadow-hover min-w-[300px] max-w-[420px]"
         >
           {popupSensor && <SensorPopup key={chartKey} sensor={popupSensor} onClose={closePopup} />}
         </div>

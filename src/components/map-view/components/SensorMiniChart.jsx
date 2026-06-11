@@ -40,8 +40,8 @@ export function SensorMiniChart({ readings }) {
             borderColor: '#00E400',
             backgroundColor: 'rgba(0,228,0,0.08)',
             borderWidth: 1.5,
-            pointRadius: 1,
-            pointHoverRadius: 4,
+            pointRadius: 0,
+            pointHoverRadius: 5,
             tension: 0.3,
             spanGaps: true,
           },
@@ -51,8 +51,8 @@ export function SensorMiniChart({ readings }) {
             borderColor: '#FF7E00',
             backgroundColor: 'rgba(255,126,0,0.08)',
             borderWidth: 1.5,
-            pointRadius: 1,
-            pointHoverRadius: 4,
+            pointRadius: 0,
+            pointHoverRadius: 5,
             tension: 0.3,
             spanGaps: true,
           },
@@ -61,6 +61,7 @@ export function SensorMiniChart({ readings }) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: { intersect: false, mode: 'index' },
         plugins: {
           legend: {
             display: true,
@@ -76,13 +77,13 @@ export function SensorMiniChart({ readings }) {
         scales: {
           x: {
             display: true,
-            ticks: { maxTicksLimit: 8, font: { size: 8 }, color: '#999' },
+            ticks: { maxTicksLimit: 10, font: { size: 9 }, color: '#999' },
             grid: { display: false },
           },
           y: {
             display: true,
             beginAtZero: true,
-            ticks: { font: { size: 9 }, color: '#999' },
+            ticks: { font: { size: 10 }, color: '#999' },
             grid: { color: 'rgba(0,0,0,0.04)' },
           },
         },
@@ -96,14 +97,14 @@ export function SensorMiniChart({ readings }) {
 
   if (!readings || readings.length < 2) {
     return (
-      <div className="SensorMiniChartComponent h-[160px] flex items-center justify-center text-xs text-text-light">
+      <div className="SensorMiniChartComponent h-[240px] flex items-center justify-center text-xs text-text-light">
         Dados insuficientes para o gráfico
       </div>
     );
   }
 
   return (
-    <div className="SensorMiniChartComponent h-[160px]">
+    <div className="SensorMiniChartComponent h-[240px]">
       <canvas ref={canvasRef} />
     </div>
   );
