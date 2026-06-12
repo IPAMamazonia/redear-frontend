@@ -202,17 +202,13 @@ export function MapView() {
       const rightCoord = map.getCoordinateFromPixel([centerPixel[0] + pixelRadius, centerPixel[1]]);
       const meterRadius = abs(rightCoord[0] - centerCoord[0]);
 
-      const spreadAngle = min((2 * PI) / 3, (PI * 2) / num);
-      // 2 -> 120°,
-      // 3 -> 90°,
-      // 4 -> 72°,
-      // 5 -> 60°,
-      // 6 -> 50°,
-      // 7 -> ~43°,
-      // 8 -> ~36°,
-      // 9 -> ~32°,
-      // 10 -> ~28°
-      const startAngle = PI - spreadAngle / 4;
+      // Só alguns cálculos de angulo para distribuir os sensores em volta do ponto central de forma agradável
+      const isSmallCluster = num <= 3;
+      const isP0OnAxis = num % 2 === 0;
+
+      // Marque isP0OnAxis com "!" para a distribuição começar ou não exatamente no eixo horizontal
+      const spreadAngle = isSmallCluster ? (2 * PI) / 3 : (2 * PI) / num;
+      const startAngle = isSmallCluster ? (5 * PI) / 6 : !isP0OnAxis ? PI - spreadAngle / 2 : PI;
 
       const items = [];
 
