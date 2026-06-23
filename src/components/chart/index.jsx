@@ -1,7 +1,8 @@
 import { Section, SectionHeading, GlassCard, GradientText, SegmentedControl } from '@/components';
 import { gerarDadosHistorico, getCorAQI, getLabelAQI } from '@/helpers/format';
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { ESTADOS, TIPOS_TERRITORIO } from '@/mocks/sensors';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchSensors, selectSensors } from '@/store/slices/sensorsSlice';
 import ChartZoom from 'chartjs-plugin-zoom';
 import Chart from 'chart.js/auto';
 
@@ -11,12 +12,19 @@ Chart.register(ChartZoom);
  * Gráfico AQI com seleção de período, filtro por estado/território e zoom interativo.
  */
 export function AQIChart() {
+  const dispatch = useDispatch();
+  const sensors = useSelector(selectSensors);
+
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
   const [periodo, setPeriodo] = useState('1A');
   const [modo, setModo] = useState('estado');
   const [nivel1, setNivel1] = useState('');
   const [nivel2, setNivel2] = useState('');
+
+  useEffect(() => {
+    if (!sensors.length) dispatch(fetchSensors());
+  }, [dispatch, sensors.length]);
 
   const getLocal = useCallback(() => nivel2 || nivel1 || null, [nivel1, nivel2]);
 
@@ -31,11 +39,37 @@ export function AQIChart() {
     { value: 'Max', label: 'Máx' },
   ];
 
-  const nivel1Options = modo === 'estado' ? ESTADOS : TIPOS_TERRITORIO;
-  const selectedParent =
-    modo === 'estado' ? ESTADOS.find((e) => e.id === nivel1) : TIPOS_TERRITORIO.find((t) => t.id === nivel1);
-  const children = modo === 'estado' ? selectedParent?.municipios : selectedParent?.territorios;
-  const hasChildren = children && children.length > 0;
+  const nivel1Options = useMemo(() => {
+    const key = modo === 'estado' ? 'estado' : 'regiao';
+    const set = new Set(
+      sensors.map((s) => {
+        const loc = s.location?.[key];
+        return loc?.nome ?? loc?.bioma ?? null;
+      }).filter(Boolean),
+    );
+    return [...set].map((nome) => ({ id: nome, nome }));
+  }, [sensors, modo]);
+
+  const children = useMemo(() => {
+    if (!nivel1) return [];
+    const key = modo === 'estado' ? 'estado' : 'regiao';
+    const childKey = modo === 'estado' ? 'municipio' : 'bioma';
+    const set = new Set(
+      sensors
+        .filter((s) => {
+          const loc = s.location?.[key];
+          return (loc?.nome ?? loc?.bioma) === nivel1;
+        })
+        .map((s) => {
+          const child = s.location?.[childKey];
+          return child?.nome ?? child?.bioma ?? null;
+        })
+        .filter(Boolean),
+    );
+    return [...set].map((nome) => ({ id: nome, nome }));
+  }, [sensors, modo, nivel1]);
+
+  const hasChildren = children.length > 0;
 
   const createChart = useCallback(() => {
     if (!canvasRef.current) return;
@@ -233,7 +267,7 @@ export function AQIChart() {
               style={{ width: '220px' }}
               aria-label="Selecionar"
             >
-              <option value="">{modo === 'estado' ? 'Selecione um estado' : 'Selecione um tipo'}</option>
+              <option value="">{modo === 'estado' ? 'Selecione um estado' : 'Selecione uma região'}</option>
               {nivel1Options.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.nome}
