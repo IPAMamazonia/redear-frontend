@@ -13,6 +13,7 @@ import { defaults as defaultControls, FullScreen } from 'ol/control';
 import VectorSource from 'ol/source/Vector';
 import { Point, LineString } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
+import Cluster from 'ol/source/Cluster';
 import TileLayer from 'ol/layer/Tile';
 import { fromLonLat } from 'ol/proj';
 import Feature from 'ol/Feature';
@@ -73,6 +74,56 @@ function styleSpider(feature) {
       text: online ? (pm25 ?? '').toString() : '-',
       fill: new Fill({ color: texto }),
       font: 'bold 8px Arial',
+    }),
+  });
+}
+
+function styleCluster(feature) {
+  const features = feature.get('features');
+  const size = features.length;
+
+  if (size === 1) {
+    const f = features[0];
+    const cor = f.get('cor');
+    const texto = f.get('texto');
+    const pm25 = f.get('pm25');
+    const online = f.get('isOnline');
+    return new Style({
+      zIndex: online ? 2 : 1,
+      image: new CircleStyle({
+        radius: 15,
+        fill: new Fill({ color: cor }),
+        stroke: new Stroke({ color: 'white', width: 3 }),
+      }),
+      text: new Text({
+        text: online ? (pm25 ?? '').toString() : '-',
+        fill: new Fill({ color: texto }),
+        font: 'bold 9px Arial',
+        offsetY: 0,
+      }),
+    });
+  }
+
+  const worst = features.reduce(
+    (worst, f) => {
+      const pm25 = f.get('pm25');
+      return pm25 > (worst.pm25 || 0) ? { pm25, feature: f } : worst;
+    },
+    { pm25: 0, feature: null }
+  );
+  const cor = worst.feature?.get('cor') || '#9e9e9e';
+
+  return new Style({
+    image: new CircleStyle({
+      radius: Math.min(17 + size * 1.5, 28),
+      fill: new Fill({ color: cor }),
+      stroke: new Stroke({ color: 'white', width: 3 }),
+    }),
+    text: new Text({
+      text: `${size}`,
+      fill: new Fill({ color: '#fff' }),
+      font: 'bold 11px Arial',
+      stroke: new Stroke({ color: '#000', width: 2 }),
     }),
   });
 }
@@ -150,7 +201,12 @@ export function MapView() {
     });
 
     const vectorSource = new VectorSource();
-    map.addLayer(new VectorLayer({ source: vectorSource, style: styleSensor }));
+    const clusterSource = new Cluster({
+      source: vectorSource,
+      distance: 50,
+    });
+    const clusterLayer = new VectorLayer({ source: clusterSource, style: styleCluster });
+    map.addLayer(clusterLayer);
     vectorSourceRef.current = vectorSource;
 
     const spiderSource = new VectorSource();
@@ -187,13 +243,15 @@ export function MapView() {
     function spiderfy(features, centerCoord) {
       cancelAnim();
 
-      // Restore any previously spiderfied features before spiderfying a new cluster
+      // Restore any previously spiderfied features
       if (spiderfiedFeatures.length > 0) {
         spiderSource.clear();
-        spiderfiedFeatures.forEach((f) => vectorSource.addFeature(f));
         spiderfiedFeatures = [];
         isSpiderfied = false;
       }
+
+      // Hide cluster layer so only spider leaves are visible
+      clusterLayer.setVisible(false);
 
       const { PI, abs, min, max } = Math;
       const num = features.length;
@@ -213,8 +271,6 @@ export function MapView() {
       const items = [];
 
       features.forEach((feature, i) => {
-        vectorSource.removeFeature(feature);
-
         const angle = startAngle - spreadAngle * (num - 1) * i;
         const targetCoord = [
           centerCoord[0] + meterRadius * Math.cos(angle),
@@ -287,7 +343,7 @@ export function MapView() {
         },
         () => {
           spiderSource.clear();
-          spiderfiedFeatures.forEach((f) => vectorSource.addFeature(f));
+          clusterLayer.setVisible(true);
           spiderfiedFeatures = [];
           isSpiderfied = false;
         }
@@ -324,18 +380,19 @@ export function MapView() {
         return;
       }
 
-      const feature = map.forEachFeatureAtPixel(evt.pixel, (f) => (f.get('sensor_id') ? f : null), {
-        layerFilter: (l) => l.getSource() === vectorSource,
+      const feature = map.forEachFeatureAtPixel(evt.pixel, (f) => {
+        const inner = f.get('features');
+        return inner && inner.length > 0 ? f : null;
       });
       if (feature) {
-        const coord = feature.getGeometry().getCoordinates();
-        const allAtCoord = vectorSource.getFeaturesAtCoordinate(coord);
-        const sensorFeatures = allAtCoord.filter((f) => f.get('sensor_id'));
+        const inner = feature.get('features');
+        const first = inner[0];
+        const coord = first.getGeometry()?.getCoordinates() || feature.getGeometry().getCoordinates();
 
-        if (sensorFeatures.length > 1) {
-          spiderfy(sensorFeatures, coord);
+        if (inner.length > 1) {
+          spiderfy(inner, coord);
         } else {
-          setPopupId(feature.get('sensor_id'));
+          setPopupId(first.get('sensor_id'));
           setChartKey((k) => k + 1);
           overlay.setPosition(coord);
           map.getView().animate({ center: coord, duration: 350 });
