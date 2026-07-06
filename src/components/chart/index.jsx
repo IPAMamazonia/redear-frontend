@@ -41,12 +41,7 @@ export function AQIChart() {
 
   const nivel1Options = useMemo(() => {
     const key = modo === 'estado' ? 'estado' : 'regiao';
-    const set = new Set(
-      sensors.map((s) => {
-        const loc = s.location?.[key];
-        return loc?.nome ?? loc?.bioma ?? null;
-      }).filter(Boolean),
-    );
+    const set = new Set(sensors.map((s) => s[key]).filter(Boolean));
     return [...set].map((nome) => ({ id: nome, nome }));
   }, [sensors, modo]);
 
@@ -56,14 +51,8 @@ export function AQIChart() {
     const childKey = modo === 'estado' ? 'municipio' : 'bioma';
     const set = new Set(
       sensors
-        .filter((s) => {
-          const loc = s.location?.[key];
-          return (loc?.nome ?? loc?.bioma) === nivel1;
-        })
-        .map((s) => {
-          const child = s.location?.[childKey];
-          return child?.nome ?? child?.bioma ?? null;
-        })
+        .filter((s) => s[key] === nivel1)
+        .map((s) => s[childKey])
         .filter(Boolean),
     );
     return [...set].map((nome) => ({ id: nome, nome }));

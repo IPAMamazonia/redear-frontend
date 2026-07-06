@@ -11,11 +11,11 @@ import { SensorMiniChart } from './SensorMiniChart';
 export function SensorPopup({ sensor, onClose }) {
   const [showChart, setShowChart] = useState(false);
 
-  const pm25 = sensor.last_readings?.[0]?.pms1_pm2_5_env
-    ?? sensor.last_readings?.[0]?.pms2_pm2_5_env
+  const pm25 = sensor.readings?.[0]?.pms1_pm2_5_env
+    ?? sensor.readings?.[0]?.pms2_pm2_5_env
     ?? null;
   const online = sensor.is_online ?? false;
-  const faixa = online ? getPM25Color(pm25) : { cor: '#9e9e9e', texto: '#ffffff', label: 'Offline' };
+  const faixa = online ? getPM25Color(pm25) : { color: '#9e9e9e', textColor: '#ffffff', label: 'Offline' };
 
   return (
     <div className="SensorPopupComponent relative">
@@ -27,13 +27,16 @@ export function SensorPopup({ sensor, onClose }) {
         &times;
       </a>
       <h3 className="text-base mb-2 pr-5 text-text-dark">{sensor.name}</h3>
+      <span className="text-[10px] uppercase tracking-wider text-text-light mb-2 block">
+        {sensor.source === 'purpleAir' ? 'PurpleAir' : 'RedeAr'}
+      </span>
 
       <div className="flex items-center gap-3 mb-2">
         {pm25 != null && online ? (
           <>
             <div
               className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-extrabold shrink-0"
-              style={{ background: faixa.cor, color: faixa.texto }}
+              style={{ background: faixa.color, color: faixa.textColor }}
             >
               {pm25}
             </div>
@@ -53,7 +56,7 @@ export function SensorPopup({ sensor, onClose }) {
         {sensor.latest_reading && (
           <span>Última leitura: {new Date(sensor.latest_reading).toLocaleString('pt-BR')}</span>
         )}
-        {sensor.oldest_reading && (
+        {sensor.oldest_reading && sensor.oldest_reading !== sensor.latest_reading && (
           <span>Primeira leitura: {new Date(sensor.oldest_reading).toLocaleString('pt-BR')}</span>
         )}
       </div>
@@ -69,7 +72,7 @@ export function SensorPopup({ sensor, onClose }) {
 
       {showChart && (
         <div className="mt-3 pt-3 border-t border-black/10">
-          <SensorMiniChart readings={sensor.last_readings} />
+          <SensorMiniChart readings={sensor.readings} />
         </div>
       )}
     </div>

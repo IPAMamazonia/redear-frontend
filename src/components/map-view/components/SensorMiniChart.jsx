@@ -27,6 +27,10 @@ export function SensorMiniChart({ readings }) {
     const pms1 = data.map((r) => r.pms1_pm2_5_env ?? null);
     const pms2 = data.map((r) => r.pms2_pm2_5_env ?? null);
 
+    const allValues = [...pms1, ...pms2].filter((v) => v != null);
+    const dataMax = allValues.length > 0 ? Math.max(...allValues) : 50;
+    const yMax = Math.ceil(Math.max(dataMax * 1.15, 50) / 25) * 25;
+
     if (chartRef.current) chartRef.current.destroy();
 
     chartRef.current = new Chart(canvasRef.current, {
@@ -83,6 +87,7 @@ export function SensorMiniChart({ readings }) {
           y: {
             display: true,
             beginAtZero: true,
+            max: yMax,
             ticks: { font: { size: 10 }, color: '#999' },
             grid: { color: 'rgba(0,0,0,0.04)' },
           },

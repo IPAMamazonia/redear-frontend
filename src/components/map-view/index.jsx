@@ -1,14 +1,14 @@
 import { fetchSensors, selectSensors, selectSensorsError, selectSensorsLoading } from '@/store/slices/sensorsSlice';
 import { ErrorBanner, LoadingOverlay, MapLegend, SensorPopup } from './components';
 import { Section, SectionHeading, GradientText } from '@/components';
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useRef, useState } from 'react';
 import { getPM25Color } from '@/rules/qualidadeAr';
 import { RecenterControl } from './classes';
 import { VIEW_CONFIG } from './rules';
 
 // OpenLayers imports
-import { Circle as CircleStyle, Fill, Stroke, Style, Text } from 'ol/style';
+import { Circle as CircleStyle, Fill, Stroke, Style, Text, RegularShape } from 'ol/style';
 import { defaults as defaultControls, FullScreen } from 'ol/control';
 import VectorSource from 'ol/source/Vector';
 import { Point, LineString } from 'ol/geom';
@@ -23,30 +23,36 @@ import View from 'ol/View';
 import Map from 'ol/Map';
 import 'ol/ol.css';
 
-function get_pm25(sensor) {
-  const sensor_reading_1 = sensor.last_readings?.[0]?.pms1_pm2_5_env;
-  const sensor_reading_2 = sensor.last_readings?.[0]?.pms2_pm2_5_env;
-  return Number(((sensor_reading_1 || 0) + (sensor_reading_2 || 0)) / 2);
+function getPM25(sensor) {
+  const reading = sensor.readings?.[0];
+  if (!reading) return null;
+  const v1 = reading.pms1_pm2_5_env;
+  const v2 = reading.pms2_pm2_5_env;
+  return Number(((v1 || 0) + (v2 || 0)) / 2);
 }
 
-function styleSensor(feature) {
-  const cor = feature.get('cor');
-  const texto = feature.get('texto');
-  const pm25 = feature.get('pm25');
-  const online = feature.get('isOnline');
+function createSensorStyle({ color, textColor, pm25, online, isPurpleAir, strokeWidth, fontSize, zIndex }) {
+  const image = isPurpleAir
+    ? new RegularShape({
+        radius: 15,
+        points: 4,
+        angle: Math.PI / 4,
+        fill: new Fill({ color }),
+        stroke: new Stroke({ color: 'white', width: strokeWidth }),
+      })
+    : new CircleStyle({
+        radius: 15,
+        fill: new Fill({ color }),
+        stroke: new Stroke({ color: 'white', width: strokeWidth }),
+      });
 
   return new Style({
-    zIndex: online ? 2 : 1,
-    image: new CircleStyle({
-      radius: 15,
-      fill: new Fill({ color: cor }),
-      stroke: new Stroke({ color: 'white', width: 3 }),
-    }),
+    ...(zIndex != null ? { zIndex } : {}),
+    image,
     text: new Text({
       text: online ? (pm25 ?? '').toString() : '-',
-      fill: new Fill({ color: texto }),
-      font: 'bold 9px Arial',
-      offsetY: 0,
+      fill: new Fill({ color: textColor }),
+      font: `bold ${fontSize}px Arial`,
     }),
   });
 }
@@ -59,71 +65,77 @@ function styleSpider(feature) {
     });
   }
 
-  const cor = feature.get('cor');
-  const texto = feature.get('texto');
-  const pm25 = feature.get('pm25');
-  const online = feature.get('isOnline');
-
-  return new Style({
-    image: new CircleStyle({
-      radius: 15,
-      fill: new Fill({ color: cor }),
-      stroke: new Stroke({ color: 'white', width: 3 }),
-    }),
-    text: new Text({
-      text: online ? (pm25 ?? '').toString() : '-',
-      fill: new Fill({ color: texto }),
-      font: 'bold 8px Arial',
-    }),
+  return createSensorStyle({
+    color: feature.get('color'),
+    textColor: feature.get('textColor'),
+    pm25: feature.get('pm25'),
+    online: feature.get('isOnline'),
+    isPurpleAir: feature.get('source') === 'purpleAir',
+    strokeWidth: 1.5,
+    fontSize: 10,
   });
 }
 
-function styleCluster(feature) {
+function stylePointWithCluster(feature) {
   const features = feature.get('features');
   const size = features.length;
 
   if (size === 1) {
     const f = features[0];
-    const cor = f.get('cor');
-    const texto = f.get('texto');
-    const pm25 = f.get('pm25');
-    const online = f.get('isOnline');
+
+    return createSensorStyle({
+      color: f.get('color'),
+      textColor: f.get('textColor'),
+      pm25: f.get('pm25'),
+      online: f.get('isOnline'),
+      isPurpleAir: f.get('source') === 'purpleAir',
+      strokeWidth: 1.5,
+      fontSize: 12,
+      zIndex: f.get('isOnline') ? 2 : 1,
+    });
+  }
+
+  const onlineFeatures = features.filter((f) => f.get('isOnline'));
+
+  if (onlineFeatures.length === 0) {
     return new Style({
-      zIndex: online ? 2 : 1,
       image: new CircleStyle({
-        radius: 15,
-        fill: new Fill({ color: cor }),
-        stroke: new Stroke({ color: 'white', width: 3 }),
+        radius: Math.min(12 + size * 1.5, 28),
+        fill: new Fill({ color: '#9e9e9e' }),
+        stroke: new Stroke({ color: 'white', width: 1.5 }),
       }),
       text: new Text({
-        text: online ? (pm25 ?? '').toString() : '-',
-        fill: new Fill({ color: texto }),
-        font: 'bold 9px Arial',
-        offsetY: 0,
+        text: `${size}`,
+        fill: new Fill({ color: '#fff' }),
+        font: 'bold 12px Arial',
       }),
     });
   }
 
-  const worst = features.reduce(
+  const worst = onlineFeatures.reduce(
     (worst, f) => {
       const pm25 = f.get('pm25');
-      return pm25 > (worst.pm25 || 0) ? { pm25, feature: f } : worst;
+      if (pm25 == null) return worst;
+      if (worst.feature == null || pm25 > worst.pm25) {
+        return { pm25, feature: f };
+      }
+      return worst;
     },
     { pm25: 0, feature: null }
   );
-  const cor = worst.feature?.get('cor') || '#9e9e9e';
+  const color = worst.feature?.get('color') || '#9e9e9e';
 
   return new Style({
     image: new CircleStyle({
       radius: Math.min(17 + size * 1.5, 28),
-      fill: new Fill({ color: cor }),
-      stroke: new Stroke({ color: 'white', width: 3 }),
+      fill: new Fill({ color }),
+      stroke: new Stroke({ color: 'white', width: 1.5 }),
     }),
     text: new Text({
       text: `${size}`,
       fill: new Fill({ color: '#fff' }),
-      font: 'bold 11px Arial',
-      stroke: new Stroke({ color: '#000', width: 2 }),
+      font: 'bold 12px Arial',
+      textDecoration: 'underline',
     }),
   });
 }
@@ -142,8 +154,6 @@ export function MapView() {
   const vectorSourceRef = useRef(null);
   const popupRef = useRef(null);
   const overlayRef = useRef(null);
-  const sensorsRef = useRef(sensors);
-  sensorsRef.current = sensors;
 
   const [popupId, setPopupId] = useState(null);
   const [chartKey, setChartKey] = useState(0);
@@ -158,7 +168,7 @@ export function MapView() {
     unspiderfyRef.current();
   }
 
-  const buildFeatures = useCallback((sensors) => {
+  function buildFeatures(sensors) {
     if (!vectorSourceRef.current) return;
 
     vectorSourceRef.current.clear();
@@ -166,25 +176,26 @@ export function MapView() {
     const features = sensors
       .filter((s) => s.gps?.coordinates?.[0] != null && s.gps?.coordinates?.[1] != null)
       .map((s) => {
-        const pm25 = get_pm25(s);
+        const pm25 = getPM25(s);
         const online = s.is_online ?? false;
-        const faixa = online ? getPM25Color(pm25) : { cor: '#9e9e9e', texto: '#ffffff', label: 'Offline' };
+        const range = online ? getPM25Color(pm25) : { color: '#9e9e9e', textColor: '#ffffff', label: 'Offline' };
         return new Feature({
           geometry: new Point(fromLonLat([s.gps.coordinates[0], s.gps.coordinates[1]])),
           sensor_id: s.id,
+          source: s.source,
           nome: s.name,
           isOnline: online,
           pm25,
           latestReading: s.latest_reading,
           oldestReading: s.oldest_reading,
-          cor: faixa.cor,
-          texto: faixa.texto,
-          label: faixa.label,
+          color: range.color,
+          textColor: range.textColor,
+          label: range.label,
         });
       });
 
     vectorSourceRef.current.addFeatures(features);
-  }, []);
+  }
 
   useEffect(() => {
     dispatch(fetchSensors());
@@ -205,7 +216,7 @@ export function MapView() {
       source: vectorSource,
       distance: 50,
     });
-    const clusterLayer = new VectorLayer({ source: clusterSource, style: styleCluster });
+    const clusterLayer = new VectorLayer({ source: clusterSource, style: stylePointWithCluster });
     map.addLayer(clusterLayer);
     vectorSourceRef.current = vectorSource;
 
@@ -253,20 +264,16 @@ export function MapView() {
       // Hide cluster layer so only spider leaves are visible
       clusterLayer.setVisible(false);
 
-      const { PI, abs, min, max } = Math;
+      const { PI, abs, max } = Math;
       const num = features.length;
-      const pixelRadius = min(15 + 15 * num, 60);
+      const pixelRadius = max(10 + 5 * num, 50);
       const centerPixel = map.getPixelFromCoordinate(centerCoord);
       const rightCoord = map.getCoordinateFromPixel([centerPixel[0] + pixelRadius, centerPixel[1]]);
       const meterRadius = abs(rightCoord[0] - centerCoord[0]);
 
-      // Só alguns cálculos de angulo para distribuir os sensores em volta do ponto central de forma agradável
       const isSmallCluster = num <= 3;
-      const isP0OnAxis = num % 2 === 0;
-
-      // Marque isP0OnAxis com "!" para a distribuição começar ou não exatamente no eixo horizontal
       const spreadAngle = isSmallCluster ? (2 * PI) / 3 : (2 * PI) / num;
-      const startAngle = isSmallCluster ? (5 * PI) / 6 : !isP0OnAxis ? PI - spreadAngle / 2 : PI;
+      const startAngle = isSmallCluster ? (5 * PI) / 6 : num % 2 === 0 ? PI : PI - spreadAngle / 2;
 
       const items = [];
 
@@ -417,7 +424,7 @@ export function MapView() {
 
   useEffect(() => {
     buildFeatures(sensors);
-  }, [sensors, buildFeatures]);
+  }, [sensors]);
 
   return (
     <Section id="mapa" className="MapViewComponent">

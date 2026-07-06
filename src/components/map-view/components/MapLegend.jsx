@@ -10,7 +10,7 @@ export function MapLegend() {
         <h4 className="mb-2 text-sm">PM2.5 (µg/m³)</h4>
         {FAIXAS_PM25.map((f) => (
           <div key={f.label} className="flex items-center gap-2 mb-1">
-            <span className="w-[14px] h-[14px] rounded-full shrink-0" style={{ background: f.cor }} />
+            <span className="w-[14px] h-[14px] rounded-full shrink-0" style={{ background: f.color }} />
             {f.label}
           </div>
         ))}
