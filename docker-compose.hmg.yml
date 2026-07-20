@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: hmg-redear-org-br
+    # Utiliza o build multi-stage do Dockerfile
+    restart: unless-stopped
+    networks:
+      - default
+      - nginxproxymanager_default
+
+networks:
+  nginxproxymanager_default:
+    external: true
+    name: nginxproxymanager_default

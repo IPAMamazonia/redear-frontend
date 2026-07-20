@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: dev-redear-org-br
+    restart: unless-stopped
+    user: "root"
+    # Em dev, ignoramos o build multi-stage e usamos node puro com Vite para hot-reload
+    image: "node:${NODE_VERSION:?Erro: NODE_VERSION nao definida no .env}-slim"
+    command: /app/docker-entrypoint.sh
+    working_dir: /app
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    networks:
+      - default

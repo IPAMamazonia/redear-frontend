@@ -1,0 +1,29 @@
+name: Deploy HMG
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Deploy to Server
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_MAPSERVER01 }}
+          ARGS: "-rltgoDzvO --delete --exclude='*.pyc' --exclude='node_modules' --exclude='.git'"
+          SOURCE: './*'
+          REMOTE_HOST: ${{ secrets.HOST_MAPSERVER01 }}
+          REMOTE_USER: ${{ secrets.USER }}
+          TARGET: '/var/www/hmg-redear-org-br/'
+          REMOTE_PORT: 1338
+
+      - name: Run container
+        run: |
+          ssh -p 1338 -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key* ${{ secrets.USER }}@${{ secrets.HOST_MAPSERVER01 }} 'chmod +x /var/www/hmg-redear-org-br/run-app-deploy.sh'
+          ssh -p 1338 -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key* ${{ secrets.USER }}@${{ secrets.HOST_MAPSERVER01 }} 'cd /var/www/hmg-redear-org-br && ./run-app-deploy.sh --hmg'

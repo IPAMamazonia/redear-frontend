@@ -1,0 +1,13 @@
+node_modules
+dist
+.git
+.github
+.env
+.env.*
+!.env.example
+.vscode
+.idea
+*.md
+netlify.toml
+js/
+css/

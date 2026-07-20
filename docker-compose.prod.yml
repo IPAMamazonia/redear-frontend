@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: prod-redear-org-br
+    restart: always
+    networks:
+      - default
+      - nginxproxymanager_default
+
+networks:
+  nginxproxymanager_default:
+    external: true
+    name: nginxproxymanager_default

@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_VERSION: "${NODE_VERSION:?Erro: NODE_VERSION nao definida no .env}"
+    # As configurações específicas de cada ambiente (portas, volumes, redes) ficarão nos arquivos de sobreposição.
