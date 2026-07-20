@@ -21,9 +21,9 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST_APP01 }}
           REMOTE_USER: ${{ secrets.USER }}
           TARGET: '/var/www/redear-org-br/'
-          REMOTE_PORT: 1338
+          REMOTE_PORT: 15505
 
       - name: Run container
         run: |
-          ssh -p 1338 -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key* ${{ secrets.USER }}@${{ secrets.HOST_APP01 }} 'chmod +x /var/www/redear-org-br/run-app-deploy.sh'
-          ssh -p 1338 -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key* ${{ secrets.USER }}@${{ secrets.HOST_APP01 }} 'cd /var/www/redear-org-br && ./run-app-deploy.sh --prod'
+          ssh -p 15505 -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key* ${{ secrets.USER }}@${{ secrets.HOST_APP01 }} 'chmod +x /var/www/redear-org-br/run-app-deploy.sh'
+          ssh -p 15505 -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key* ${{ secrets.USER }}@${{ secrets.HOST_APP01 }} 'cd /var/www/redear-org-br && ./run-app-deploy.sh --prod'
