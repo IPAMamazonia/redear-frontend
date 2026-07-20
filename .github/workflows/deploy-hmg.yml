@@ -15,15 +15,15 @@ jobs:
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_MAPSERVER01 }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_APP01 }}
           ARGS: "-rltgoDzvO --delete --exclude='*.pyc' --exclude='node_modules' --exclude='.git'"
           SOURCE: './*'
-          REMOTE_HOST: ${{ secrets.HOST_MAPSERVER01 }}
+          REMOTE_HOST: ${{ secrets.HOST_APP01 }}
           REMOTE_USER: ${{ secrets.USER }}
           TARGET: '/var/www/hmg-redear-org-br/'
           REMOTE_PORT: 15505
 
       - name: Run container
         run: |
-          ssh -p 15505 -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key* ${{ secrets.USER }}@${{ secrets.HOST_MAPSERVER01 }} 'chmod +x /var/www/hmg-redear-org-br/run-app-deploy.sh'
-          ssh -p 15505 -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key* ${{ secrets.USER }}@${{ secrets.HOST_MAPSERVER01 }} 'cd /var/www/hmg-redear-org-br && ./run-app-deploy.sh --hmg'
+          ssh -p 15505 -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key* ${{ secrets.USER }}@${{ secrets.HOST_APP01 }} 'chmod +x /var/www/hmg-redear-org-br/run-app-deploy.sh'
+          ssh -p 15505 -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key* ${{ secrets.USER }}@${{ secrets.HOST_APP01 }} 'cd /var/www/hmg-redear-org-br && ./run-app-deploy.sh --hmg'
