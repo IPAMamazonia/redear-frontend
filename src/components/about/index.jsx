@@ -41,7 +41,7 @@ export function About() {
   return (
     <Section id="sobre" className="AboutComponent">
       <SectionHeading subtitle="Conheça nossa iniciativa de monitoramento da qualidade do ar">
-        Sobre o <GradientText>RedeAr</GradientText>
+        Sobre a <GradientText>RedeAr</GradientText>
       </SectionHeading>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-md:gap-10 max-w-[1280px] mx-auto items-center">
