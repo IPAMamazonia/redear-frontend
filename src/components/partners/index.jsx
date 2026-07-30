@@ -28,7 +28,7 @@ export function Partners() {
         </div>
       </FadeUp>
 
-      <h3 className="text-center text-[1.4rem] font-bold text-[#FF6D00] mb-8">Nossos Parceiros</h3>
+      <h3 className="text-center text-[1.4rem] font-bold text-[#22A64A] mb-8">Nossos Parceiros</h3>
 
       <FadeUp delay={100}>
         <div className="flex flex-wrap justify-center gap-8 max-w-[1200px] mx-auto items-center max-md:gap-4">
@@ -42,7 +42,7 @@ export function Partners() {
                 <i
                   className={`fas ${p.icon} text-[2.2rem] mb-2 block`}
                   style={{
-                    background: 'linear-gradient(135deg, #00E676, #FF6D00)',
+                    background: 'linear-gradient(135deg, #22A64A, #84AAD8)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',

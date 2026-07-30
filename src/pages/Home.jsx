@@ -13,8 +13,8 @@ export function HomePage() {
       <Navbar />
       <HeroSlider />
       <About />
-      <AQIChart />
       <MapView />
+      <AQIChart />
       <FAQ />
       <Contact />
       <Partners />

@@ -4,7 +4,7 @@ import { useInterval } from '@/hooks/useInterval';
 const SLIDES = [
   {
     img: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=1920&q=80',
-    title: 'Monitorando a Qualidade do Ar',
+    title: 'RedeAr: Monitorando a Qualidade do Ar',
     subtitle: 'Dados em tempo real da qualidade do ar em todo o Brasil',
   },
   {

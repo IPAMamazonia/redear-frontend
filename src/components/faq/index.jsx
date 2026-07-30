@@ -4,7 +4,7 @@ import { Section, SectionHeading, GlassCard, GradientText } from '@/components';
 const FAQ_ITEMS = [
   {
     q: 'O que é o Índice de Qualidade do Ar (AQI)?',
-    a: 'O AQI (Air Quality Index) é um índice padronizado que indica o nível de poluição do ar. Quanto maior o valor, pior a qualidade do ar. A escala vai de 0 (Bom) a 500+ (Péssimo), considerando poluentes como material particulado (PM2.5 e PM10), ozônio (O₃), dióxido de nitrogênio (NO₂) e outros.',
+    a: 'O AQI (Air Quality Index) é um índice padronizado que indica o nível de poluição do ar. Quanto maior o valor, pior a qualidade do ar. A escala vai de 0 (Bom) a 500+ (Péssimo), considerando poluentes e material particulado', //(PM2.5 e PM10), ozônio (O₃), dióxido de nitrogênio (NO₂) e outros.',
   },
   {
     q: 'Como a qualidade do ar é medida?',

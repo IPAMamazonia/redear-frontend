@@ -2,11 +2,12 @@ import { toggleMobileMenu, closeMobileMenu, setScrolled } from '@/store/slices/u
 import { useSelector, useDispatch } from 'react-redux';
 import { GradientText } from '@/components';
 import { useEffect } from 'react';
+import logo from '@/assets/png/Logo RedeAR - IPAM vetores-01.png'
 
 const LINKS = [
   { href: '#sobre', label: 'Sobre' },
-  { href: '#grafico', label: 'Gráfico' },
   { href: '#mapa', label: 'Mapa' },
+  { href: '#grafico', label: 'Gráfico' },
   { href: '#faq', label: 'FAQ' },
   { href: '#contato', label: 'Fale Conosco' },
   { href: '#parceiros', label: 'Parceiros' },
@@ -45,7 +46,7 @@ export function Navbar() {
         onClick={(e) => handleNav(e, '#hero')}
         className="text-2xl font-black tracking-tighter no-underline"
       >
-        <GradientText>RedeAr</GradientText>
+        <img src={logo} alt="Logo RedeAR" className="w-[200px]" />
       </a>
 
       <button

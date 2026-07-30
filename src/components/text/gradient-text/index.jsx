@@ -1,5 +1,5 @@
 const GRADIENT_STYLE = {
-  background: 'linear-gradient(135deg, #00E676, #FF6D00)',
+  background: 'linear-gradient(135deg, #22A64A, #84AAD8)', // Alterado para cores da logo principal...
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',
