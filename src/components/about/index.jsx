@@ -26,7 +26,7 @@ export function About() {
             </p>
             <p>
               Por meio de uma rede de sensores distribuídos estrategicamente, coletamos dados de material particulado
-              (PM2.5 e PM10), ozônio, dióxido de nitrogênio e outros poluentes, transformando essas informações em{' '}
+              (PM2.5 e PM10){/*, ozônio, dióxido de nitrogênio e outros poluentes,*/} transformando essas informações em 
               <strong>dados abertos e acessíveis</strong> para pesquisadores, gestores públicos e a sociedade civil.
             </p>
             <p>
