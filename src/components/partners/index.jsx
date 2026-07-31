@@ -1,15 +1,21 @@
 import { Section, FadeUp, GradientText, GlassCard } from '@/components';
 
+import logoCapacream from '@/assets/sponsors/Logo - CAPACREAM.png';
+import logoConexao from '@/assets/sponsors/Logo - Rede Conexão Povos da Floresta.png';
+import logoSema from '@/assets/sponsors/Logo - SEMA MT.png';
+import logoUfac from '@/assets/sponsors/Logo - UFAC.png';
+import logoIpam from '@/assets/sponsors/Logo - IPAM.svg';
+
 const PARCEIROS = [
-  { icon: 'fa-leaf', nome: 'BioAmazônia' },
-  { icon: 'fa-university', nome: 'UFAC' },
-  { icon: 'fa-tree', nome: 'Instituto Verdejar' },
-  { icon: 'fa-globe', nome: 'GreenTech Soluções' },
-  { icon: 'fa-hand-holding-heart', nome: 'RedeAr' },
+  { src: logoCapacream, nome: 'CAPACREAM' },
+  { src: logoConexao, nome: 'Rede Conexão Povos da Floresta' },
+  { src: logoIpam, nome: 'IPAM' },
+  { src: logoSema, nome: 'SEMA MT' },
+  { src: logoUfac, nome: 'UFAC' },
 ];
 
 /**
- * Seção de parceiros com destaque para o IPAM e cards das instituições envolvidas.
+ * Seção de parceiros com destaque para o IPAM e mosaico dos logos das instituições envolvidas.
  */
 export function Partners() {
   return (
@@ -31,25 +37,11 @@ export function Partners() {
       <h3 className="text-center text-[1.4rem] font-bold text-[#22A64A] mb-8">Nossos Parceiros</h3>
 
       <FadeUp delay={100}>
-        <div className="flex flex-wrap justify-center gap-8 max-w-[1200px] mx-auto items-center max-md:gap-4">
+        <div className="flex flex-wrap items-center justify-center gap-2 max-w-[1200px] mx-auto">
           {PARCEIROS.map((p) => (
-            <GlassCard
-              key={p.nome}
-              hover
-              className="px-10 py-8 flex items-center justify-center min-h-[110px] min-w-[170px] max-md:min-w-[140px] max-md:p-6"
-            >
-              <div className="text-sm font-semibold text-text-light flex flex-col items-center gap-[5px]">
-                <i
-                  className={`fas ${p.icon} text-[2.2rem] mb-2 block`}
-                  style={{
-                    background: 'linear-gradient(135deg, #22A64A, #84AAD8)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}
-                />
-                {p.nome}
-              </div>
+            <GlassCard key={p.nome} className="flex flex-col items-center justify-center bg-white rounded-lg shadow-md p-[20px] card-lift">
+              <img src={p.src} alt={p.nome} className="h-[100px]" loading="lazy" />
+              <p className="text-center text-sm font-semibold text-text-light mt-2">{p.nome}</p>
             </GlassCard>
           ))}
         </div>
