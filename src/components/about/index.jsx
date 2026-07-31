@@ -12,7 +12,7 @@ export function About() {
   const [stats, setStats] = useState([
     { id: 'sensors-total', number: '-', label: 'Sensores Totais' },
     { id: 'states-monitored', number: '-', label: 'Estados Monitorados' },
-    { id: 'sensors-proprietary', number: '-', label: 'Sensores Proprietários' },
+    { id: 'sensors-proprietary', number: '-', label: 'Sensores Proprietários' }, //TODO: decidir sobre o label proprietários
     { id: 'sensors-purpleair', number: '-', label: 'Sensores PurpleAir' },
     { id: 'readings-daily', number: '10 mil+', label: 'Leituras Coletadas todos os dias' },
     { id: 'monitoring-continuous', number: '24/7', label: 'Monitoramento Contínuo' },
@@ -31,7 +31,7 @@ export function About() {
     setStats((prevStats) => [
       { id: 'sensors-total', number: totalSensors.toString(), label: 'Sensores Totais' },
       { id: 'states-monitored', number: statesMonitored.toString(), label: 'Estados Monitorados' },
-      { id: 'sensors-proprietary', number: proprietarySensors.toString(), label: 'Sensores Proprietários' },
+      { id: 'sensors-proprietary', number: proprietarySensors.toString(), label: 'Sensores Proprietários' }, //TODO: decidir sobre o label proprietários
       { id: 'sensors-purpleair', number: purpleAirSensors.toString(), label: 'Sensores PurpleAir' },
       { id: 'readings-daily', number: '10 mil+', label: 'Leituras Coletadas todos os dias' },
       { id: 'monitoring-continuous', number: '24/7', label: 'Monitoramento Contínuo' },
@@ -59,7 +59,7 @@ export function About() {
 
             <p>
               Por meio de uma rede de sensores distribuídos estrategicamente, coletamos dados de material particulado
-              (PM2.5 e PM10), umidade relativa do ar e temperatura, transformando essas informações em{' '}
+              (PM2.5 e PM10), umidade relativa do ar e temperatura, transformando essas informações em
               <strong>dados abertos e acessíveis</strong> para pesquisadores, gestores públicos e a sociedade civil.
             </p>
 

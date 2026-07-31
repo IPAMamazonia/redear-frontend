@@ -10,7 +10,7 @@ const SLIDES = [
   {
     img: 'https://ipam.org.br/wp-content/uploads/2026/03/Amazonia-em-chamas-sobrevoo-fumaca-2-Victor-Moriyama-Amazonia-em-Chamas.webp',
     title: 'Qualidade do Ar Importa',
-    subtitle: 'Monitore os níveis de poluição e proteja sua saúde',
+    subtitle: 'Acompanhe a qualidade do ar em tempo real e proteja sua saúde',
   },
   {
     img: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&q=80',
