@@ -39,7 +39,7 @@ export function Partners() {
       <FadeUp delay={100}>
         <div className="flex flex-wrap items-center justify-center gap-2 max-w-[1200px] mx-auto">
           {PARCEIROS.map((p) => (
-            <GlassCard key={p.nome} className="flex flex-col items-center justify-center bg-white rounded-lg shadow-md p-[20px] card-lift">
+            <GlassCard hover key={p.nome} className="flex flex-col items-center justify-center rounded-lg shadow-md p-[20px]">
               <img src={p.src} alt={p.nome} className="h-[100px]" loading="lazy" />
               <p className="text-center text-sm font-semibold text-text-light mt-2">{p.nome}</p>
             </GlassCard>

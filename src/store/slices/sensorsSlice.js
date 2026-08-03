@@ -3,8 +3,35 @@ import { APIService } from '@/API/APIService';
 
 const api = new APIService();
 
+function parseReadingDatetime(value) {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value.toISOString();
+  }
+
+  if (typeof value !== 'string') return null;
+
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const hasTimezone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(trimmed);
+  const candidate = hasTimezone ? trimmed : `${trimmed.replace(/\s+/g, 'T')}Z`;
+  const date = new Date(candidate);
+
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+function normalizeReadings(readings) {
+  if (!Array.isArray(readings)) return [];
+
+  return readings
+    .filter((r) => r && typeof r === 'object')
+    .map((r) => ({ ...r, datetime: parseReadingDatetime(r.datetime) }));
+}
+
 function normalizeSensor(s) {
-  const readings = s.readings || [];
+  if (!s || typeof s !== 'object') return null;
+
+  const readings = normalizeReadings(s.readings);
   const firstReading = readings[0];
   const lastReading = readings[readings.length - 1];
 
@@ -31,7 +58,8 @@ function normalizeSensor(s) {
 
 export const fetchSensors = createAsyncThunk('sensors/fetchSensors', async () => {
   const data = await api.fetchSensors();
-  return (data || []).map(normalizeSensor);
+  if (!Array.isArray(data)) return [];
+  return data.map(normalizeSensor).filter(Boolean);
 });
 
 const sensorsSlice = createSlice({
