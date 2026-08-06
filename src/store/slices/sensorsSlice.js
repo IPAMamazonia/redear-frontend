@@ -32,13 +32,22 @@ function normalizeSensor(s) {
   if (!s || typeof s !== 'object') return null;
 
   const readings = normalizeReadings(s.readings);
-  const firstReading = readings[0];
-  const lastReading = readings[readings.length - 1];
+  const timestamps = readings
+    .map((r) => r.datetime)
+    .filter(Boolean)
+    .map((d) => new Date(d).getTime())
+    .filter((t) => !Number.isNaN(t));
+
+  const latestTimestamp = timestamps.length ? Math.max(...timestamps) : null;
+  const oldestTimestamp = timestamps.length ? Math.min(...timestamps) : null;
 
   let coordinates = null;
   if (s.gps?.type === 'Point' && Array.isArray(s.gps.coordinates)) {
     coordinates = s.gps.coordinates;
   }
+
+  const minutesInMs = 60 * 1000;
+  const onlineWindow = 15 * minutesInMs; // 15 minutes in milliseconds
 
   return {
     id: s.sensor_id,
@@ -50,9 +59,9 @@ function normalizeSensor(s) {
     regiao: s.regiao,
     bioma: s.bioma,
     readings,
-    is_online: readings.length > 0,
-    latest_reading: firstReading?.datetime ?? null,
-    oldest_reading: lastReading?.datetime ?? null,
+    is_online: latestTimestamp != null && latestTimestamp >= Date.now() - onlineWindow,
+    latest_reading: latestTimestamp != null ? new Date(latestTimestamp).toISOString() : null,
+    oldest_reading: oldestTimestamp != null ? new Date(oldestTimestamp).toISOString() : null,
   };
 }
 

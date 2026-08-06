@@ -179,6 +179,7 @@ export function MapView() {
         const pm25 = getPM25(s);
         const online = s.is_online ?? false;
         const range = online ? getPM25Color(pm25) : { color: '#9e9e9e', textColor: '#ffffff', label: 'Offline' };
+
         return new Feature({
           geometry: new Point(fromLonLat([s.gps.coordinates[0], s.gps.coordinates[1]])),
           sensor_id: s.id,
