@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useInterval } from '@/hooks/useInterval';
+import caciqueRaoni from '@/assets/JPEG/caciqueRaoni.jpeg';
 
 const SLIDES = [
   {
@@ -13,9 +14,9 @@ const SLIDES = [
     subtitle: 'Acompanhe a qualidade do ar em tempo real e proteja sua saúde',
   },
   {
-    img: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&q=80',
-    title: 'Dados para Transformação',
-    subtitle: 'Tecnologia e informação a serviço do meio ambiente',
+    img: caciqueRaoni,
+    title: 'Monitoramento da qualidade do ar em territórios tradicionais',
+    subtitle: '',
   },
 ];
 
