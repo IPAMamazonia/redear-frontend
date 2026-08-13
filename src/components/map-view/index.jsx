@@ -31,17 +31,26 @@ function getPM25(sensor) {
   return Number(((v1 || 0) + (v2 || 0)) / 2);
 }
 
+const NODE_RADIUS = 15;
+
+function fitFontSize(text, maxFontSize, diameter) {
+  const len = text == null ? 1 : String(text).length;
+  const fitted = Math.floor((diameter * 0.82) / (len * 0.58));
+  return Math.max(Math.min(fitted, maxFontSize), 7);
+}
+
 function createSensorStyle({ color, textColor, pm25, online, isPurpleAir, strokeWidth, fontSize, zIndex }) {
+  const text = online ? (pm25 ?? '').toString() : '-';
   const image = isPurpleAir
     ? new RegularShape({
-        radius: 15,
+        radius: NODE_RADIUS,
         points: 4,
         angle: Math.PI / 4,
         fill: new Fill({ color }),
         stroke: new Stroke({ color: 'white', width: strokeWidth }),
       })
     : new CircleStyle({
-        radius: 15,
+        radius: NODE_RADIUS,
         fill: new Fill({ color }),
         stroke: new Stroke({ color: 'white', width: strokeWidth }),
       });
@@ -50,9 +59,9 @@ function createSensorStyle({ color, textColor, pm25, online, isPurpleAir, stroke
     ...(zIndex != null ? { zIndex } : {}),
     image,
     text: new Text({
-      text: online ? (pm25 ?? '').toString() : '-',
+      text,
       fill: new Fill({ color: textColor }),
-      font: `bold ${fontSize}px Arial`,
+      font: `bold ${fitFontSize(text, fontSize, NODE_RADIUS * 2)}px Arial`,
     }),
   });
 }
