@@ -41,7 +41,7 @@ function fitFontSize(text, maxFontSize, diameter) {
 }
 
 function createSensorStyle({ color, textColor, pm25, online, isPurpleAir, strokeWidth, fontSize, zIndex }) {
-  const text = online ? (formatNumberString(text, 1) ?? '') : '-';
+  const text = online ? (formatNumberString(pm25, 1) ?? '') : '-';
 
   const image = isPurpleAir
     ? new RegularShape({
