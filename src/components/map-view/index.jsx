@@ -2,6 +2,7 @@ import { fetchSensors, selectSensors, selectSensorsError, selectSensorsLoading }
 import { ErrorBanner, LoadingOverlay, MapLegend, SensorPopup } from './components';
 import { Section, SectionHeading, GradientText } from '@/components';
 import { useDispatch, useSelector } from 'react-redux';
+import { formatNumberString } from '@/helpers/format';
 import { useEffect, useRef, useState } from 'react';
 import { getPM25Color } from '@/rules/qualidadeAr';
 import { RecenterControl } from './classes';
@@ -40,7 +41,8 @@ function fitFontSize(text, maxFontSize, diameter) {
 }
 
 function createSensorStyle({ color, textColor, pm25, online, isPurpleAir, strokeWidth, fontSize, zIndex }) {
-  const text = online ? (pm25 ?? '').toString() : '-';
+  const text = online ? (formatNumberString(text, 1) ?? '') : '-';
+
   const image = isPurpleAir
     ? new RegularShape({
         radius: NODE_RADIUS,

@@ -159,3 +159,12 @@ export function gerarDadosHistorico(localId, periodo) {
 
   return { labels, valores, pm25, pm10 };
 }
+
+export function formatNumberString(value, decimals = 0) {
+  if (value == null || isNaN(value)) return '';
+
+  return Number(value).toLocaleString('pt-BR', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+}
