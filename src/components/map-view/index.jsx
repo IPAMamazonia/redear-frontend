@@ -1,5 +1,5 @@
 import { fetchSensors, selectSensors, selectSensorsError, selectSensorsLoading } from '@/store/slices/sensorsSlice';
-import { ErrorBanner, LoadingOverlay, MapLegend, SensorPopup } from './components';
+import { ErrorBanner, LoadingOverlay, MapLegend, SensorPopup, SensorTypeLegend } from './components';
 import { Section, SectionHeading, GradientText } from '@/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { formatNumberString } from '@/helpers/format';
@@ -467,6 +467,7 @@ export function MapView() {
         <div ref={mapRef} className="w-full h-[700px] max-md:h-[380px] rounded relative" />
 
         <MapLegend />
+        <SensorTypeLegend />
 
         <div
           ref={popupRef}
