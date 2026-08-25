@@ -6,6 +6,7 @@ const uiSlice = createSlice({
     mobileMenuOpen: false,
     activeFaqIndex: null,
     scrolled: false,
+    selectedVariable: 'pm25',
   },
   reducers: {
     toggleMobileMenu: (state) => {
@@ -20,8 +21,11 @@ const uiSlice = createSlice({
     setScrolled: (state, action) => {
       state.scrolled = action.payload;
     },
+    setSelectedVariable: (state, action) => {
+      state.selectedVariable = action.payload;
+    },
   },
 });
 
-export const { toggleMobileMenu, closeMobileMenu, setActiveFaq, setScrolled } = uiSlice.actions;
+export const { toggleMobileMenu, closeMobileMenu, setActiveFaq, setScrolled, setSelectedVariable } = uiSlice.actions;
 export default uiSlice.reducer;

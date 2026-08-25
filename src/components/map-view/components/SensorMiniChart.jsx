@@ -1,12 +1,61 @@
 import { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 
-/**
- * Mini gráfico de linha exibindo as leituras PMS1 e PMS2 de um sensor.
- *
- * @param {Array} props.readings - Array de leituras do sensor.
- */
-export function SensorMiniChart({ readings }) {
+const PMS_COLORS = {
+  pms1: { border: '#00E400', bg: 'rgba(0,228,0,0.08)' },
+  pms2: { border: '#FF7E00', bg: 'rgba(255,126,0,0.08)' },
+};
+
+function extractPmsPair(readings, field) {
+  const pms1 = readings.map((r) => r[`pms1_${field}`] ?? null);
+  const pms2 = readings.map((r) => r[`pms2_${field}`] ?? null);
+  return { pms1, pms2 };
+}
+
+function buildDatasets(variable, data) {
+  const readings = data.map((r) => r);
+
+  if (variable.key === 'pm25') {
+    const { pms1, pms2 } = extractPmsPair(readings, 'pm2_5_env');
+    return [
+      { label: 'PMS1', data: pms1, borderColor: PMS_COLORS.pms1.border, backgroundColor: PMS_COLORS.pms1.bg, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.3, spanGaps: true },
+      { label: 'PMS2', data: pms2, borderColor: PMS_COLORS.pms2.border, backgroundColor: PMS_COLORS.pms2.bg, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.3, spanGaps: true },
+    ];
+  }
+
+  if (variable.key === 'pm10') {
+    const { pms1, pms2 } = extractPmsPair(readings, 'pm10_env');
+    return [
+      { label: 'PMS1', data: pms1, borderColor: PMS_COLORS.pms1.border, backgroundColor: PMS_COLORS.pms1.bg, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.3, spanGaps: true },
+      { label: 'PMS2', data: pms2, borderColor: PMS_COLORS.pms2.border, backgroundColor: PMS_COLORS.pms2.bg, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.3, spanGaps: true },
+    ];
+  }
+
+  if (variable.key === 'pm1') {
+    const { pms1, pms2 } = extractPmsPair(readings, 'pm1_0_env');
+    return [
+      { label: 'PMS1', data: pms1, borderColor: PMS_COLORS.pms1.border, backgroundColor: PMS_COLORS.pms1.bg, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.3, spanGaps: true },
+      { label: 'PMS2', data: pms2, borderColor: PMS_COLORS.pms2.border, backgroundColor: PMS_COLORS.pms2.bg, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.3, spanGaps: true },
+    ];
+  }
+
+  const values = readings.map((r) => variable.extract(r));
+  return [
+    {
+      label: variable.label,
+      data: values,
+      borderColor: '#00E400',
+      backgroundColor: 'rgba(0,228,0,0.08)',
+      borderWidth: 1.5,
+      pointRadius: 0,
+      pointHoverRadius: 5,
+      tension: 0.3,
+      spanGaps: true,
+    },
+  ];
+}
+
+export function SensorMiniChart({ readings, variable }) {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
 
@@ -24,10 +73,9 @@ export function SensorMiniChart({ readings }) {
       return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
     });
 
-    const pms1 = data.map((r) => r.pms1_pm2_5_env ?? null);
-    const pms2 = data.map((r) => r.pms2_pm2_5_env ?? null);
+    const datasets = buildDatasets(variable, data);
 
-    const allValues = [...pms1, ...pms2].filter((v) => v != null);
+    const allValues = datasets.flatMap((ds) => ds.data).filter((v) => v != null);
     const dataMax = allValues.length > 0 ? Math.max(...allValues) : 50;
     const yMax = Math.ceil(Math.max(dataMax * 1.15, 50) / 25) * 25;
 
@@ -35,46 +83,20 @@ export function SensorMiniChart({ readings }) {
 
     chartRef.current = new Chart(canvasRef.current, {
       type: 'line',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'PMS1',
-            data: pms1,
-            borderColor: '#00E400',
-            backgroundColor: 'rgba(0,228,0,0.08)',
-            borderWidth: 1.5,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-            tension: 0.3,
-            spanGaps: true,
-          },
-          {
-            label: 'PMS2',
-            data: pms2,
-            borderColor: '#FF7E00',
-            backgroundColor: 'rgba(255,126,0,0.08)',
-            borderWidth: 1.5,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-            tension: 0.3,
-            spanGaps: true,
-          },
-        ],
-      },
+      data: { labels, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         interaction: { intersect: false, mode: 'index' },
         plugins: {
           legend: {
-            display: true,
+            display: datasets.length > 1,
             position: 'top',
             labels: { font: { size: 10 }, boxWidth: 12, padding: 8 },
           },
           tooltip: {
             callbacks: {
-              label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y} µg/m³`,
+              label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y} ${variable.unit}`,
             },
           },
         },
@@ -98,7 +120,7 @@ export function SensorMiniChart({ readings }) {
     return () => {
       if (chartRef.current) chartRef.current.destroy();
     };
-  }, [readings]);
+  }, [readings, variable]);
 
   if (!readings || readings.length < 2) {
     return (

@@ -14,7 +14,7 @@ export function SensorTypeLegend() {
   }, [open]);
 
   return (
-    <div className="SensorTypeLegendComponent absolute bottom-[10px] left-[10px] z-10 text-sm max-md:hidden">
+    <div className="SensorTypeLegendComponent text-sm">
       <div className="relative" ref={ref}>
         <button
           className={`w-9 h-9 flex items-center justify-center bg-card backdrop-blur-xl border border-white/35 rounded shadow-glass cursor-pointer text-text-dark text-base hover:shadow-hover transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
@@ -27,9 +27,9 @@ export function SensorTypeLegend() {
         </button>
 
         <div
-          className={`absolute bottom-0 left-0 bg-card backdrop-blur-xl border border-white/35 rounded shadow-glass p-4 max-w-[240px] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] origin-bottom-left ${
-            open ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-75 opacity-0 pointer-events-none'
-          }`}
+          className={`absolute bottom-full left-0 mb-1 bg-card backdrop-blur-xl border border-white/35 rounded z-10
+            shadow-glass p-4 max-w-[240px] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] origin-bottom-left 
+            ${open ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-75 opacity-0 pointer-events-none'}`}
         >
           <div className="flex items-center justify-between mb-2">
             <h4 className="text-sm font-semibold">Tipos de Sensor</h4>

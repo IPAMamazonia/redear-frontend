@@ -1,19 +1,16 @@
+import { getVariableByKey, getSensorValue } from '@/rules/variables';
 import { useState } from 'react';
-import { getPM25Color } from '@/rules/qualidadeAr';
+import { useSelector } from 'react-redux';
 import { SensorMiniChart } from './SensorMiniChart';
 
-/**
- * Popup de detalhes do sensor com indicador PM2.5, datas e gráfico opcional.
- *
- * @param {object}   props.sensor  - Dados do sensor selecionado.
- * @param {function} props.onClose - Callback para fechar o popup.
- */
 export function SensorPopup({ sensor, onClose }) {
   const [showChart, setShowChart] = useState(false);
+  const selectedVariableKey = useSelector((state) => state.ui.selectedVariable);
 
-  const pm25 = sensor.readings?.[0]?.pms1_pm2_5_env ?? sensor.readings?.[0]?.pms2_pm2_5_env ?? null;
+  const variable = getVariableByKey(selectedVariableKey);
+  const value = getSensorValue(sensor, variable);
   const online = sensor.is_online ?? false;
-  const faixa = online ? getPM25Color(pm25) : { color: '#9e9e9e', textColor: '#ffffff', label: 'Offline' };
+  const faixa = online ? variable.getColor(value) : { color: '#9e9e9e', textColor: '#ffffff', label: 'Offline' };
 
   return (
     <div className="SensorPopupComponent relative">
@@ -33,17 +30,17 @@ export function SensorPopup({ sensor, onClose }) {
       </span>
 
       <div className="flex items-center gap-3 mb-2">
-        {pm25 != null && online ? (
+        {value != null && online ? (
           <>
             <div
-              className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-extrabold shrink-0"
+              className="w-[80px] h-[50px] rounded-[8px] flex items-center justify-center text-lg font-extrabold shrink-0 overflow-clip"
               style={{ background: faixa.color, color: faixa.textColor }}
             >
-              {pm25}
+              {value}
             </div>
             <div className="text-sm text-text-light">
               <div className="font-bold">{faixa.label}</div>
-              <div>PM2.5: {pm25} µg/m³</div>
+              <div>{variable.label}: {value} {variable.unit}</div>
             </div>
           </>
         ) : (
@@ -67,7 +64,7 @@ export function SensorPopup({ sensor, onClose }) {
         </div>
       )}
 
-      {online && pm25 != null && (
+      {online && value != null && (
         <button
           className="px-4 py-[0.4rem] bg-text-dark text-white border-none rounded-md cursor-pointer text-sm font-semibold transition-opacity duration-[0.35s] hover:opacity-85"
           onClick={() => setShowChart((v) => !v)}
@@ -78,7 +75,7 @@ export function SensorPopup({ sensor, onClose }) {
 
       {showChart && (
         <div className="mt-3 pt-3 border-t border-black/10">
-          <SensorMiniChart readings={sensor.readings} />
+          <SensorMiniChart readings={sensor.readings} variable={variable} />
         </div>
       )}
     </div>

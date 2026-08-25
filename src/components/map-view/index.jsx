@@ -1,11 +1,18 @@
 import { fetchSensors, selectSensors, selectSensorsError, selectSensorsLoading } from '@/store/slices/sensorsSlice';
-import { ErrorBanner, LoadingOverlay, MapLegend, SensorPopup, SensorTypeLegend } from './components';
+import {
+  ErrorBanner,
+  LegendContainer,
+  LoadingOverlay,
+  MapLegend,
+  SensorPopup,
+  SensorTypeLegend,
+  VariableSelector,
+} from './components';
 import { Section, SectionHeading, GradientText } from '@/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { formatNumberString } from '@/helpers/format';
-import { useEffect, useRef, useState } from 'react';
-import { getPM25Color } from '@/rules/qualidadeAr';
-import { RecenterControl } from './classes';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { getVariableByKey } from '@/rules/variables';
 import { VIEW_CONFIG } from './rules';
 
 // OpenLayers imports
@@ -24,12 +31,10 @@ import View from 'ol/View';
 import Map from 'ol/Map';
 import 'ol/ol.css';
 
-function getPM25(sensor) {
+function getSensorDisplayValue(sensor, variable) {
   const reading = sensor.readings?.[0];
   if (!reading) return null;
-  const v1 = reading.pms1_pm2_5_env;
-  const v2 = reading.pms2_pm2_5_env;
-  return Number(((v1 || 0) + (v2 || 0)) / 2);
+  return variable.extract(reading);
 }
 
 const NODE_RADIUS = 18;
@@ -43,7 +48,7 @@ function fitFontSize(text, maxFontSize, diameter) {
 function createSensorStyle({
   color,
   textColor,
-  pm25,
+  value,
   online,
   isPurpleAir,
   isTrustworthy,
@@ -51,7 +56,7 @@ function createSensorStyle({
   fontSize,
   zIndex,
 }) {
-  const text = online ? (formatNumberString(pm25, 1) ?? '') : '-';
+  const text = online ? (formatNumberString(value, 1) ?? '') : '-';
   const strokeColor = isTrustworthy === false ? 'black' : 'white';
 
   const aplyStrokewidth = isTrustworthy === false ? 3 : strokeWidth;
@@ -92,7 +97,7 @@ function styleSpider(feature) {
   return createSensorStyle({
     color: feature.get('color'),
     textColor: feature.get('textColor'),
-    pm25: feature.get('pm25'),
+    value: feature.get('value'),
     online: feature.get('isOnline'),
     isTrustworthy: feature.get('isTrustworthy'),
     isPurpleAir: feature.get('source') === 'purpleAir',
@@ -111,7 +116,7 @@ function stylePointWithCluster(feature) {
     return createSensorStyle({
       color: f.get('color'),
       textColor: f.get('textColor'),
-      pm25: f.get('pm25'),
+      value: f.get('value'),
       online: f.get('isOnline'),
       isTrustworthy: f.get('isTrustworthy'),
       isPurpleAir: f.get('source') === 'purpleAir',
@@ -140,14 +145,14 @@ function stylePointWithCluster(feature) {
 
   const worst = onlineFeatures.reduce(
     (worst, f) => {
-      const pm25 = f.get('pm25');
-      if (pm25 == null) return worst;
-      if (worst.feature == null || pm25 > worst.pm25) {
-        return { pm25, feature: f };
+      const val = f.get('value');
+      if (val == null) return worst;
+      if (worst.feature == null || val > worst.value) {
+        return { value: val, feature: f };
       }
       return worst;
     },
-    { pm25: 0, feature: null }
+    { value: 0, feature: null }
   );
   const color = worst.feature?.get('color') || '#9e9e9e';
 
@@ -174,6 +179,7 @@ export function MapView() {
   const sensors = useSelector(selectSensors);
   const loading = useSelector(selectSensorsLoading);
   const error = useSelector(selectSensorsError);
+  const selectedVariableKey = useSelector((state) => state.ui.selectedVariable);
 
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -194,36 +200,43 @@ export function MapView() {
     unspiderfyRef.current();
   }
 
-  function buildFeatures(sensors) {
-    if (!vectorSourceRef.current) return;
+  const buildFeatures = useCallback(
+    (sensorsList) => {
+      if (!vectorSourceRef.current) return;
 
-    vectorSourceRef.current.clear();
+      vectorSourceRef.current.clear();
 
-    const features = sensors
-      .filter((s) => s.gps?.coordinates?.[0] != null && s.gps?.coordinates?.[1] != null)
-      .map((s) => {
-        const pm25 = getPM25(s);
-        const online = s.is_online ?? false;
-        const range = online ? getPM25Color(pm25) : { color: '#9e9e9e', textColor: '#ffffff', label: 'Offline' };
+      const variable = getVariableByKey(selectedVariableKey);
 
-        return new Feature({
-          geometry: new Point(fromLonLat([s.gps.coordinates[0], s.gps.coordinates[1]])),
-          sensor_id: s.id,
-          source: s.source,
-          nome: s.name,
-          isOnline: online,
-          isTrustworthy: s.is_trustworthy,
-          pm25,
-          latestReading: s.latest_reading,
-          oldestReading: s.oldest_reading,
-          color: range.color,
-          textColor: range.textColor,
-          label: range.label,
+      const features = sensorsList
+        .filter((s) => s.gps?.coordinates?.[0] != null && s.gps?.coordinates?.[1] != null)
+        .map((s) => {
+          const value = getSensorDisplayValue(s, variable);
+          const online = s.is_online ?? false;
+          const range = online
+            ? variable.getColor(value)
+            : { color: '#9e9e9e', textColor: '#ffffff', label: 'Offline' };
+
+          return new Feature({
+            geometry: new Point(fromLonLat([s.gps.coordinates[0], s.gps.coordinates[1]])),
+            sensor_id: s.id,
+            source: s.source,
+            nome: s.name,
+            isOnline: online,
+            isTrustworthy: s.is_trustworthy,
+            value,
+            latestReading: s.latest_reading,
+            oldestReading: s.oldest_reading,
+            color: range.color,
+            textColor: range.textColor,
+            label: range.label,
+          });
         });
-      });
 
-    vectorSourceRef.current.addFeatures(features);
-  }
+      vectorSourceRef.current.addFeatures(features);
+    },
+    [selectedVariableKey]
+  );
 
   useEffect(() => {
     dispatch(fetchSensors());
@@ -234,7 +247,7 @@ export function MapView() {
 
     const map = new Map({
       target: mapRef.current,
-      controls: defaultControls().extend([new FullScreen(), new RecenterControl()]),
+      controls: defaultControls().extend([new FullScreen()]),
       layers: [new TileLayer({ source: new OSM() })],
       view: new View(VIEW_CONFIG),
     });
@@ -452,7 +465,7 @@ export function MapView() {
 
   useEffect(() => {
     buildFeatures(sensors);
-  }, [sensors]);
+  }, [sensors, buildFeatures]);
 
   return (
     <Section id="mapa" className="MapViewComponent">
@@ -467,7 +480,22 @@ export function MapView() {
         <div ref={mapRef} className="w-full h-[700px] max-md:h-[380px] rounded relative" />
 
         <MapLegend />
-        <SensorTypeLegend />
+        <LegendContainer>
+          <button
+            className="w-9 h-9 flex items-center justify-center bg-card backdrop-blur-xl border border-white/35 
+            rounded shadow-glass cursor-pointer text-text-dark text-base hover:shadow-hover transition-shadow"
+            onClick={() =>
+              mapInstanceRef.current
+                ?.getView()
+                .animate({ center: VIEW_CONFIG.center, zoom: VIEW_CONFIG.zoom, duration: 500 })
+            }
+            title="Centralizar mapa"
+          >
+            ⌖
+          </button>
+          <SensorTypeLegend />
+          <VariableSelector />
+        </LegendContainer>
 
         <div
           ref={popupRef}

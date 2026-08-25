@@ -20,18 +20,24 @@ function parseReadingDatetime(value) {
   return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
-function normalizeReadings(readings) {
+function normalizeReadings(readings, source) {
   if (!Array.isArray(readings)) return [];
 
   return readings
     .filter((r) => r && typeof r === 'object')
-    .map((r) => ({ ...r, datetime: parseReadingDatetime(r.datetime) }));
+    .map((r) => {
+      const normalized = { ...r, datetime: parseReadingDatetime(r.datetime) };
+      if (source === 'purpleAir' && normalized.bme_temperature != null) {
+        normalized.bme_temperature = Number(((normalized.bme_temperature - 32) * 5 / 9).toFixed(1));
+      }
+      return normalized;
+    });
 }
 
 function normalizeSensor(s) {
   if (!s || typeof s !== 'object') return null;
 
-  const readings = normalizeReadings(s.readings);
+  const readings = normalizeReadings(s.readings, s.source);
   const timestamps = readings
     .map((r) => r.datetime)
     .filter(Boolean)
