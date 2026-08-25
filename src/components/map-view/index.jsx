@@ -1,9 +1,11 @@
 import { fetchSensors, selectSensors, selectSensorsError, selectSensorsLoading } from '@/store/slices/sensorsSlice';
 import {
+  ClusterToggleButton,
   ErrorBanner,
   LegendContainer,
   LoadingOverlay,
   MapLegend,
+  RecenterButton,
   SensorPopup,
   SensorTypeLegend,
   VariableSelector,
@@ -38,6 +40,11 @@ function getSensorDisplayValue(sensor, variable) {
 }
 
 const NODE_RADIUS = 18;
+const NODE_RADIUS_CLUSTER_OFF = 10;
+
+let currentNodeRadius = NODE_RADIUS;
+
+function setCurrentNodeRadius(r) { currentNodeRadius = r; }
 
 function fitFontSize(text, maxFontSize, diameter) {
   const len = text == null ? 1 : String(text).length;
@@ -58,19 +65,19 @@ function createSensorStyle({
 }) {
   const text = online ? (formatNumberString(value, 1) ?? '') : '-';
   const strokeColor = isTrustworthy === false ? 'black' : 'white';
-
   const aplyStrokewidth = isTrustworthy === false ? 3 : strokeWidth;
+  const radius = currentNodeRadius;
 
   const image = isPurpleAir
     ? new RegularShape({
-        radius: NODE_RADIUS,
+        radius,
         points: 4,
         angle: Math.PI / 4,
         fill: new Fill({ color }),
         stroke: new Stroke({ color: strokeColor, width: aplyStrokewidth }),
       })
     : new CircleStyle({
-        radius: NODE_RADIUS,
+        radius,
         fill: new Fill({ color }),
         stroke: new Stroke({ color: strokeColor, width: aplyStrokewidth }),
       });
@@ -81,7 +88,7 @@ function createSensorStyle({
     text: new Text({
       text,
       fill: new Fill({ color: textColor }),
-      font: `bold ${fitFontSize(text, fontSize, NODE_RADIUS * 2)}px Arial`,
+      font: `bold ${fitFontSize(text, fontSize, radius * 2)}px Arial`,
     }),
   });
 }
@@ -189,6 +196,8 @@ export function MapView() {
 
   const [popupId, setPopupId] = useState(null);
   const [chartKey, setChartKey] = useState(0);
+  const [clusterEnabled, setClusterEnabled] = useState(true);
+  const clusterSourceRef = useRef(null);
 
   const popupSensor = popupId ? sensors.find((s) => s.id === popupId) : null;
 
@@ -257,6 +266,7 @@ export function MapView() {
       source: vectorSource,
       distance: 50,
     });
+    clusterSourceRef.current = clusterSource;
     const clusterLayer = new VectorLayer({ source: clusterSource, style: stylePointWithCluster });
     map.addLayer(clusterLayer);
     vectorSourceRef.current = vectorSource;
@@ -464,8 +474,12 @@ export function MapView() {
   }, []);
 
   useEffect(() => {
+    if (clusterSourceRef.current) {
+      clusterSourceRef.current.setDistance(clusterEnabled ? 50 : 0);
+    }
+    setCurrentNodeRadius(clusterEnabled ? NODE_RADIUS : NODE_RADIUS_CLUSTER_OFF);
     buildFeatures(sensors);
-  }, [sensors, buildFeatures]);
+  }, [clusterEnabled, buildFeatures, sensors]);
 
   return (
     <Section id="mapa" className="MapViewComponent">
@@ -481,18 +495,8 @@ export function MapView() {
 
         <MapLegend />
         <LegendContainer>
-          <button
-            className="w-9 h-9 flex items-center justify-center bg-card backdrop-blur-xl border border-white/35 
-            rounded shadow-glass cursor-pointer text-text-dark text-base hover:shadow-hover transition-shadow"
-            onClick={() =>
-              mapInstanceRef.current
-                ?.getView()
-                .animate({ center: VIEW_CONFIG.center, zoom: VIEW_CONFIG.zoom, duration: 500 })
-            }
-            title="Centralizar mapa"
-          >
-            ⌖
-          </button>
+          <RecenterButton mapRef={mapInstanceRef} />
+          <ClusterToggleButton enabled={clusterEnabled} onToggle={setClusterEnabled} />
           <SensorTypeLegend />
           <VariableSelector />
         </LegendContainer>
