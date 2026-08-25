@@ -12,10 +12,10 @@ export function About() {
   const [stats, setStats] = useState([
     { id: 'sensors-total', number: '-', label: 'Sensores Totais' },
     { id: 'states-monitored', number: '-', label: 'Estados Monitorados' },
-    { id: 'sensors-proprietary', number: '-', label: 'Sensores Proprietários' }, //TODO: decidir sobre o label proprietários
+    { id: 'sensors-redear', number: '-', label: 'Sensores RedeAr' },
     { id: 'sensors-purpleair', number: '-', label: 'Sensores PurpleAir' },
     { id: 'readings-daily', number: '10 mil+', label: 'Leituras Coletadas todos os dias' },
-    { id: 'monitoring-continuous', number: '24/7', label: 'Monitoramento Contínuo' },
+    { id: 'monitoring-continuous', number: '24h/7', label: 'Monitoramento Contínuo' },
   ]);
 
   useEffect(() => {
@@ -24,17 +24,17 @@ export function About() {
     }
 
     const totalSensors = sensors.length;
-    const proprietarySensors = sensors.filter((s) => s.source === 'RedeAr').length;
+    const redeArSensors = sensors.filter((s) => s.source === 'RedeAr').length;
     const purpleAirSensors = sensors.filter((s) => s.source === 'purpleAir').length;
     const statesMonitored = new Set(sensors.map((s) => s.estado)).size;
 
     setStats((prevStats) => [
       { id: 'sensors-total', number: totalSensors.toString(), label: 'Sensores Totais' },
       { id: 'states-monitored', number: statesMonitored.toString(), label: 'Estados Monitorados' },
-      { id: 'sensors-proprietary', number: proprietarySensors.toString(), label: 'Sensores Proprietários' }, //TODO: decidir sobre o label proprietários
+      { id: 'sensors-redear', number: redeArSensors.toString(), label: 'Sensores RedeAr' },
       { id: 'sensors-purpleair', number: purpleAirSensors.toString(), label: 'Sensores PurpleAir' },
       { id: 'readings-daily', number: '10 mil+', label: 'Leituras Coletadas todos os dias' },
-      { id: 'monitoring-continuous', number: '24/7', label: 'Monitoramento Contínuo' },
+      { id: 'monitoring-continuous', number: '24h/7', label: 'Monitoramento Contínuo' },
     ]);
   }, [sensors]);
 
@@ -48,7 +48,7 @@ export function About() {
         <FadeUp>
           <div className="text-text-light text-[1.05rem] space-y-4">
             <p>
-              O <strong>RedeAr</strong> é uma plataforma de monitoramento da qualidade do ar desenvolvida para
+              A <strong>RedeAr</strong> é uma plataforma de monitoramento da qualidade do ar desenvolvida para
               acompanhar em tempo real os índices de poluentes atmosféricos em todo o <strong>Brasil</strong>.
             </p>
 
@@ -59,19 +59,13 @@ export function About() {
 
             <p>
               Por meio de uma rede de sensores distribuídos estrategicamente, coletamos dados de material particulado
-              (PM2.5 e PM10), umidade relativa do ar e temperatura, transformando essas informações em
+              (PM2.5 e PM10), umidade relativa do ar e temperatura, transformando essas informações em {' '}
               <strong>dados abertos e acessíveis</strong> para pesquisadores, gestores públicos e a sociedade civil.
             </p>
 
             <p>
-              Nosso objetivo é <strong>fortalecer a rede de monitoramento da qualidade do ar do Brasil</strong> e
-              consequentemente auxiliar a elaboração de políticas públicas que promovam a melhoria da qualidade do ar no
-              Brasil.
-            </p>
-
-            <p>
-              <strong>Impactando positivamente</strong> a saúde da população, fornecendo informações de qualidade e em
-              tempo real sobre a qualidade do ar.
+              Nosso objetivo é <strong>fortalecer a rede de monitoramento da qualidade do ar no Brasil</strong>, fornecendo dados em 
+              tempo real para auxiliar na elaboração de políticas públicas que impactem positivamente na saúde da população 
             </p>
           </div>
         </FadeUp>
