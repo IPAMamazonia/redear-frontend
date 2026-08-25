@@ -11,9 +11,7 @@ import { SensorMiniChart } from './SensorMiniChart';
 export function SensorPopup({ sensor, onClose }) {
   const [showChart, setShowChart] = useState(false);
 
-  const pm25 = sensor.readings?.[0]?.pms1_pm2_5_env
-    ?? sensor.readings?.[0]?.pms2_pm2_5_env
-    ?? null;
+  const pm25 = sensor.readings?.[0]?.pms1_pm2_5_env ?? sensor.readings?.[0]?.pms2_pm2_5_env ?? null;
   const online = sensor.is_online ?? false;
   const faixa = online ? getPM25Color(pm25) : { color: '#9e9e9e', textColor: '#ffffff', label: 'Offline' };
 
@@ -22,7 +20,10 @@ export function SensorPopup({ sensor, onClose }) {
       <a
         href="#"
         className="absolute top-0 right-0 no-underline text-lg text-text-light leading-none hover:text-text-dark"
-        onClick={(e) => { e.preventDefault(); onClose?.(); }}
+        onClick={(e) => {
+          e.preventDefault();
+          onClose?.();
+        }}
       >
         &times;
       </a>
@@ -46,9 +47,7 @@ export function SensorPopup({ sensor, onClose }) {
             </div>
           </>
         ) : (
-          <div className="text-sm text-text-light">
-            {online ? 'Aguardando dados' : 'Sensor offline'}
-          </div>
+          <div className="text-sm text-text-light">{online ? 'Aguardando dados' : 'Sensor offline'}</div>
         )}
       </div>
 
@@ -60,6 +59,13 @@ export function SensorPopup({ sensor, onClose }) {
           <span>Primeira leitura: {new Date(sensor.oldest_reading).toLocaleString('pt-BR')}</span>
         )}
       </div>
+
+      {sensor.is_trustworthy === false && (
+        <div className="flex items-start gap-2 mb-2 p-2 rounded-sm bg-amber-50 text-amber-700 text-xs border border-amber-200">
+          <span className="text-sm shrink-0 mt-px">⚠</span>
+          <span> Leituras divergentes entre os sensores, os dados podem não ser confiáveis. </span>
+        </div>
+      )}
 
       {online && pm25 != null && (
         <button

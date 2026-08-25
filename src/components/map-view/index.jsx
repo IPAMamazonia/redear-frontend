@@ -32,7 +32,7 @@ function getPM25(sensor) {
   return Number(((v1 || 0) + (v2 || 0)) / 2);
 }
 
-const NODE_RADIUS = 15;
+const NODE_RADIUS = 18;
 
 function fitFontSize(text, maxFontSize, diameter) {
   const len = text == null ? 1 : String(text).length;
@@ -40,8 +40,21 @@ function fitFontSize(text, maxFontSize, diameter) {
   return Math.max(Math.min(fitted, maxFontSize), 7);
 }
 
-function createSensorStyle({ color, textColor, pm25, online, isPurpleAir, strokeWidth, fontSize, zIndex }) {
+function createSensorStyle({
+  color,
+  textColor,
+  pm25,
+  online,
+  isPurpleAir,
+  isTrustworthy,
+  strokeWidth,
+  fontSize,
+  zIndex,
+}) {
   const text = online ? (formatNumberString(pm25, 1) ?? '') : '-';
+  const strokeColor = isTrustworthy === false ? 'black' : 'white';
+
+  const aplyStrokewidth = isTrustworthy === false ? 3 : strokeWidth;
 
   const image = isPurpleAir
     ? new RegularShape({
@@ -49,12 +62,12 @@ function createSensorStyle({ color, textColor, pm25, online, isPurpleAir, stroke
         points: 4,
         angle: Math.PI / 4,
         fill: new Fill({ color }),
-        stroke: new Stroke({ color: 'white', width: strokeWidth }),
+        stroke: new Stroke({ color: strokeColor, width: aplyStrokewidth }),
       })
     : new CircleStyle({
         radius: NODE_RADIUS,
         fill: new Fill({ color }),
-        stroke: new Stroke({ color: 'white', width: strokeWidth }),
+        stroke: new Stroke({ color: strokeColor, width: aplyStrokewidth }),
       });
 
   return new Style({
@@ -81,6 +94,7 @@ function styleSpider(feature) {
     textColor: feature.get('textColor'),
     pm25: feature.get('pm25'),
     online: feature.get('isOnline'),
+    isTrustworthy: feature.get('isTrustworthy'),
     isPurpleAir: feature.get('source') === 'purpleAir',
     strokeWidth: 1.5,
     fontSize: 10,
@@ -99,6 +113,7 @@ function stylePointWithCluster(feature) {
       textColor: f.get('textColor'),
       pm25: f.get('pm25'),
       online: f.get('isOnline'),
+      isTrustworthy: f.get('isTrustworthy'),
       isPurpleAir: f.get('source') === 'purpleAir',
       strokeWidth: 1.5,
       fontSize: 12,
@@ -197,6 +212,7 @@ export function MapView() {
           source: s.source,
           nome: s.name,
           isOnline: online,
+          isTrustworthy: s.is_trustworthy,
           pm25,
           latestReading: s.latest_reading,
           oldestReading: s.oldest_reading,

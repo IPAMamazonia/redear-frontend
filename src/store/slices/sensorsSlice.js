@@ -49,6 +49,15 @@ function normalizeSensor(s) {
   const minutesInMs = 60 * 1000;
   const onlineWindow = 15 * minutesInMs; // 15 minutes in milliseconds
 
+  const latestReading = readings[0];
+  const v1 = latestReading?.pms1_pm2_5_env;
+  const v2 = latestReading?.pms2_pm2_5_env;
+  const maxVal = Math.max(v1 ?? 0, v2 ?? 0);
+  const absDiff = Math.abs((v1 ?? 0) - (v2 ?? 0));
+  const relDiff = maxVal === 0 ? 0 : absDiff / maxVal;
+
+  const isTrustworthy = absDiff <= 10 || relDiff < 0.40;
+
   return {
     id: s.sensor_id,
     source: s.source,
@@ -60,6 +69,7 @@ function normalizeSensor(s) {
     bioma: s.bioma,
     readings,
     is_online: latestTimestamp != null && latestTimestamp >= Date.now() - onlineWindow,
+    is_trustworthy: isTrustworthy,
     latest_reading: latestTimestamp != null ? new Date(latestTimestamp).toISOString() : null,
     oldest_reading: oldestTimestamp != null ? new Date(oldestTimestamp).toISOString() : null,
   };
