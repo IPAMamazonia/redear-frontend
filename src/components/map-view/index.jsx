@@ -471,6 +471,14 @@ export function MapView() {
       mapRef.current.style.cursor = map.hasFeatureAtPixel(evt.pixel) ? 'pointer' : '';
     });
 
+    map.getView().on('change:resolution', () => {
+      if (isSpiderfied) {
+        unspiderfy();
+        setPopupId(null);
+        overlay.setPosition(undefined);
+      }
+    });
+
     mapInstanceRef.current = map;
 
     return () => {
