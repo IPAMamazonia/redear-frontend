@@ -1,4 +1,4 @@
-import { getVariableByKey } from '@/rules/variables';
+import { getVariableByKey } from '@/helpers';
 import { useSelector } from 'react-redux';
 
 export function MapLegend() {

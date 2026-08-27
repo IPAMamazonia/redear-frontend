@@ -24,20 +24,21 @@ export function VariableSelector() {
     <div className="VariableSelectorComponent text-sm" ref={ref}>
       <div className="relative">
         <button
-          className={`h-9 px-3 flex items-center gap-2 bg-card backdrop-blur-xl border border-white/35 rounded shadow-glass cursor-pointer text-text-dark text-xs font-medium hover:shadow-hover transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-            open ? 'scale-90 opacity-0 pointer-events-none' : 'scale-100 opacity-100'
-          }`}
+          className={`h-9 px-3 flex items-center gap-2 bg-card backdrop-blur-xl border border-white/35 rounded shadow-glass 
+            cursor-pointer text-text-dark text-xs font-medium hover:shadow-hover transition-all ease-[cubic-bezier(0.4,0,0.2,1)] 
+            duration-300 ${open ? 'scale-90 opacity-0 pointer-events-none' : 'scale-100 opacity-100'}`}
           onClick={() => setOpen(true)}
           title="Selecionar variável"
         >
           <i className="fas fa-layer-group text-[10px]" />
           <span>{current.label}</span>
-          <i className="fas fa-chevron-up text-[8px]" />
+          <i className="fas fa-chevron-up text-[10px]" />
         </button>
 
         <div
-          className={`absolute bottom-full left-0 mb-1 bg-card backdrop-blur-xl border border-white/35 rounded shadow-glass py-1 min-w-[160px] max-h-[320px] overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] origin-bottom-left ${
-            open ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-75 opacity-0 pointer-events-none'
+          className={`absolute bottom-full left-0 mb-1 bg-card backdrop-blur-xl border border-white/35 rounded 
+            shadow-glass py-1 min-w-[160px] max-h-[340px] overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] 
+            origin-bottom-left ${open ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-75 opacity-0 pointer-events-none'
           }`}
         >
           {MAP_VARIABLES.map((v) => (

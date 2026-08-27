@@ -11,10 +11,9 @@ import {
   VariableSelector,
 } from './components';
 import { Section, SectionHeading, GradientText } from '@/components';
-import { useDispatch, useSelector } from 'react-redux';
-import { formatNumberString } from '@/helpers/format';
+import { formatNumberString, getVariableByKey } from '@/helpers';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { getVariableByKey } from '@/rules/variables';
+import { useDispatch, useSelector } from 'react-redux';
 import { VIEW_CONFIG } from './rules';
 
 // OpenLayers imports
@@ -44,7 +43,9 @@ const NODE_RADIUS_CLUSTER_OFF = 10;
 
 let currentNodeRadius = NODE_RADIUS;
 
-function setCurrentNodeRadius(r) { currentNodeRadius = r; }
+function setCurrentNodeRadius(r) {
+  currentNodeRadius = r;
+}
 
 function fitFontSize(text, maxFontSize, diameter) {
   const len = text == null ? 1 : String(text).length;
@@ -150,9 +151,7 @@ function stylePointWithCluster(feature) {
     });
   }
 
-  const trustworthyOnlineFeatures = onlineFeatures.filter(
-    (f) => f.get('isTrustworthy') !== false
-  );
+  const trustworthyOnlineFeatures = onlineFeatures.filter((f) => f.get('isTrustworthy') !== false);
 
   const evaluatedFeatures = trustworthyOnlineFeatures.length > 0 ? trustworthyOnlineFeatures : onlineFeatures;
 

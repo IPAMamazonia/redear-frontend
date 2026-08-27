@@ -1,7 +1,7 @@
-import { getVariableByKey, getSensorValue } from '@/rules/variables';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { getVariableByKey, getSensorValue } from '@/helpers';
 import { SensorMiniChart } from './SensorMiniChart';
+import { useSelector } from 'react-redux';
+import { useState } from 'react';
 
 export function SensorPopup({ sensor, onClose }) {
   const [showChart, setShowChart] = useState(false);
@@ -27,7 +27,7 @@ export function SensorPopup({ sensor, onClose }) {
 
       <span
         title="Origem dos dados desse sensor"
-        className="w-max px-[10px] py-[5px] rounded-[8px] text-2xl font-bold tracking-wider text-text-light border-[2px] border-text-light bg-white"
+        className="w-max px-[10px] py-[5px] rounded-[8px] text-2xl font-bold tracking-wider text-text-light border-[2px] border-text-light bg-[#ffffff95]"
       >
         {sensor.source === 'purpleAir' ? 'PurpleAir' : 'RedeAr'}
       </span>
