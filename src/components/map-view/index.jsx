@@ -194,6 +194,7 @@ export function MapView() {
   const selectedVariableKey = useSelector((state) => state.ui.selectedVariable);
 
   const mapRef = useRef(null);
+  const wrapperRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const vectorSourceRef = useRef(null);
   const popupRef = useRef(null);
@@ -261,7 +262,7 @@ export function MapView() {
 
     const map = new Map({
       target: mapRef.current,
-      controls: defaultControls().extend([new FullScreen()]),
+      controls: defaultControls().extend([new FullScreen({ source: wrapperRef.current })]),
       layers: [new TileLayer({ source: new OSM() })],
       view: new View(VIEW_CONFIG),
     });
@@ -492,11 +493,17 @@ export function MapView() {
         Mapa de <GradientText>Sensores</GradientText>
       </SectionHeading>
 
-      <div className="max-w-[1400px] mx-auto bg-card backdrop-blur-xl border border-white/35 rounded shadow-glass relative">
+      <div
+        ref={wrapperRef}
+        className="map-fullscreen-target max-w-[1400px] mx-auto bg-card backdrop-blur-xl border border-white/35 rounded shadow-glass relative"
+      >
         <LoadingOverlay loading={loading} />
         <ErrorBanner error={error} />
 
-        <div ref={mapRef} className="w-full h-[700px] max-md:h-[380px] rounded relative" />
+        <div
+          ref={mapRef}
+          className="map-fullscreen-canvas w-full h-[700px] max-md:h-[380px] rounded relative"
+        />
 
         <MapLegend />
         <LegendContainer>
