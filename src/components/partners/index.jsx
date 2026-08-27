@@ -1,27 +1,31 @@
 import { Section, FadeUp, GradientText, GlassCard } from '@/components';
 
 //IPAM
-import logoIpam from '@/assets/sponsors/Logo - IPAM.svg';
+import logoIpam from '@/assets/partners/Logo - IPAM.svg';
 
 //Partners and Sponsors
-import logoCapacream from '@/assets/sponsors/Logo - CAPACREAM.png';
-import logoConexao from '@/assets/sponsors/Logo - Rede Conexão Povos da Floresta.png';
-import logoSema from '@/assets/sponsors/Logo - SEMA MT.png';
-import logoUfac from '@/assets/sponsors/Logo - UFAC.png';
-import logoUFMT from '@/assets/sponsors/Logo - UFMT.png';
+import logoCapacream from '@/assets/partners/Logo - CAPACREAM.png';
+import logoConexao from '@/assets/partners/Logo - Rede Conexão Povos da Floresta.png';
+import logoSema from '@/assets/partners/Logo - SEMA MT.png';
+import logoUfac from '@/assets/partners/Logo - UFAC.png';
+import logoUFMT from '@/assets/partners/Logo - UFMT.png';
+import logoUEA from '@/assets/partners/Logo - UEA.png';
 
 //Developers
-import logoUFPA from '@/assets/sponsors/Logo - UFPA.png';
-import logoGuama from '@/assets/sponsors/Logo - Guama.png';
-import logoLasse from '@/assets/sponsors/Logo - LASSE.png';
-import logoWoodwell from '@/assets/sponsors/Logo - Woodwell.png';
+import logoUFPA from '@/assets/partners/Logo - UFPA.png';
+import logoGuama from '@/assets/partners/Logo - Guama.png';
+import logoLasse from '@/assets/partners/Logo - LASSE.png';
+import logoWoodwell from '@/assets/partners/Logo - Woodwell.png';
+import RespiraAm from '@/assets/partners/Respira amazonia.png';
 
 const PARTNERS = [
   { src: logoCapacream, nome: 'CAPACREAM' },
   { src: logoConexao, nome: 'Rede Conexão Povos da Floresta' },
-  { src: logoUFMT, nome: 'UFMT' },
+  { src: RespiraAm, nome: 'Respira Amazonia' },
   { src: logoSema, nome: 'SEMA MT' },
   { src: logoUfac, nome: 'UFAC' },
+  { src: logoUEA, nome: 'UEA' },
+  { src: logoUFMT, nome: 'UFMT' },
 ];
 
 const DEVELOPERS = [
