@@ -13,10 +13,10 @@ export function SensorPopup({ sensor, onClose }) {
   const faixa = online ? variable.getColor(value) : { color: '#9e9e9e', textColor: '#ffffff', label: 'Offline' };
 
   return (
-    <div className="SensorPopupComponent relative">
+    <div className="SensorPopupComponent relative flex flex-col gap-[10px]">
       <a
         href="#"
-        className="absolute top-0 right-0 no-underline text-lg text-text-light leading-none hover:text-text-dark"
+        className="absolute top-0 right-0 no-underline text-3xl text-text-light leading-none hover:text-text-dark"
         onClick={(e) => {
           e.preventDefault();
           onClose?.();
@@ -24,12 +24,17 @@ export function SensorPopup({ sensor, onClose }) {
       >
         &times;
       </a>
-      <h3 className="text-base mb-2 pr-5 text-text-dark">{sensor.name}</h3>
-      <span className="text-[10px] uppercase tracking-wider text-text-light mb-2 block">
+
+      <span
+        title="Origem dos dados desse sensor"
+        className="w-max px-[10px] py-[5px] rounded-[8px] text-2xl font-bold tracking-wider text-text-light border-[2px] border-text-light bg-white"
+      >
         {sensor.source === 'purpleAir' ? 'PurpleAir' : 'RedeAr'}
       </span>
 
-      <div className="flex items-center gap-3 mb-2">
+      <h3 className="text-base pr-5 text-text-dark">{sensor.name}</h3>
+
+      <div className="flex items-center gap-3">
         {value != null && online ? (
           <>
             <div
@@ -40,7 +45,9 @@ export function SensorPopup({ sensor, onClose }) {
             </div>
             <div className="text-sm text-text-light">
               <div className="font-bold">{faixa.label}</div>
-              <div>{variable.label}: {value} {variable.unit}</div>
+              <div>
+                {variable.label}: {value} {variable.unit}
+              </div>
             </div>
           </>
         ) : (
@@ -48,7 +55,7 @@ export function SensorPopup({ sensor, onClose }) {
         )}
       </div>
 
-      <div className="flex flex-col gap-1 text-xs text-text-light mb-3">
+      <div className="flex flex-col gap-1 text-xs text-text-light">
         {sensor.latest_reading && (
           <span>Última leitura: {new Date(sensor.latest_reading).toLocaleString('pt-BR')}</span>
         )}
@@ -58,7 +65,7 @@ export function SensorPopup({ sensor, onClose }) {
       </div>
 
       {sensor.is_trustworthy === false && (
-        <div className="flex items-start gap-2 mb-2 p-2 rounded-sm bg-amber-50 text-amber-700 text-xs border border-amber-200">
+        <div className="flex items-start gap-2 p-2 rounded-sm bg-amber-50 text-amber-700 text-xs border border-amber-200">
           <span className="text-sm shrink-0 mt-px">⚠</span>
           <span> Leituras divergentes entre os sensores, os dados podem não ser confiáveis. </span>
         </div>
