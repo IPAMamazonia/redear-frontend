@@ -150,7 +150,13 @@ function stylePointWithCluster(feature) {
     });
   }
 
-  const worst = onlineFeatures.reduce(
+  const trustworthyOnlineFeatures = onlineFeatures.filter(
+    (f) => f.get('isTrustworthy') !== false
+  );
+
+  const evaluatedFeatures = trustworthyOnlineFeatures.length > 0 ? trustworthyOnlineFeatures : onlineFeatures;
+
+  const worst = evaluatedFeatures.reduce(
     (worst, f) => {
       const val = f.get('value');
       if (val == null) return worst;
