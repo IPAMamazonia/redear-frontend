@@ -1,36 +1,24 @@
-function avg(v1, v2) {
-  const a = v1 ?? null;
-  const b = v2 ?? null;
-  if (a == null && b == null) return null;
-  if (a == null) return Number(b);
-  if (b == null) return Number(a);
-  return Number(((a + b) / 2).toFixed(1));
-}
+import { avg, buildGradientScale, computePM25AQI, aqiColor } from '@/helpers';
 
-function lerpColor(low, high, t) {
-  const r = Math.round(low[0] + (high[0] - low[0]) * t);
-  const g = Math.round(low[1] + (high[1] - low[1]) * t);
-  const b = Math.round(low[2] + (high[2] - low[2]) * t);
-  return `rgb(${r},${g},${b})`;
-}
+export const EPA_PM25_BREAKPOINTS = [
+  { iLow: 0, iHigh: 50, cLow: 0.0, cHigh: 9.0 },
+  { iLow: 51, iHigh: 100, cLow: 9.1, cHigh: 35.4 },
+  { iLow: 101, iHigh: 150, cLow: 35.5, cHigh: 55.4 },
+  { iLow: 151, iHigh: 200, cLow: 55.5, cHigh: 125.4 },
+  { iLow: 201, iHigh: 300, cLow: 125.5, cHigh: 225.4 },
+  { iLow: 301, iHigh: 500, cLow: 225.5, cHigh: 325.4 },
+];
 
-function gradientColor(value, stops) {
-  if (value == null) return { color: '#9e9e9e', textColor: '#ffffff', label: 'Sem dados' };
-  for (let i = 0; i < stops.length - 1; i++) {
-    if (value <= stops[i + 1].min) {
-      const t = (value - stops[i].min) / (stops[i + 1].min - stops[i].min);
-      return {
-        color: lerpColor(stops[i].rgb, stops[i + 1].rgb, t),
-        textColor: stops[i].textColor ?? '#000000',
-        label: stops[i].label,
-      };
-    }
-  }
-  const last = stops[stops.length - 1];
-  return { color: lerpColor(last.rgb, last.rgb, 1), textColor: last.textColor ?? '#000000', label: last.label };
-}
+export const AQI_STOPS = [
+  { max: 50, rgb: [0, 228, 0], label: 'Bom' },
+  { max: 100, rgb: [255, 255, 0], label: 'Moderado' },
+  { max: 150, rgb: [255, 126, 0], label: 'Insalubre' },
+  { max: 200, rgb: [255, 0, 0], label: 'Muito insalubre', textColor: '#ffffff' },
+  { max: 300, rgb: [143, 63, 151], label: 'Perigoso', textColor: '#ffffff' },
+  { max: 500, rgb: [126, 0, 35], label: 'Muito perigoso', textColor: '#ffffff' },
+];
 
-const PM1_STOPS = [
+export const PM1_STOPS = [
   { min: 0, rgb: [82, 159, 43], label: 'Boa' },
   { min: 10, rgb: [247, 212, 0], label: 'Moderada' },
   { min: 25, rgb: [228, 139, 39], label: 'Ruim' },
@@ -38,7 +26,7 @@ const PM1_STOPS = [
   { min: 75, rgb: [139, 0, 0], label: 'Péssima', textColor: '#ffffff' },
 ];
 
-const PM25_STOPS = [
+export const PM25_STOPS = [
   { min: 0, rgb: [82, 159, 43], label: 'Boa' },
   { min: 15, rgb: [247, 212, 0], label: 'Moderada' },
   { min: 50, rgb: [228, 139, 39], label: 'Ruim' },
@@ -46,7 +34,7 @@ const PM25_STOPS = [
   { min: 125, rgb: [139, 0, 0], label: 'Péssima', textColor: '#ffffff' },
 ];
 
-const PM10_STOPS = [
+export const PM10_STOPS = [
   { min: 0, rgb: [82, 159, 43], label: 'Boa' },
   { min: 45, rgb: [247, 212, 0], label: 'Moderada' },
   { min: 100, rgb: [228, 139, 39], label: 'Ruim' },
@@ -54,7 +42,7 @@ const PM10_STOPS = [
   { min: 250, rgb: [139, 0, 0], label: 'Péssima', textColor: '#ffffff' },
 ];
 
-const TEMP_STOPS = [
+export const TEMP_STOPS = [
   { min: 0, rgb: [33, 150, 243], label: 'Frio' },
   { min: 15, rgb: [0, 200, 83], label: 'Agradável' },
   { min: 25, rgb: [255, 235, 59], label: 'Quente' },
@@ -62,7 +50,7 @@ const TEMP_STOPS = [
   { min: 42, rgb: [183, 28, 28], label: 'Extremo', textColor: '#ffffff' },
 ];
 
-const HUMIDITY_STOPS = [
+export const HUMIDITY_STOPS = [
   { min: 0, rgb: [183, 28, 28], label: 'Muito seco', textColor: '#ffffff' },
   { min: 20, rgb: [255, 152, 0], label: 'Seco' },
   { min: 40, rgb: [255, 235, 59], label: 'Confortável' },
@@ -70,61 +58,69 @@ const HUMIDITY_STOPS = [
   { min: 80, rgb: [33, 150, 243], label: 'Muito úmido' },
 ];
 
-const PRESSURE_STOPS = [
+export const PRESSURE_STOPS = [
   { min: 990, rgb: [255, 152, 0], label: 'Baixa' },
   { min: 1005, rgb: [255, 235, 59], label: 'Normal' },
   { min: 1015, rgb: [0, 200, 83], label: 'Estável' },
   { min: 1025, rgb: [33, 150, 243], label: 'Alta' },
 ];
 
-const P03_STOPS = [
+export const P03_STOPS = [
   { min: 0, rgb: [0, 200, 83], label: 'Baixa' },
   { min: 1000, rgb: [255, 235, 59], label: 'Moderada' },
   { min: 3000, rgb: [255, 152, 0], label: 'Alta' },
   { min: 6000, rgb: [255, 0, 0], label: 'Muito alta', textColor: '#ffffff' },
 ];
 
-const P10_STOPS = [
+export const P10_STOPS = [
   { min: 0, rgb: [0, 200, 83], label: 'Baixa' },
   { min: 200, rgb: [255, 235, 59], label: 'Moderada' },
   { min: 600, rgb: [255, 152, 0], label: 'Alta' },
   { min: 1500, rgb: [255, 0, 0], label: 'Muito alta', textColor: '#ffffff' },
 ];
 
-const P25_STOPS = [
+export const P25_STOPS = [
   { min: 0, rgb: [0, 200, 83], label: 'Baixa' },
   { min: 100, rgb: [255, 235, 59], label: 'Moderada' },
   { min: 300, rgb: [255, 152, 0], label: 'Alta' },
   { min: 800, rgb: [255, 0, 0], label: 'Muito alta', textColor: '#ffffff' },
 ];
 
-const P100_STOPS = [
+export const P100_STOPS = [
   { min: 0, rgb: [0, 200, 83], label: 'Baixa' },
   { min: 30, rgb: [255, 235, 59], label: 'Moderada' },
   { min: 100, rgb: [255, 152, 0], label: 'Alta' },
   { min: 300, rgb: [255, 0, 0], label: 'Muito alta', textColor: '#ffffff' },
 ];
 
-function buildGradientScale(stops) {
-  return (value) => gradientColor(value, stops);
+function buildLegend(stops) {
+  return stops.map((s) => ({ color: `rgb(${s.rgb.join(',')})`, label: s.label, textColor: s.textColor }));
 }
 
 export const MAP_VARIABLES = [
-  {
-    key: 'pm1',
-    label: 'PM1.0',
-    unit: 'µg/m³',
-    extract: (r) => avg(r.pms1_pm1_0_env, r.pms2_pm1_0_env),
-    getColor: buildGradientScale(PM1_STOPS),
-    legend: PM1_STOPS.map((s) => ({ color: `rgb(${s.rgb.join(',')})`, label: s.label, textColor: s.textColor })),
-  },
   {
     key: 'pm25',
     label: 'PM2.5',
     unit: 'µg/m³',
     extract: (r) => avg(r.pms1_pm2_5_env, r.pms2_pm2_5_env),
     getColor: buildGradientScale(PM25_STOPS),
-    legend: PM25_STOPS.map((s) => ({ color: `rgb(${s.rgb.join(',')})`, label: s.label, textColor: s.textColor })),
+    legend: buildLegend(PM25_STOPS),
+  },
+  {
+    key: 'aqi',
+    label: 'US EPA PM2.5',
+    unit: 'AQI',
+    extract: (r) => computePM25AQI(avg(r.pms1_pm2_5_env, r.pms2_pm2_5_env), EPA_PM25_BREAKPOINTS),
+    getColor: (aqi) => aqiColor(aqi, AQI_STOPS),
+    legend: buildLegend(AQI_STOPS),
+  },
+  {
+    key: 'pm1',
+    label: 'PM1.0',
+    unit: 'µg/m³',
+    extract: (r) => avg(r.pms1_pm1_0_env, r.pms2_pm1_0_env),
+    getColor: buildGradientScale(PM1_STOPS),
+    legend: buildLegend(PM1_STOPS),
   },
   {
     key: 'pm10',
@@ -132,7 +128,7 @@ export const MAP_VARIABLES = [
     unit: 'µg/m³',
     extract: (r) => avg(r.pms1_pm10_env, r.pms2_pm10_env),
     getColor: buildGradientScale(PM10_STOPS),
-    legend: PM10_STOPS.map((s) => ({ color: `rgb(${s.rgb.join(',')})`, label: s.label, textColor: s.textColor })),
+    legend: buildLegend(PM10_STOPS),
   },
   {
     key: 'temperature',
@@ -140,7 +136,7 @@ export const MAP_VARIABLES = [
     unit: '°C',
     extract: (r) => r.bme_temperature ?? null,
     getColor: buildGradientScale(TEMP_STOPS),
-    legend: TEMP_STOPS.map((s) => ({ color: `rgb(${s.rgb.join(',')})`, label: s.label, textColor: s.textColor })),
+    legend: buildLegend(TEMP_STOPS),
   },
   {
     key: 'humidity',
@@ -148,7 +144,7 @@ export const MAP_VARIABLES = [
     unit: '%',
     extract: (r) => r.bme_humidity ?? null,
     getColor: buildGradientScale(HUMIDITY_STOPS),
-    legend: HUMIDITY_STOPS.map((s) => ({ color: `rgb(${s.rgb.join(',')})`, label: s.label, textColor: s.textColor })),
+    legend: buildLegend(HUMIDITY_STOPS),
   },
   {
     key: 'pressure',
@@ -156,7 +152,7 @@ export const MAP_VARIABLES = [
     unit: 'hPa',
     extract: (r) => r.bme_pressure ?? null,
     getColor: buildGradientScale(PRESSURE_STOPS),
-    legend: PRESSURE_STOPS.map((s) => ({ color: `rgb(${s.rgb.join(',')})`, label: s.label, textColor: s.textColor })),
+    legend: buildLegend(PRESSURE_STOPS),
   },
   {
     key: 'p03um',
@@ -164,7 +160,7 @@ export const MAP_VARIABLES = [
     unit: 'p/0.1L',
     extract: (r) => avg(r.pms1_p03um, r.pms2_p03um),
     getColor: buildGradientScale(P03_STOPS),
-    legend: P03_STOPS.map((s) => ({ color: `rgb(${s.rgb.join(',')})`, label: s.label, textColor: s.textColor })),
+    legend: buildLegend(P03_STOPS),
   },
   {
     key: 'p10um',
@@ -172,7 +168,7 @@ export const MAP_VARIABLES = [
     unit: 'p/0.1L',
     extract: (r) => avg(r.pms1_p10um, r.pms2_p10um),
     getColor: buildGradientScale(P10_STOPS),
-    legend: P10_STOPS.map((s) => ({ color: `rgb(${s.rgb.join(',')})`, label: s.label, textColor: s.textColor })),
+    legend: buildLegend(P10_STOPS),
   },
   {
     key: 'p25um',
@@ -180,7 +176,7 @@ export const MAP_VARIABLES = [
     unit: 'p/0.1L',
     extract: (r) => avg(r.pms1_p25um, r.pms2_p25um),
     getColor: buildGradientScale(P25_STOPS),
-    legend: P25_STOPS.map((s) => ({ color: `rgb(${s.rgb.join(',')})`, label: s.label, textColor: s.textColor })),
+    legend: buildLegend(P25_STOPS),
   },
   {
     key: 'p100um',
@@ -188,16 +184,6 @@ export const MAP_VARIABLES = [
     unit: 'p/0.1L',
     extract: (r) => avg(r.pms1_p100um, r.pms2_p100um),
     getColor: buildGradientScale(P100_STOPS),
-    legend: P100_STOPS.map((s) => ({ color: `rgb(${s.rgb.join(',')})`, label: s.label, textColor: s.textColor })),
+    legend: buildLegend(P100_STOPS),
   },
 ];
-
-export function getVariableByKey(key) {
-  return MAP_VARIABLES.find((v) => v.key === key) || MAP_VARIABLES[0];
-}
-
-export function getSensorValue(sensor, variable) {
-  const reading = sensor.readings?.[0];
-  if (!reading) return null;
-  return variable.extract(reading);
-}
