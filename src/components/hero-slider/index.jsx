@@ -1,22 +1,24 @@
 import { useState, useCallback } from 'react';
 import { useInterval } from '@/hooks/useInterval';
-import caciqueRaoni from '@/assets/JPEG/caciqueRaoni.jpeg';
+import fire1 from '@/assets/carousel/fire-1.jpeg';
+import fire2 from '@/assets/carousel/fire-2-PCT.jpeg';
+import fire3 from '@/assets/carousel/fire-3.jpeg';
 
 const SLIDES = [
   {
-    img: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=1920&q=80',
+    img: fire1,
     title: 'RedeAr: Monitorando a Qualidade do Ar',
     subtitle: 'Dados em tempo real da qualidade do ar em todo o Brasil',
   },
   {
-    img: 'https://ipam.org.br/wp-content/uploads/2026/03/Amazonia-em-chamas-sobrevoo-fumaca-2-Victor-Moriyama-Amazonia-em-Chamas.webp',
-    title: 'Qualidade do Ar Importa',
-    subtitle: 'Acompanhe a qualidade do ar em tempo real e proteja sua saúde',
-  },
-  {
-    img: caciqueRaoni,
+    img: fire2,
     title: 'Monitoramento da qualidade do ar em territórios tradicionais',
     subtitle: '',
+  },
+  {
+    img: fire3,
+    title: 'Qualidade do Ar Importa',
+    subtitle: 'Acompanhe a qualidade do ar em tempo real e proteja sua saúde',
   },
 ];
 
