@@ -39,7 +39,7 @@ function getSensorDisplayValue(sensor, variable) {
 }
 
 const NODE_RADIUS = 18;
-const NODE_RADIUS_CLUSTER_OFF = 10;
+const NODE_RADIUS_CLUSTER_OFF = 18;
 
 let currentNodeRadius = NODE_RADIUS;
 
@@ -81,6 +81,7 @@ function createSensorStyle({
         radius,
         fill: new Fill({ color }),
         stroke: new Stroke({ color: strokeColor, width: aplyStrokewidth }),
+        declutterMode: 'none',
       });
 
   return new Style({
@@ -90,6 +91,8 @@ function createSensorStyle({
       text,
       fill: new Fill({ color: textColor }),
       font: `bold ${fitFontSize(text, fontSize, radius * 2)}px Arial`,
+      overflow: false,
+      declutterMode: 'none',
     }),
   });
 }
@@ -145,7 +148,7 @@ function stylePointWithCluster(feature) {
       }),
       text: new Text({
         text: `${size}`,
-        fill: new Fill({ color: '#fff' }),
+        fill: new Fill({ color: '#000' }),
         font: 'bold 12px Arial',
       }),
     });
@@ -176,7 +179,7 @@ function stylePointWithCluster(feature) {
     }),
     text: new Text({
       text: `${size}`,
-      fill: new Fill({ color: '#fff' }),
+      fill: new Fill({ color: '#000' }),
       font: 'bold 12px Arial',
       textDecoration: 'underline',
     }),
@@ -273,7 +276,13 @@ export function MapView() {
       distance: 50,
     });
     clusterSourceRef.current = clusterSource;
-    const clusterLayer = new VectorLayer({ source: clusterSource, style: stylePointWithCluster });
+
+    const clusterLayer = new VectorLayer({ 
+      style: stylePointWithCluster, 
+      source: clusterSource, 
+      declutter: true 
+    });
+
     map.addLayer(clusterLayer);
     vectorSourceRef.current = vectorSource;
 
@@ -508,10 +517,7 @@ export function MapView() {
         <LoadingOverlay loading={loading} />
         <ErrorBanner error={error} />
 
-        <div
-          ref={mapRef}
-          className="map-fullscreen-canvas w-full h-[700px] max-md:h-[380px] rounded relative"
-        />
+        <div ref={mapRef} className="map-fullscreen-canvas w-full h-[700px] max-md:h-[380px] rounded relative" />
 
         <MapLegend />
         <LegendContainer>
