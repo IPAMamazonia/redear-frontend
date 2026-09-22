@@ -36,6 +36,23 @@ class APIService {
       .catch((e) => console.error(e));
   }
 
+  /**
+   * Fetch que lança erro com `code` e `message` na falha (formato da API).
+   * @param {string}  url
+   * @param {Object}  [options]
+   * @returns {Promise<Object>}
+   */
+  async _request(url, options = {}) {
+    const res = await fetch(url, options);
+    const body = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      const erro = body?.error ?? {};
+      throw new Error(`${erro.code ?? 'ERRO'}: ${erro.message ?? 'Falha na requisição'}`);
+    }
+    return body;
+  }
+
   // ─── Sensor Methods ──────────────────────────────────────────────────────
 
   async fetchSensors() {
@@ -45,14 +62,37 @@ class APIService {
     });
   }
 
-  async fetchSensorReadings(sensorId, interval, startDate, endDate, limit, offset) {
-    return this._fetchJson(
-      `${baseBackEnd}/v1/sensors/${sensorId}/readings?interval=${interval}&startDate=${startDate}&endDate=${endDate}&limit=${limit}&offset=${offset}`,
-      {
-        method: 'GET',
-        headers: this._headers('application/json'),
+  /**
+   * Consulta leituras brutas de sensores em `GET /v1/sensor-readings`.
+   *
+   * O filtro deve ter exatamente uma chave de `sensorIds`, `municipio` ou
+   * `estado`; `startDate`/`endDate` são opcionais (e devem vir juntos).
+   *
+   * @param {Object}                    params
+   * @param {number[]}  [params.sensorIds] - Ids dos sensores.
+   * @param {number}    [params.municipio] - Geocode IBGE do município.
+   * @param {number}    [params.estado]    - Geocode IBGE do estado (UF).
+   * @param {string}    [params.startDate] - Início do intervalo (ISO).
+   * @param {string}    [params.endDate]   - Fim do intervalo (ISO).
+   * @returns {Promise<Object>} Resposta `{ filter, period, count, readings }`.
+   */
+  async fetchSensorReadings(params) {
+    const query = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value == null || value === '') return;
+      if (Array.isArray(value)) {
+        if (value.length) query.append(key, value.join(','));
+        return;
       }
-    );
+      query.append(key, String(value));
+    });
+
+    const url = `${baseBackEnd}/v1/sensor-readings?${query.toString()}`;
+    return this._request(url, {
+      method: 'GET',
+      headers: this._headers('application/json'),
+    });
   }
 }
 

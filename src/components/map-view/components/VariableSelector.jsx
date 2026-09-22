@@ -3,7 +3,7 @@ import { MAP_VARIABLES } from '@/rules';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect, useRef } from 'react';
 
-export function VariableSelector() {
+export function VariableSelector({ openDown = false }) {
   const dispatch = useDispatch();
   const selected = useSelector((state) => state.ui.selectedVariable);
   const [open, setOpen] = useState(false);
@@ -36,9 +36,14 @@ export function VariableSelector() {
         </button>
 
         <div
-          className={`absolute bottom-full left-0 mb-1 bg-card backdrop-blur-xl border border-white/35 rounded 
+          className={`absolute bg-card backdrop-blur-xl border border-white/35 rounded 
             shadow-glass py-1 min-w-[160px] max-h-[340px] overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] 
-            origin-bottom-left ${open ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-75 opacity-0 pointer-events-none'
+            ${
+              openDown
+                ? 'top-full left-0 mt-1 origin-top-left'
+                : 'bottom-full left-0 mb-1 origin-bottom-left'
+            }
+            ${open ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-75 opacity-0 pointer-events-none'
           }`}
         >
           {MAP_VARIABLES.map((v) => (

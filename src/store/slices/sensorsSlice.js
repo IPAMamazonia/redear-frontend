@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { APIService } from '@/API/APIService';
+import { purpleAirTempParaCelsius } from '@/helpers/readings';
 
 const api = new APIService();
 
@@ -27,8 +28,8 @@ function normalizeReadings(readings, source) {
     .filter((r) => r && typeof r === 'object')
     .map((r) => {
       const normalized = { ...r, datetime: parseReadingDatetime(r.datetime) };
-      if (source === 'purpleAir' && normalized.bme_temperature != null) {
-        normalized.bme_temperature = Number(((normalized.bme_temperature - 32) * 5 / 9).toFixed(1));
+      if (source === 'purpleAir') {
+        normalized.bme_temperature = purpleAirTempParaCelsius(normalized.bme_temperature);
       }
       return normalized;
     });
@@ -71,6 +72,8 @@ function normalizeSensor(s) {
     gps: coordinates ? { coordinates } : null,
     municipio: s.municipio,
     estado: s.estado,
+    geocode_mun: s.geocode_mun ?? null,
+    geocode_uf: s.geocode_uf ?? null,
     regiao: s.regiao,
     bioma: s.bioma,
     readings,

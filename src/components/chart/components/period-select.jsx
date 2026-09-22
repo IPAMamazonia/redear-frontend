@@ -6,7 +6,6 @@ const PERIODOS = [
   { value: '2M', label: '2 M' },
   { value: '3M', label: '3 M' },
   { value: '6M', label: '6 M' },
-  { value: 'Max', label: 'Máx' },
 ];
 
 /**
