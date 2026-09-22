@@ -43,7 +43,7 @@ export function Footer() {
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-10 max-w-[1100px] mx-auto mb-10">
         <FooterColumn title="RedeAr">
           <FooterLink href="#sobre">Sobre</FooterLink>
-          {/*<FooterLink href="#grafico">Gráfico</FooterLink>*/}
+          <FooterLink href="#grafico">Gráfico</FooterLink>
           <FooterLink href="#mapa">Mapa</FooterLink>
           <FooterLink href="#faq">FAQ</FooterLink>
         </FooterColumn>
@@ -77,7 +77,7 @@ export function Footer() {
       </div>
 
       <div className="text-center pt-6 border-t border-white/10 text-sm text-white/35">
-        &copy; 2026 RedeAr. Todos os direitos reservados. Desenvolvido com {' '}
+        &copy; 2026 RedeAr. Todos os direitos reservados. Desenvolvido com{' '}
         <i className="fas fa-heart text-[#FF0000]"></i> pela equipe RedeAr.
       </div>
     </footer>

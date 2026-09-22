@@ -14,7 +14,7 @@ export function HomePage() {
       <HeroSlider />
       <About />
       <MapView />
-      {/*<AQIChart /> */}
+      <AQIChart />
       <FAQ />
       <Contact />
       <Partners />

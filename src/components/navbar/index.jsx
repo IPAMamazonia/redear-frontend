@@ -2,12 +2,12 @@ import { toggleMobileMenu, closeMobileMenu, setScrolled } from '@/store/slices/u
 import { useSelector, useDispatch } from 'react-redux';
 import { GradientText } from '@/components';
 import { useEffect } from 'react';
-import logo from '@/assets/png/Logo RedeAR - IPAM vetores-01.png'
+import logo from '@/assets/png/Logo RedeAR - IPAM vetores-01.png';
 
 const LINKS = [
   { href: '#sobre', label: 'Sobre' },
   { href: '#mapa', label: 'Mapa' },
-  // href: '#grafico', label: 'Gráfico' },
+  { href: '#grafico', label: 'Gráfico' },
   { href: '#faq', label: 'FAQ' },
   { href: '#contato', label: 'Fale Conosco' },
   { href: '#parceiros', label: 'Parceiros' },
