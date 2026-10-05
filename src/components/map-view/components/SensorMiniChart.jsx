@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
+import { calcularYMax, criarPluginFaixas, faixasVisiveis } from '@/components/chart/utils/faixas-plugin';
 
 const PMS_COLORS = {
   pms1: { border: '#00E400', bg: 'rgba(0,228,0,0.08)' },
@@ -76,8 +77,9 @@ export function SensorMiniChart({ readings, variable }) {
     const datasets = buildDatasets(variable, data);
 
     const allValues = datasets.flatMap((ds) => ds.data).filter((v) => v != null);
-    const dataMax = allValues.length > 0 ? Math.max(...allValues) : 50;
-    const yMax = Math.ceil(Math.max(dataMax * 1.15, 50) / 25) * 25;
+    const dataMax = allValues.length > 0 ? Math.max(...allValues) : 0;
+    const yMax = calcularYMax(dataMax, variable.faixasYMax);
+    const faixas = faixasVisiveis(variable.faixas, yMax, variable.faixasYMax);
 
     if (chartRef.current) chartRef.current.destroy();
 
@@ -115,6 +117,7 @@ export function SensorMiniChart({ readings, variable }) {
           },
         },
       },
+      plugins: faixas ? [criarPluginFaixas(faixas)] : [],
     });
 
     return () => {

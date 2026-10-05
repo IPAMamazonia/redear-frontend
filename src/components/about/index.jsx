@@ -28,7 +28,7 @@ export function About() {
     const purpleAirSensors = sensors.filter((s) => s.source === 'purpleAir').length;
     const statesMonitored = new Set(sensors.map((s) => s.estado)).size;
 
-    setStats((prevStats) => [
+    setStats(() => [
       { id: 'sensors-total', number: totalSensors.toString(), label: 'Sensores Totais' },
       { id: 'states-monitored', number: statesMonitored.toString(), label: 'Estados Monitorados' },
       { id: 'sensors-redear', number: redeArSensors.toString(), label: 'Sensores RedeAr' },

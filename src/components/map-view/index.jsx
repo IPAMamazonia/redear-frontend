@@ -12,6 +12,7 @@ import {
 } from './components';
 import { Section, SectionHeading, GradientText } from '@/components';
 import { formatNumberString, getVariableByKey } from '@/helpers';
+import { COR_SEM_DADOS, OFFLINE } from '@/rules/faixas';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { VIEW_CONFIG } from './rules';
@@ -143,7 +144,7 @@ function stylePointWithCluster(feature) {
     return new Style({
       image: new CircleStyle({
         radius: Math.min(12 + size * 1.5, 28),
-        fill: new Fill({ color: '#9e9e9e' }),
+        fill: new Fill({ color: COR_SEM_DADOS }),
         stroke: new Stroke({ color: 'white', width: 1.5 }),
       }),
       text: new Text({
@@ -169,7 +170,7 @@ function stylePointWithCluster(feature) {
     },
     { value: 0, feature: null }
   );
-  const color = worst.feature?.get('color') || '#9e9e9e';
+  const color = worst.feature?.get('color') || COR_SEM_DADOS;
 
   return new Style({
     image: new CircleStyle({
@@ -231,9 +232,7 @@ export function MapView() {
         .map((s) => {
           const value = getSensorDisplayValue(s, variable);
           const online = s.is_online ?? false;
-          const range = online
-            ? variable.getColor(value)
-            : { color: '#9e9e9e', textColor: '#ffffff', label: 'Offline' };
+          const range = online ? variable.getColor(value) : OFFLINE;
 
           return new Feature({
             geometry: new Point(fromLonLat([s.gps.coordinates[0], s.gps.coordinates[1]])),

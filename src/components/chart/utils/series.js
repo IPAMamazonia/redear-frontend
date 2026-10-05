@@ -1,3 +1,5 @@
+import { calcularYMax } from './faixas-plugin';
+
 /**
  * Monta as séries do gráfico a partir das leituras reais.
  * Uma linha por sensor, com os dados crus (sem agregação temporal);
@@ -5,7 +7,7 @@
  *
  * @param {Array<object>} readings - Leituras normalizadas do redux (sensor_id, datetime, ...).
  * @param {Array<object>} sensors - Camada de sensores (id, name).
- * @param {object} variable - Variável selecionada (key, unit, extract).
+ * @param {object} variable - Variável selecionada (key, unit, extract, faixasYMax).
  * @returns {{ datasets: Array<{ sensorId: string, name: string, data: Array<{ x: number, y: number }> }>, yMax: number }}
  */
 export function montarSeries(readings, sensors, variable) {
@@ -43,7 +45,7 @@ export function montarSeries(readings, sensors, variable) {
 
   datasets.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
 
-  yMax = Math.ceil(Math.max(yMax * 1.15, 50) / 25) * 25;
+  yMax = calcularYMax(yMax, variable.faixasYMax);
 
   return { datasets, yMax };
 }

@@ -36,7 +36,7 @@ export function VariableSelector({ openDown = false }) {
         </button>
 
         <div
-          className={`absolute bg-card backdrop-blur-xl border border-white/35 rounded 
+          className={`absolute bg-card backdrop-blur-xl border border-white/35 rounded z-10
             shadow-glass py-1 min-w-[160px] max-h-[340px] overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] 
             ${
               openDown

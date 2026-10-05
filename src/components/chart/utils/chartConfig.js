@@ -1,3 +1,6 @@
+import { criarPluginFaixas } from './faixas-plugin';
+import { MODO_POR_HORARIO, lerInstanteDoCursor } from './modo-por-horario';
+
 const CORES_PALETA = [
   '#2C3E50',
   '#FF7E00',
@@ -9,14 +12,6 @@ const CORES_PALETA = [
   '#00695C',
   '#4E342E',
   '#5D4037',
-];
-
-const ZONAS = [
-  { max: 40, cor: 'rgba(0,228,0,0.05)' },
-  { max: 80, cor: 'rgba(255,255,0,0.04)' },
-  { max: 120, cor: 'rgba(255,126,0,0.04)' },
-  { max: 200, cor: 'rgba(255,0,0,0.04)' },
-  { max: 250, cor: 'rgba(139,0,0,0.05)' },
 ];
 
 const zoom = {
@@ -53,6 +48,14 @@ function formataValor(v) {
   return v.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
 }
 
+function formataInstante(x, comData = true) {
+  return new Date(x).toLocaleString('pt-BR', {
+    ...(comData ? { day: '2-digit', month: '2-digit' } : {}),
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 function criarTooltip(unit) {
   return {
     backgroundColor: 'rgba(44,62,80,0.95)',
@@ -62,7 +65,9 @@ function criarTooltip(unit) {
     cornerRadius: 8,
     callbacks: {
       title(items) {
-        const x = items[0]?.parsed?.x;
+        // O cabeçalho é o instante do cursor, não o de um sensor: entre séries,
+        // o x de `items[0]` é arbitrário.
+        const x = lerInstanteDoCursor(items[0]?.chart) ?? items[0]?.parsed?.x;
         if (x == null) return '';
         return new Date(x).toLocaleString('pt-BR', {
           day: '2-digit',
@@ -73,7 +78,16 @@ function criarTooltip(unit) {
         });
       },
       label(ctx) {
-        return `${ctx.dataset.label}: ${formataValor(ctx.parsed?.y)} ${unit}`.trim();
+        const base = `${ctx.dataset.label}: ${formataValor(ctx.parsed?.y)} ${unit}`.trim();
+
+        // Só desvia o horário da leitura quando ela realmente não coincide com o
+        // instante do cursor — normalmente a diferença é menor que a cadência.
+        const instante = ctx.parsed?.x;
+        const cursor = lerInstanteDoCursor(ctx.chart);
+        if (instante == null || cursor == null) return base;
+        if (Math.abs(instante - cursor) < 60000) return base;
+
+        return `${base} · ${formataInstante(instante, false)}`;
       },
     },
   };
@@ -111,35 +125,6 @@ function criarEscalas(spanMs, yMax) {
   };
 }
 
-function criarPluginZonas() {
-  return {
-    id: 'aqiZones',
-    beforeDraw(chart) {
-      const { ctx, chartArea, scales: eixos } = chart;
-      if (!chartArea || !eixos.y) return;
-
-      let prevY = chartArea.bottom;
-      ZONAS.forEach((z) => {
-        const y = eixos.y.getPixelForValue(z.max);
-
-        ctx.fillStyle = z.cor;
-        ctx.fillRect(chartArea.left, y, chartArea.right - chartArea.left, prevY - y);
-
-        ctx.strokeStyle = z.cor.replace('0.0', '0.15');
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath();
-        ctx.moveTo(chartArea.left, y);
-        ctx.lineTo(chartArea.right, y);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        prevY = y;
-      });
-    },
-  };
-}
-
 /**
  * Monta a configuração do Chart.js para as séries de sensores.
  *
@@ -147,7 +132,7 @@ function criarPluginZonas() {
  * @param {Array<{ name: string, data: Array<{ x: number, y: number }> }>} params.datasets - Séries prontas (montarSeries).
  * @param {number} params.yMax - Limite superior dinâmico do eixo Y.
  * @param {string} params.unit - Unidade da variável (para o tooltip).
- * @param {boolean} params.mostrarZonas - Desenha as zonas do AQI (apenas para a variável 'aqi').
+ * @param {Array<object>} [params.faixas] - Faixas de qualidade a desenhar atrás das séries.
  * @param {number} params.spanMs - Tamanho do intervalo em ms (formato dos ticks do eixo X).
  * @param {number} params.totalPontos - Total de pontos do gráfico (decimation quando alto).
  * @param {boolean} params.dadosContinuos - True se nenhuma série tem lacunas (null) — requisito do LTTB.
@@ -156,13 +141,14 @@ export function criarConfigChart({
   datasets = [],
   yMax = 50,
   unit = '',
-  mostrarZonas = false,
+  faixas = null,
   spanMs = 0,
   totalPontos = 0,
   dadosContinuos = false,
 }) {
   const usarDecimation = totalPontos > 1500 && dadosContinuos;
   const amostrasAlvo = Math.min(Math.max(Math.round(totalPontos / 10), 300), 1500);
+  const mostrarFaixas = Array.isArray(faixas) && faixas.length > 0;
 
   return {
     type: 'line',
@@ -173,7 +159,10 @@ export function criarConfigChart({
       responsive: true,
       maintainAspectRatio: false,
       parsing: false, // dados já vêm como {x, y} (necessário p/ decimation LTTB)
-      interaction: { intersect: false, mode: 'index' },
+      // Um ponto por sensor, casado pelo horário mais próximo do cursor. O
+      // 'index' do Chart.js casaria por posição no array, que aqui corresponde
+      // a instantes diferentes em cada sensor.
+      interaction: { intersect: false, mode: MODO_POR_HORARIO },
       plugins: {
         legend: {
           display: datasets.length > 1,
@@ -194,6 +183,6 @@ export function criarConfigChart({
       scales: criarEscalas(spanMs, yMax),
       elements: { line: { tension: 0.15 }, point: { radius: 0 } },
     },
-    plugins: mostrarZonas ? [criarPluginZonas()] : [],
+    plugins: mostrarFaixas ? [criarPluginFaixas(faixas)] : [],
   };
 }

@@ -1,4 +1,5 @@
 import { getVariableByKey, getSensorValue } from '@/helpers';
+import { OFFLINE } from '@/rules/faixas';
 import { SensorMiniChart } from './SensorMiniChart';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
@@ -10,7 +11,7 @@ export function SensorPopup({ sensor, onClose }) {
   const variable = getVariableByKey(selectedVariableKey);
   const value = getSensorValue(sensor, variable);
   const online = sensor.is_online ?? false;
-  const faixa = online ? variable.getColor(value) : { color: '#9e9e9e', textColor: '#ffffff', label: 'Offline' };
+  const faixa = online ? variable.getColor(value) : OFFLINE;
 
   return (
     <div className="SensorPopupComponent relative flex flex-col gap-[10px]">

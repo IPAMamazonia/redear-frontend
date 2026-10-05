@@ -1,5 +1,6 @@
 // Componentes locais
 import { criarConfigChart } from './utils/chartConfig';
+import { faixasVisiveis as calcularFaixasVisiveis } from './utils/faixas-plugin';
 import { montarFiltro, montarLocalId, resolverIds, SELECAO_INICIAL } from './utils/selection';
 import { montarSeries } from './utils/series';
 import { periodoParaIntervalo } from './utils/intervalo';
@@ -9,7 +10,7 @@ import { GlassCard, GradientText, Section, SectionHeading } from '@/components';
 import { VariableSelector } from '@/components/map-view/components/VariableSelector';
 
 // Componentes do chart
-import { ChartFilters, DateRangeInput, PeriodSelector, SensorChips } from './components';
+import { ChartFilters, DateRangeInput, FaixasLegend, PeriodSelector, SensorChips } from './components';
 
 // Redux
 import { fetchSensors, selectSensors } from '@/store/slices/sensorsSlice';
@@ -99,6 +100,15 @@ export function AQIChart() {
     [series]
   );
 
+  // Só variáveis com topo de escala reservado desenham faixas: em pressão e
+  // contagem de partículas a escala completa achataria a série na borda do eixo.
+  // As faixas são ainda cortadas pelo yMax real, para que o gráfico não anuncie
+  // uma faixa que ficou sem altura.
+  const faixasVisiveis = useMemo(
+    () => calcularFaixasVisiveis(variable.faixas, series.yMax, variable.faixasYMax),
+    [variable, series.yMax]
+  );
+
   const criarChart = useCallback(() => {
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx) return;
@@ -114,13 +124,13 @@ export function AQIChart() {
         datasets: series.datasets,
         yMax: series.yMax,
         unit: variable.unit,
-        mostrarZonas: variable.key === 'aqi',
+        faixas: faixasVisiveis,
         spanMs,
         totalPontos,
         dadosContinuos,
       })
     );
-  }, [series, variable, spanMs, totalPontos, dadosContinuos]);
+  }, [series, variable, spanMs, totalPontos, dadosContinuos, faixasVisiveis]);
 
   useEffect(() => {
     if (!hasOptionSelection) {
@@ -220,6 +230,8 @@ export function AQIChart() {
       </div>
 
       <SensorChips sensors={sensoresSelecionados} onRemove={removerSensor} />
+
+      {mostrarGrafico && faixasVisiveis && <FaixasLegend faixas={faixasVisiveis} unit={variable.unit} />}
 
       <div className="max-w-[1280px] mx-auto">
         <GlassCard className="p-6">
