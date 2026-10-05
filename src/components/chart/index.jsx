@@ -1,21 +1,29 @@
 // Componentes locais
-import { criarConfigChart } from './utils/chartConfig';
-import { faixasVisiveis as calcularFaixasVisiveis } from './utils/faixas-plugin';
-import { montarFiltro, montarLocalId, resolverIds, SELECAO_INICIAL } from './utils/selection';
-import { montarSeries } from './utils/series';
-import { periodoParaIntervalo } from './utils/intervalo';
+import {
+  montarFiltro,
+  montarLocalId,
+  resolverIds,
+  SELECAO_INICIAL,
+  criarConfigChart,
+  faixasVisiveis as calcularFaixasVisiveis,
+  montarSeries,
+  periodoParaIntervalo,
+} from './utils';
+import { VariableSelector } from '@/components/map-view/components/VariableSelector';
+import { ChartFilters, DateRangeInput, FaixasLegend, PeriodSelector, SensorChips } from './components';
+import { getVariableByKey } from '@/helpers/get-variable-by-key';
 
 // Componentes globais
 import { GlassCard, GradientText, Section, SectionHeading } from '@/components';
-import { VariableSelector } from '@/components/map-view/components/VariableSelector';
-
-// Componentes do chart
-import { ChartFilters, DateRangeInput, FaixasLegend, PeriodSelector, SensorChips } from './components';
 
 // Redux
 import { fetchSensors, selectSensors } from '@/store/slices/sensorsSlice';
-import { fetchReadings, selectReadings, selectReadingsLoading, selectReadingsError } from '@/store/slices/readingsSlice';
-import { getVariableByKey } from '@/helpers/get-variable-by-key';
+import {
+  fetchReadings,
+  selectReadings,
+  selectReadingsLoading,
+  selectReadingsError,
+} from '@/store/slices/readingsSlice';
 
 // React
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -59,7 +67,10 @@ export function AQIChart() {
     [selecao, sensorMap]
   );
 
-  const variable = useMemo(() => getVariableByKey(selectedVariableKey) ?? getVariableByKey('aqi'), [selectedVariableKey]);
+  const variable = useMemo(
+    () => getVariableByKey(selectedVariableKey) ?? getVariableByKey('aqi'),
+    [selectedVariableKey]
+  );
 
   const intervalo = useMemo(() => {
     if (modoPeriodo === 'manual') return intervaloManual;
@@ -85,25 +96,17 @@ export function AQIChart() {
     return new Date(intervalo.endDate).getTime() - new Date(intervalo.startDate).getTime();
   }, [intervalo]);
 
-  const series = useMemo(
-    () => montarSeries(readings, sensors, variable),
-    [readings, sensors, variable]
-  );
+  const series = useMemo(() => montarSeries(readings, sensors, variable), [readings, sensors, variable]);
 
-  const totalPontos = useMemo(
-    () => series.datasets.reduce((n, d) => n + d.data.length, 0),
-    [series]
-  );
+  const totalPontos = useMemo(() => series.datasets.reduce((n, d) => n + d.data.length, 0), [series]);
 
   const dadosContinuos = useMemo(
     () => series.datasets.every((d) => d.data.every((p) => Number.isFinite(p.y))),
     [series]
   );
 
-  // Só variáveis com topo de escala reservado desenham faixas: em pressão e
-  // contagem de partículas a escala completa achataria a série na borda do eixo.
-  // As faixas são ainda cortadas pelo yMax real, para que o gráfico não anuncie
-  // uma faixa que ficou sem altura.
+  // Só variáveis com topo de escala reservado desenham faixas: em pressão e contagem de partículas a escala completa achataria a série na borda do eixo.
+  // As faixas são ainda cortadas pelo yMax real, para que o gráfico não anuncie uma faixa que ficou sem altura.
   const faixasVisiveis = useMemo(
     () => calcularFaixasVisiveis(variable.faixas, series.yMax, variable.faixasYMax),
     [variable, series.yMax]
@@ -167,14 +170,11 @@ export function AQIChart() {
     setIntervaloManual(null);
   }, []);
 
-  const handlePeriodoChange = useCallback(
-    (p) => {
-      setPeriodo(p);
-      setModoPeriodo('preset');
-      setIntervaloManual(null);
-    },
-    []
-  );
+  const handlePeriodoChange = useCallback((p) => {
+    setPeriodo(p);
+    setModoPeriodo('preset');
+    setIntervaloManual(null);
+  }, []);
 
   const handleRetry = useCallback(() => {
     if (!hasOptionSelection || !filtro || !intervalo) return;
@@ -283,8 +283,8 @@ export function AQIChart() {
 
           {mostrarGrafico && (
             <p className="text-center mt-3 text-sm text-text-light">
-              <i className="fas fa-info-circle"></i> Arraste para zoom, role para ampliar. Passe o mouse sobre os
-              pontos para detalhes.
+              <i className="fas fa-info-circle"></i> Arraste para zoom, role para ampliar. Passe o mouse sobre os pontos
+              para detalhes.
             </p>
           )}
         </GlassCard>

@@ -58,7 +58,7 @@ function formataInstante(x, comData = true) {
 
 function criarTooltip(unit) {
   return {
-    backgroundColor: 'rgba(44,62,80,0.95)',
+    backgroundColor: 'rgba(44,62,80,0.5)',
     titleFont: { size: 13 },
     bodyFont: { size: 12 },
     padding: 12,
