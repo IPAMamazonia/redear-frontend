@@ -1,30 +1,40 @@
-import { lerpColor } from './lerp-color.js';
+import { SEM_DADOS } from '@/rules/faixas';
+import { getBand } from './get-band.js';
 
 /**
  * Gera um estilo de cor a partir de um valor e de uma lista de faixas.
  *
- * Percorre as faixas ordenadas e devolve um gradiente interpolado entre as
- * duas faixas vizinhas que contêm o valor. Quando o valor é nulo ou ultrapassa
- * a última faixa, retorna um valor neutro ou a cor da última faixa.
+ * O fundo é interpolado entre a faixa que contém o valor e a seguinte, o que
+ * preserva a leitura de gradiente do mapa. Já o rótulo e a cor do texto vêm da
+ * faixa fechada que contém o valor, e não da faixa inferior: é o que garante
+ * que o texto do popup, a cor do marcador e a legenda do mapa concordem entre
+ * si, e que as faixas do gráfico usem exatamente os mesmos cortes.
  *
  * @param {number|null|undefined} value - Valor a ser avaliado.
- * @param {Array<{min: number, rgb: number[], textColor?: string, label: string}>} stops -
- *   Faixas ordenadas por `min` com pelo menos 2 elementos.
+ * @param {Array<{min: number, max: number, rgb: number[], color: string, textColor: string, label: string}>} faixas -
+ *   Faixas normalizadas e ordenadas.
  * @returns {{color: string, textColor: string, label: string}} Estilo de cor
  * (cor de fundo, cor do texto e rótulo da faixa).
  */
-export function gradientColor(value, stops) {
-  if (value == null) return { color: '#9e9e9e', textColor: '#ffffff', label: 'Sem dados' };
-  for (let i = 0; i < stops.length - 1; i++) {
-    if (value <= stops[i + 1].min) {
-      const t = (value - stops[i].min) / (stops[i + 1].min - stops[i].min);
-      return {
-        color: lerpColor(stops[i].rgb, stops[i + 1].rgb, t),
-        textColor: stops[i].textColor ?? '#000000',
-        label: stops[i].label,
-      };
-    }
+export function gradientColor(value, faixas) {
+  const faixa = getBand(value, faixas);
+  if (!faixa) return SEM_DADOS;
+
+  const indice = faixas.indexOf(faixa);
+  const proxima = faixas[indice + 1];
+
+  if (!proxima || !Number.isFinite(proxima.min)) {
+    return { color: faixa.color, textColor: faixa.textColor, label: faixa.label };
   }
-  const last = stops[stops.length - 1];
-  return { color: lerpColor(last.rgb, last.rgb, 1), textColor: last.textColor ?? '#000000', label: last.label };
+
+  const span = proxima.min - faixa.min;
+  const t = span > 0 ? Math.min(Math.max((value - faixa.min) / span, 0), 1) : 0;
+  const [r, g, b] = faixa.rgb;
+  const [pr, pg, pb] = proxima.rgb;
+
+  return {
+    color: `rgb(${Math.round(r + (pr - r) * t)},${Math.round(g + (pg - g) * t)},${Math.round(b + (pb - b) * t)})`,
+    textColor: faixa.textColor,
+    label: faixa.label,
+  };
 }

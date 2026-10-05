@@ -1,5 +1,7 @@
 export * from './avg.js';
 export * from './lerp-color.js';
+export * from './faixas.js';
+export * from './get-band.js';
 export * from './gradient-color.js';
 export * from './build-gradient-scale.js';
 export * from './compute-pm25-aqi.js';

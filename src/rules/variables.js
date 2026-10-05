@@ -1,4 +1,6 @@
-import { avg, buildGradientScale, computePM25AQI, aqiColor } from '@/helpers';
+import { avg } from '@/helpers/avg.js';
+import { buildVariable } from '@/helpers/build-variable.js';
+import { computePM25AQI } from '@/helpers/compute-pm25-aqi.js';
 
 export const EPA_PM25_BREAKPOINTS = [
   { iLow: 0, iHigh: 50, cLow: 0.0, cHigh: 9.0 },
@@ -93,97 +95,83 @@ export const P100_STOPS = [
   { min: 300, rgb: [255, 0, 0], label: 'Muito alta', textColor: '#ffffff' },
 ];
 
-function buildLegend(stops) {
-  return stops.map((s) => ({ color: `rgb(${s.rgb.join(',')})`, label: s.label, textColor: s.textColor }));
-}
-
 export const MAP_VARIABLES = [
-  {
+  buildVariable({
     key: 'pm25',
     label: 'PM2.5',
     unit: 'µg/m³',
     extract: (r) => avg(r.pms1_pm2_5_env, r.pms2_pm2_5_env),
-    getColor: buildGradientScale(PM25_STOPS),
-    legend: buildLegend(PM25_STOPS),
-  },
-  {
+    stops: PM25_STOPS,
+  }),
+  buildVariable({
     key: 'aqi',
     label: 'US EPA PM2.5',
     unit: 'AQI',
     extract: (r) => computePM25AQI(avg(r.pms1_pm2_5_env, r.pms2_pm2_5_env), EPA_PM25_BREAKPOINTS),
-    getColor: (aqi) => aqiColor(aqi, AQI_STOPS),
-    legend: buildLegend(AQI_STOPS),
-  },
-  {
+    stops: AQI_STOPS,
+    mode: 'discrete',
+  }),
+  buildVariable({
     key: 'pm1',
     label: 'PM1.0',
     unit: 'µg/m³',
     extract: (r) => avg(r.pms1_pm1_0_env, r.pms2_pm1_0_env),
-    getColor: buildGradientScale(PM1_STOPS),
-    legend: buildLegend(PM1_STOPS),
-  },
-  {
+    stops: PM1_STOPS,
+  }),
+  buildVariable({
     key: 'pm10',
     label: 'PM10',
     unit: 'µg/m³',
     extract: (r) => avg(r.pms1_pm10_env, r.pms2_pm10_env),
-    getColor: buildGradientScale(PM10_STOPS),
-    legend: buildLegend(PM10_STOPS),
-  },
-  {
+    stops: PM10_STOPS,
+  }),
+  buildVariable({
     key: 'temperature',
     label: 'Temperatura',
     unit: '°C',
     extract: (r) => r.bme_temperature ?? null,
-    getColor: buildGradientScale(TEMP_STOPS),
-    legend: buildLegend(TEMP_STOPS),
-  },
-  {
+    stops: TEMP_STOPS,
+  }),
+  buildVariable({
     key: 'humidity',
     label: 'Umidade',
     unit: '%',
     extract: (r) => r.bme_humidity ?? null,
-    getColor: buildGradientScale(HUMIDITY_STOPS),
-    legend: buildLegend(HUMIDITY_STOPS),
-  },
-  {
+    stops: HUMIDITY_STOPS,
+  }),
+  buildVariable({
     key: 'pressure',
     label: 'Pressão',
     unit: 'hPa',
     extract: (r) => r.bme_pressure ?? null,
-    getColor: buildGradientScale(PRESSURE_STOPS),
-    legend: buildLegend(PRESSURE_STOPS),
-  },
-  {
+    stops: PRESSURE_STOPS,
+  }),
+  buildVariable({
     key: 'p03um',
     label: 'P ≥ 0.3µm',
     unit: 'p/0.1L',
     extract: (r) => avg(r.pms1_p03um, r.pms2_p03um),
-    getColor: buildGradientScale(P03_STOPS),
-    legend: buildLegend(P03_STOPS),
-  },
-  {
+    stops: P03_STOPS,
+  }),
+  buildVariable({
     key: 'p10um',
     label: 'P ≥ 1.0µm',
     unit: 'p/0.1L',
     extract: (r) => avg(r.pms1_p10um, r.pms2_p10um),
-    getColor: buildGradientScale(P10_STOPS),
-    legend: buildLegend(P10_STOPS),
-  },
-  {
+    stops: P10_STOPS,
+  }),
+  buildVariable({
     key: 'p25um',
     label: 'P ≥ 2.5µm',
     unit: 'p/0.1L',
     extract: (r) => avg(r.pms1_p25um, r.pms2_p25um),
-    getColor: buildGradientScale(P25_STOPS),
-    legend: buildLegend(P25_STOPS),
-  },
-  {
+    stops: P25_STOPS,
+  }),
+  buildVariable({
     key: 'p100um',
     label: 'P ≥ 10µm',
     unit: 'p/0.1L',
     extract: (r) => avg(r.pms1_p100um, r.pms2_p100um),
-    getColor: buildGradientScale(P100_STOPS),
-    legend: buildLegend(P100_STOPS),
-  },
+    stops: P100_STOPS,
+  }),
 ];
