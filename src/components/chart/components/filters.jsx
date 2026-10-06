@@ -6,11 +6,12 @@ import { selectSensors } from '@/store/slices/sensorsSlice';
 
 import { opcoesDistintas } from '../utils/selection';
 import { SensorSelect } from './SensorSelect';
+import { useTranslation } from '@/i18n';
 
 const MODOS = [
-  { value: 'sensores', label: 'Sensores' },
-  { value: 'municipio', label: 'Município' },
-  { value: 'estado', label: 'Estado' },
+  { value: 'sensores', labelKey: 'chart.modeSensors' },
+  { value: 'municipio', labelKey: 'chart.modeMunicipality' },
+  { value: 'estado', labelKey: 'chart.modeState' },
 ];
 
 const CONFIG_SELECT = {
@@ -18,15 +19,15 @@ const CONFIG_SELECT = {
     multiple: true,
     itemWord: 'sensor',
     icon: 'fa-microchip',
-    placeholder: 'Selecionar sensores',
+    placeholderKey: 'chart.placeholderSensors',
   },
   municipio: {
     icon: 'fa-map-marker-alt',
-    placeholder: 'Selecione um município',
+    placeholderKey: 'chart.placeholderMunicipality',
   },
   estado: {
     icon: 'fa-flag',
-    placeholder: 'Selecione um estado',
+    placeholderKey: 'chart.placeholderState',
   },
 };
 
@@ -40,6 +41,7 @@ const CONFIG_SELECT = {
  */
 export function ChartFilters({ selecao, onChange }) {
   const sensors = useSelector(selectSensors);
+  const { t } = useTranslation();
 
   const municipios = useMemo(() => opcoesDistintas(sensors, 'municipio'), [sensors]);
   const estados = useMemo(() => opcoesDistintas(sensors, 'estado'), [sensors]);
@@ -58,17 +60,19 @@ export function ChartFilters({ selecao, onChange }) {
   );
 
   const { modo } = selecao;
+  const config = CONFIG_SELECT[modo];
 
   return (
     <div className="ChartFiltersComponent flex items-center gap-3 flex-wrap max-md:flex-col max-md:items-stretch">
       <SegmentedControl
-        options={MODOS}
+        options={MODOS.map((m) => ({ value: m.value, label: t(m.labelKey) }))}
         value={modo}
         onChange={(m) => onChange({ ...selecao, modo: m })}
       />
 
       <SensorSelect
-        {...CONFIG_SELECT[modo]}
+        {...config}
+        placeholder={t(config.placeholderKey)}
         options={options[modo]}
         value={selecao[modo]}
         onChange={(v) => onChange({ ...selecao, [modo]: v })}

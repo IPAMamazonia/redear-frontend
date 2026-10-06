@@ -10,10 +10,10 @@
 export const COR_SEM_DADOS = '#9e9e9e';
 
 /** Estilo de valor ausente (sem leitura). */
-export const SEM_DADOS = { color: COR_SEM_DADOS, textColor: '#ffffff', label: 'Sem dados' };
+export const SEM_DADOS = { color: COR_SEM_DADOS, textColor: '#ffffff', label: 'Sem dados', labelKey: 'bands.noData' };
 
 /** Estilo de sensor sem conexão. */
-export const OFFLINE = { color: COR_SEM_DADOS, textColor: '#ffffff', label: 'Offline' };
+export const OFFLINE = { color: COR_SEM_DADOS, textColor: '#ffffff', label: 'Offline', labelKey: 'bands.offline' };
 
 /**
  * Limite superior do eixo Y reservado para as faixas, por variável.

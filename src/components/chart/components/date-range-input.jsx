@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { useTranslation } from '@/i18n';
 import { validarIntervaloManual } from '../utils/intervalo';
 
 function formatoYYYYMMDD(d) {
@@ -20,6 +21,7 @@ const DEFAULT_DE = () => {
  * @param {() => void} props.onReset - Volta ao modo de períodos pré-definidos.
  */
 export function DateRangeInput({ onChange, onReset }) {
+  const { t } = useTranslation();
   const hoje = useMemo(() => new Date(), []);
 
   const [de, setDe] = useState(DEFAULT_DE);
@@ -28,8 +30,8 @@ export function DateRangeInput({ onChange, onReset }) {
   const erro = useMemo(() => {
     if (!de || !ate) return null;
     const r = validarIntervaloManual(de, ate);
-    return r.ok ? null : r.mensagem;
-  }, [de, ate]);
+    return r.ok ? null : t(r.chave);
+  }, [de, ate, t]);
 
   useEffect(() => {
     if (!de || !ate) {
@@ -45,7 +47,7 @@ export function DateRangeInput({ onChange, onReset }) {
 
   return (
     <div className="DateRangeInputComponent flex flex-wrap items-center gap-2 text-sm">
-      <label className="text-text-light text-xs font-semibold">De</label>
+      <label className="text-text-light text-xs font-semibold">{t('chart.from')}</label>
       <input
         type="date"
         value={de}
@@ -53,7 +55,7 @@ export function DateRangeInput({ onChange, onReset }) {
         onChange={(e) => setDe(e.target.value)}
         className={inputClass}
       />
-      <label className="text-text-light text-xs font-semibold">Até</label>
+      <label className="text-text-light text-xs font-semibold">{t('chart.to')}</label>
       <input
         type="date"
         value={ate}
@@ -64,11 +66,11 @@ export function DateRangeInput({ onChange, onReset }) {
       <button
         type="button"
         onClick={onReset}
-        title="Voltar aos períodos pré-definidos"
+        title={t('chart.backToPresets')}
         className="cursor-pointer border-none bg-transparent text-sm font-semibold text-[#FF6D00] hover:underline"
       >
         <i className="fas fa-rotate-left mr-1" />
-        Períodos
+        {t('chart.presets')}
       </button>
 
       {erro && <p className="w-full text-xs text-red-600">{erro}</p>}

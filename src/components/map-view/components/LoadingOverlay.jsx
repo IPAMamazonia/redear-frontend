@@ -1,9 +1,12 @@
+import { useTranslation } from '@/i18n';
+
 /**
  * Overlay de carregamento com spinner, exibido enquanto os sensores são buscados.
  *
  * @param {boolean} props.loading - Se true, exibe o overlay.
  */
 export function LoadingOverlay({ loading }) {
+  const { t } = useTranslation();
   if (!loading) return null;
   return (
     <div className="LoadingOverlayComponent absolute inset-0 z-20 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded">
@@ -12,7 +15,7 @@ export function LoadingOverlay({ loading }) {
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
-        Carregando sensores…
+        {t('map.loadingSensors')}
       </div>
     </div>
   );

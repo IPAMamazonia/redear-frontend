@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { useTranslation } from '@/i18n';
+
 export function SensorTypeLegend() {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!open) return;
@@ -21,7 +24,7 @@ export function SensorTypeLegend() {
             open ? 'scale-90 opacity-0 pointer-events-none' : 'scale-100 opacity-100'
           }`}
           onClick={() => setOpen(true)}
-          title="Tipos de sensor"
+          title={t('map.sensorTypes')}
         >
           <i className="fas fa-info" />
         </button>
@@ -32,7 +35,7 @@ export function SensorTypeLegend() {
             ${open ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-75 opacity-0 pointer-events-none'}`}
         >
           <div className="flex items-center justify-between mb-2">
-            <h4 className="text-sm font-semibold">Tipos de Sensor</h4>
+            <h4 className="text-sm font-semibold">{t('map.sensorTypes')}</h4>
             <button
               className="text-text-light hover:text-text-dark text-lg leading-none cursor-pointer bg-transparent border-none p-0"
               onClick={() => setOpen(false)}
@@ -43,11 +46,11 @@ export function SensorTypeLegend() {
           <div className="flex flex-col gap-2 text-xs text-text-light">
             <div className="flex items-center gap-2">
               <span className="w-[14px] h-[14px] rounded-full bg-verde shrink-0 border border-white" />
-              <span>RedeAR (circular)</span>
+              <span>RedeAR ({t('map.circular')})</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-[14px] h-[14px] shrink-0 bg-verde border border-white" />
-              <span>PurpleAir (quadrado)</span>
+              <span>PurpleAir ({t('map.square')})</span>
             </div>
           </div>
         </div>

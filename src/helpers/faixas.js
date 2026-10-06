@@ -37,9 +37,9 @@ export function rgba(rgb, alpha) {
  * infinito. A primeira faixa com `min` declarado preserva o próprio `min`, o
  * que permite escalas que não começam em zero (pressão, por exemplo).
  *
- * @param {Array<{min?: number, max?: number, rgb: number[], label: string, textColor?: string}>} stops -
+ * @param {Array<{min?: number, max?: number, rgb: number[], label: string, labelKey: string, textColor?: string}>} stops -
  *   Stops ordenados do menor para o maior.
- * @returns {Array<{min: number, max: number, rgb: number[], color: string, textColor: string, label: string}>}
+ * @returns {Array<{min: number, max: number, rgb: number[], color: string, textColor: string, label: string, labelKey: string}>}
  *   Faixas fechadas, com a cor CSS pré-calculada.
  */
 export function normalizarFaixas(stops) {
@@ -57,6 +57,7 @@ export function normalizarFaixas(stops) {
       color: rgbToCss(stop.rgb),
       textColor: stop.textColor ?? '#000000',
       label: stop.label,
+      labelKey: stop.labelKey,
     };
   });
 }

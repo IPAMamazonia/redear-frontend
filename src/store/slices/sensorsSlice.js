@@ -110,7 +110,7 @@ const sensorsSlice = createSlice({
       })
       .addCase(fetchSensors.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message ?? 'Erro ao buscar sensores';
+        state.error = action.error.message ?? 'errors.fetchSensors';
       });
   },
 });

@@ -1,3 +1,5 @@
+import { useTranslation } from '@/i18n';
+
 /**
  * Chips dos sensores selecionados, com botão de remoção individual.
  *
@@ -5,6 +7,7 @@
  * @param {(id: string) => void} props.onRemove - Callback chamado ao remover.
  */
 export function SensorChips({ sensors, onRemove }) {
+  const { t } = useTranslation();
   if (!sensors.length) return null;
 
   return (
@@ -18,7 +21,7 @@ export function SensorChips({ sensors, onRemove }) {
           <button
             type="button"
             onClick={() => onRemove(sensor.id)}
-            aria-label={`Remover ${sensor.name}`}
+            aria-label={t('chart.removeSensor', { name: sensor.name })}
             className="cursor-pointer border-none bg-transparent text-[#FF6D00] hover:text-red-600"
           >
             <i className="fas fa-times" />

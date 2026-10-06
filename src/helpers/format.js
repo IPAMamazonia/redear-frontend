@@ -1,4 +1,5 @@
 import { AQI_CORES, ESTADOS, TIPOS_TERRITORIO } from '@/mocks/sensors';
+import { getLocale } from '@/i18n/translate';
 
 export function getCorAQI(aqi) {
   for (const c of AQI_CORES) if (aqi <= c.max) return c;
@@ -118,7 +119,7 @@ export function gerarDadosHistorico(localId, periodo) {
       case '5D': {
         const d = new Date(hoje);
         d.setDate(hoje.getDate() - i);
-        labels.push(d.toLocaleDateString('pt-BR', { weekday: 'short' }));
+        labels.push(d.toLocaleDateString(getLocale(), { weekday: 'short' }));
         break;
       }
       case '1M': {
@@ -130,14 +131,14 @@ export function gerarDadosHistorico(localId, periodo) {
       case '6M': {
         const d = new Date(hoje);
         d.setDate(hoje.getDate() - i * 7);
-        labels.push(d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' }));
+        labels.push(d.toLocaleDateString(getLocale(), { day: 'numeric', month: 'short' }));
         break;
       }
       case 'YTD':
       case '1A': {
         const d = new Date(hoje);
         d.setMonth(hoje.getMonth() - i);
-        labels.push(d.toLocaleDateString('pt-BR', { month: 'short' }));
+        labels.push(d.toLocaleDateString(getLocale(), { month: 'short' }));
         break;
       }
       case '5A': {
@@ -163,7 +164,7 @@ export function gerarDadosHistorico(localId, periodo) {
 export function formatNumberString(value, decimals = 0) {
   if (value == null || isNaN(value)) return '';
 
-  return Number(value).toLocaleString('pt-BR', {
+  return Number(value).toLocaleString(getLocale(), {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });

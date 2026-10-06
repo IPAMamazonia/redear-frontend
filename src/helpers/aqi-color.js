@@ -8,14 +8,14 @@ import { getBand } from './get-band.js';
  * estilo "Sem dados".
  *
  * @param {number|null|undefined} aqi - Índice AQI.
- * @param {Array<{min: number, max: number, color: string, textColor: string, label: string}>} faixas -
+ * @param {Array<{min: number, max: number, color: string, textColor: string, label: string, labelKey: string}>} faixas -
  *   Faixas AQI normalizadas, em ordem crescente de índice.
- * @returns {{color: string, textColor: string, label: string}} Estilo de cor
+ * @returns {{color: string, textColor: string, label: string, labelKey: string}} Estilo de cor
  * (cor de fundo, cor do texto e rótulo da categoria).
  */
 export function aqiColor(aqi, faixas) {
   const faixa = getBand(aqi, faixas);
   if (!faixa) return SEM_DADOS;
 
-  return { color: faixa.color, textColor: faixa.textColor, label: faixa.label };
+  return { color: faixa.color, textColor: faixa.textColor, label: faixa.label, labelKey: faixa.labelKey };
 }

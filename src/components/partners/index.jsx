@@ -1,4 +1,5 @@
 import { Section, FadeUp, GradientText, GlassCard } from '@/components';
+import { useTranslation } from '@/i18n';
 
 //IPAM
 import logoIpam from '@/assets/partners/Logo - IPAM.svg';
@@ -39,20 +40,21 @@ const DEVELOPERS = [
  * Seção de parceiros com destaque para o IPAM e mosaico dos logos das instituições envolvidas.
  */
 export function Partners() {
+  const { t } = useTranslation();
   return (
     <Section id="parceiros" alt className="PartnersComponent flex flex-col items-center justify-center gap-[10px]">
       <h2 className="text-center text-[2.2rem] max-md:text-[1.8rem] max-[480px]:text-[1.5rem] font-extrabold text-text-dark tracking-tight">
-        Instituições <GradientText>Envolvidas</GradientText>
+        {t('partners.titlePre')} <GradientText>{t('partners.titleHighlight')}</GradientText>
       </h2>
 
       <FadeUp>
         <GlassCard className="flex flex-col justify-center text-center p-[40px] mb-[10px]">
-          <p className="text-sm font-semibold text-text-light uppercase tracking-widest mb-2">Desenvolvido por</p>
+          <p className="text-sm font-semibold text-text-light uppercase tracking-widest mb-2">{t('partners.developedBy')}</p>
           <img src={logoIpam} alt={'IPAM'} className="h-[200px]" loading="lazy" />
         </GlassCard>
       </FadeUp>
 
-      <h3 className="text-center text-[1.4rem] font-bold text-[#22A64A]">Nossos Parceiros</h3>
+      <h3 className="text-center text-[1.4rem] font-bold text-[#22A64A]">{t('partners.ourPartners')}</h3>
 
       <FadeUp delay={100}>
         <div className="flex flex-wrap items-center justify-center gap-2 max-w-[1200px] mb-[10px]">
@@ -68,7 +70,7 @@ export function Partners() {
         </div>
       </FadeUp>
 
-      <h3 className="text-center text-[1.4rem] font-bold text-[#22A64A]"> Desenvolvimento dos Sensores </h3>
+      <h3 className="text-center text-[1.4rem] font-bold text-[#22A64A]">{t('partners.sensorDevelopment')}</h3>
 
       <FadeUp delay={100}>
         <div className="flex flex-wrap items-center justify-center gap-2 max-w-[1200px] mb-[10px]">

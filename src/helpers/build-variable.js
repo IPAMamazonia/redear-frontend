@@ -14,19 +14,21 @@ import { aqiColor } from './aqi-color.js';
  *
  * @param {object} config
  * @param {string} config.key - Identificador da variável no redux.
- * @param {string} config.label - Nome exibido da variável.
+ * @param {string} config.label - Nome exibido da variável (pt-BR).
+ * @param {string} config.labelKey - Chave i18n do nome da variável.
  * @param {string} config.unit - Unidade de medida.
- * @param {Array<{min?: number, max?: number, rgb: number[], label: string, textColor?: string}>} config.stops - Stops brutos.
+ * @param {Array<{min?: number, max?: number, rgb: number[], label: string, labelKey: string, textColor?: string}>} config.stops - Stops brutos.
  * @param {(reading: object) => number|null} config.extract - Extrai o valor de uma leitura.
  * @param {'gradient'|'discrete'} [config.mode] - Cor interpolada dentro da faixa ou uma cor por faixa.
  * @returns {object} Descritor da variável.
  */
-export function buildVariable({ key, label, unit, stops, extract, mode = 'gradient' }) {
+export function buildVariable({ key, label, labelKey, unit, stops, extract, mode = 'gradient' }) {
   const faixas = normalizarFaixas(stops);
 
   return {
     key,
     label,
+    labelKey,
     unit,
     extract,
     faixas,

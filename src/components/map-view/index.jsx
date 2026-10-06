@@ -15,6 +15,7 @@ import { formatNumberString, getVariableByKey } from '@/helpers';
 import { COR_SEM_DADOS, OFFLINE } from '@/rules/faixas';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from '@/i18n';
 import { VIEW_CONFIG } from './rules';
 
 // OpenLayers imports
@@ -192,6 +193,7 @@ function stylePointWithCluster(feature) {
  */
 export function MapView() {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const sensors = useSelector(selectSensors);
   const loading = useSelector(selectSensorsLoading);
   const error = useSelector(selectSensorsError);
@@ -505,8 +507,8 @@ export function MapView() {
 
   return (
     <Section id="mapa" className="MapViewComponent">
-      <SectionHeading subtitle="Clique nos sensores para ver detalhes da qualidade do ar em todo o Brasil">
-        Mapa de <GradientText>Sensores</GradientText>
+      <SectionHeading subtitle={t('map.subtitle')}>
+        {t('map.title1')} <GradientText>{t('map.title2')}</GradientText>
       </SectionHeading>
 
       <div

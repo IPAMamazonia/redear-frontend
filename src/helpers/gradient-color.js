@@ -11,9 +11,9 @@ import { getBand } from './get-band.js';
  * si, e que as faixas do gráfico usem exatamente os mesmos cortes.
  *
  * @param {number|null|undefined} value - Valor a ser avaliado.
- * @param {Array<{min: number, max: number, rgb: number[], color: string, textColor: string, label: string}>} faixas -
+ * @param {Array<{min: number, max: number, rgb: number[], color: string, textColor: string, label: string, labelKey: string}>} faixas -
  *   Faixas normalizadas e ordenadas.
- * @returns {{color: string, textColor: string, label: string}} Estilo de cor
+ * @returns {{color: string, textColor: string, label: string, labelKey: string}} Estilo de cor
  * (cor de fundo, cor do texto e rótulo da faixa).
  */
 export function gradientColor(value, faixas) {
@@ -24,7 +24,7 @@ export function gradientColor(value, faixas) {
   const proxima = faixas[indice + 1];
 
   if (!proxima || !Number.isFinite(proxima.min)) {
-    return { color: faixa.color, textColor: faixa.textColor, label: faixa.label };
+    return { color: faixa.color, textColor: faixa.textColor, label: faixa.label, labelKey: faixa.labelKey };
   }
 
   const span = proxima.min - faixa.min;
@@ -36,5 +36,6 @@ export function gradientColor(value, faixas) {
     color: `rgb(${Math.round(r + (pr - r) * t)},${Math.round(g + (pg - g) * t)},${Math.round(b + (pb - b) * t)})`,
     textColor: faixa.textColor,
     label: faixa.label,
+    labelKey: faixa.labelKey,
   };
 }

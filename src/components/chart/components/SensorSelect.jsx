@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { useTranslation } from '@/i18n';
+
 function pluralDe(palavra, quantidade) {
   if (palavra === 'sensor') return quantidade === 1 ? 'sensor' : 'sensores';
   return quantidade === 1 ? palavra : `${palavra}s`;
@@ -27,6 +29,7 @@ export function SensorSelect({
   multiple = false,
   itemWord = 'sensor',
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [busca, setBusca] = useState('');
   const ref = useRef(null);
@@ -57,9 +60,8 @@ export function SensorSelect({
   const tituloBotao = () => {
     if (multiple) {
       if (!quantidade) return placeholder;
-      return `${quantidade} ${pluralDe(itemWord, quantidade)} selecionado${
-        quantidade === 1 ? '' : 's'
-      }`;
+      const sufixo = t(quantidade === 1 ? 'chart.selectedSingular' : 'chart.selectedPlural');
+      return `${quantidade} ${pluralDe(itemWord, quantidade)} ${sufixo}`;
     }
     return opcaoAtiva ? opcaoAtiva.label : placeholder;
   };
@@ -126,7 +128,7 @@ export function SensorSelect({
               <input
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar..."
+                placeholder={t('chart.search')}
                 className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-text-light"
               />
             </div>
@@ -137,7 +139,7 @@ export function SensorSelect({
                   onClick={alternarVisiveis}
                   className="cursor-pointer text-[#FF6D00] font-semibold bg-transparent border-none hover:underline"
                 >
-                  {todosVisiveis ? 'Desmarcar visíveis' : 'Marcar visíveis'}
+                  {todosVisiveis ? t('chart.unmarkVisible') : t('chart.markVisible')}
                 </button>
                 {quantidade > 0 && (
                   <button
@@ -145,7 +147,7 @@ export function SensorSelect({
                     onClick={() => onChange([])}
                     className="cursor-pointer text-text-light bg-transparent border-none hover:text-red-600"
                   >
-                    Limpar ({quantidade})
+                    {t('chart.clearCount', { count: quantidade })}
                   </button>
                 )}
               </div>
@@ -156,8 +158,8 @@ export function SensorSelect({
             {filtrados.length === 0 ? (
               <p className="px-3 py-3 text-xs text-text-light">
                 {options.length === 0
-                  ? 'Nenhuma opção disponível.'
-                  : `Nenhum resultado para "${busca}".`}
+                  ? t('chart.noOptions')
+                  : t('chart.noResults', { search: busca })}
               </p>
             ) : (
               filtrados.map((o) => (

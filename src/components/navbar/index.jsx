@@ -1,26 +1,29 @@
 import { toggleMobileMenu, closeMobileMenu, setScrolled } from '@/store/slices/uiSlice';
 import { useSelector, useDispatch } from 'react-redux';
-import { GradientText } from '@/components';
+import { SegmentedControl } from '@/components';
+import { useTranslation } from '@/i18n';
 import { useEffect } from 'react';
 import logo from '@/assets/png/Logo RedeAR - IPAM vetores-01.png';
 
-const LINKS = [
-  { href: '#sobre', label: 'Sobre' },
-  { href: '#mapa', label: 'Mapa' },
-  { href: '#grafico', label: 'Gráfico' },
-  { href: '#faq', label: 'FAQ' },
-  { href: '#contato', label: 'Fale Conosco' },
-  { href: '#parceiros', label: 'Parceiros' },
-];
-
 /**
- * Barra de navegação fixa no topo com menu mobile, links de âncora e efeito de scroll.
+ * Barra de navegação fixa no topo com menu mobile, links de âncora,
+ * seletor de idioma e efeito de scroll.
  *
- * Estados globais usados: ui.mobileMenuOpen, ui.scrolled.
+ * Estados globais usados: ui.mobileMenuOpen, ui.scrolled, ui.language.
  */
 export function Navbar() {
   const { mobileMenuOpen, scrolled } = useSelector((s) => s.ui);
   const dispatch = useDispatch();
+  const { language, t, setLanguage } = useTranslation();
+
+  const LINKS = [
+    { href: '#sobre', label: t('nav.about') },
+    { href: '#mapa', label: t('nav.map') },
+    { href: '#grafico', label: t('nav.chart') },
+    { href: '#faq', label: t('nav.faq') },
+    { href: '#contato', label: t('nav.contact') },
+    { href: '#parceiros', label: t('nav.partners') },
+  ];
 
   useEffect(() => {
     const onScroll = () => dispatch(setScrolled(window.scrollY > 50));
@@ -52,7 +55,7 @@ export function Navbar() {
       <button
         className="md:hidden flex flex-col gap-[5px] cursor-pointer bg-transparent border-none p-[5px]"
         onClick={() => dispatch(toggleMobileMenu())}
-        aria-label="Menu"
+        aria-label={t('nav.menu')}
       >
         <span
           className={`block w-[26px] h-[2.5px] bg-text-dark rounded transition-all duration-[0.35s] ease-out ${
@@ -94,6 +97,20 @@ export function Navbar() {
             </a>
           </li>
         ))}
+
+        <li className="mt-auto pt-6 w-full md:mt-0 md:pt-0 md:w-auto list-none">
+          <div role="group" aria-label={t('common.language')}>
+            <SegmentedControl
+              options={[
+                { value: 'pt', label: 'PT' },
+                { value: 'en', label: 'EN' },
+              ]}
+              value={language}
+              onChange={setLanguage}
+              className="shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
+            />
+          </div>
+        </li>
       </ul>
     </nav>
   );

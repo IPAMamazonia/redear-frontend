@@ -32,6 +32,8 @@ import ChartZoom from 'chartjs-plugin-zoom';
 import { Decimation } from 'chart.js';
 import Chart from 'chart.js/auto';
 
+import { useTranslation, getLocale } from '@/i18n';
+
 Chart.register(ChartZoom, Decimation);
 
 /**
@@ -40,6 +42,7 @@ Chart.register(ChartZoom, Decimation);
  */
 export function AQIChart() {
   const dispatch = useDispatch();
+  const { t, language } = useTranslation();
   const sensors = useSelector(selectSensors);
   const readings = useSelector(selectReadings);
   const readingsLoading = useSelector(selectReadingsLoading);
@@ -131,9 +134,10 @@ export function AQIChart() {
         spanMs,
         totalPontos,
         dadosContinuos,
+        locale: getLocale(language),
       })
     );
-  }, [series, variable, spanMs, totalPontos, dadosContinuos, faixasVisiveis]);
+  }, [series, variable, spanMs, totalPontos, dadosContinuos, faixasVisiveis, language]);
 
   useEffect(() => {
     if (!hasOptionSelection) {
@@ -189,8 +193,8 @@ export function AQIChart() {
 
   return (
     <Section id="grafico" alt className="AQIChartComponent">
-      <SectionHeading subtitle="Acompanhe a evolução dos índices com filtros de período e localização">
-        <GradientText>Qualidade do Ar</GradientText> ao Longo do Tempo
+      <SectionHeading subtitle={t('chart.subtitle')}>
+        <GradientText>{t('chart.title1')}</GradientText> {t('chart.title2')}
       </SectionHeading>
 
       <div className="flex flex-wrap gap-4 max-w-[1280px] mx-auto mb-2 justify-between items-center max-md:flex-col max-md:items-stretch">
@@ -207,7 +211,7 @@ export function AQIChart() {
               className="cursor-pointer border-none bg-transparent text-sm font-semibold text-[#FF6D00] hover:underline"
             >
               <i className="fas fa-calendar-alt mr-1" />
-              Datas manuais
+              {t('chart.manualDates')}
             </button>
           )}
         </div>
@@ -220,10 +224,10 @@ export function AQIChart() {
             type="button"
             onClick={() => chartRef.current?.resetZoom()}
             className="cursor-pointer px-3 py-1.5 rounded-[10px] bg-white/60 backdrop-blur border border-white/50 text-xs font-semibold text-text-light hover:text-[#FF6D00] transition-all"
-            title="Voltar ao zoom padrão"
+            title={t('chart.resetZoom')}
           >
             <i className="fas fa-crosshairs mr-1" />
-            Recentralizar
+            {t('chart.recenter')}
           </button>
         )}
         <VariableSelector openDown />
@@ -239,8 +243,9 @@ export function AQIChart() {
             <div className="h-[420px] flex flex-col items-center justify-center gap-3 text-center px-4">
               <i className="fas fa-chart-line text-4xl text-text-light/40" />
               <p className="text-text-light max-w-md">
-                Selecione <strong>sensores</strong>, um <strong>município</strong> ou um <strong>estado</strong> acima
-                para visualizar a série do AQI.
+                {t('chart.emptyBefore')} <strong>{t('chart.emptySensors')}</strong> {t('chart.emptyMid')}{' '}
+                <strong>{t('chart.emptyMunicipality')}</strong> {t('chart.emptyMid2')}{' '}
+                <strong>{t('chart.emptyState')}</strong> {t('chart.emptyAfter')}
               </p>
             </div>
           )}
@@ -248,20 +253,20 @@ export function AQIChart() {
           {mostrarLoading && (
             <div className="h-[420px] flex flex-col items-center justify-center gap-3 text-center px-4">
               <i className="fas fa-spinner fa-spin text-3xl text-[#FF6D00]" />
-              <p className="text-text-light">Carregando leituras...</p>
+              <p className="text-text-light">{t('chart.loading')}</p>
             </div>
           )}
 
           {mostrarErro && (
             <div className="h-[420px] flex flex-col items-center justify-center gap-3 text-center px-4">
               <i className="fas fa-exclamation-triangle text-3xl text-red-600" />
-              <p className="text-text-light max-w-md">{readingsError}</p>
+              <p className="text-text-light max-w-md">{t(readingsError)}</p>
               <button
                 type="button"
                 onClick={handleRetry}
                 className="cursor-pointer px-4 py-2 rounded-[10px] bg-[#FF6D00] text-white font-semibold shadow hover:bg-[#FF7F33] transition-colors"
               >
-                Tentar novamente
+                {t('common.retry')}
               </button>
             </div>
           )}
@@ -270,7 +275,7 @@ export function AQIChart() {
             <div className="h-[420px] flex flex-col items-center justify-center gap-3 text-center px-4">
               <i className="fas fa-inbox text-3xl text-text-light/40" />
               <p className="text-text-light max-w-md">
-                Nenhuma leitura encontrada no período selecionado para os filtros aplicados.
+                {t('chart.noReadings')}
               </p>
             </div>
           )}
@@ -283,8 +288,7 @@ export function AQIChart() {
 
           {mostrarGrafico && (
             <p className="text-center mt-3 text-sm text-text-light">
-              <i className="fas fa-info-circle"></i> Arraste para zoom, role para ampliar. Passe o mouse sobre os pontos
-              para detalhes.
+              <i className="fas fa-info-circle"></i> {t('chart.zoomHint')}
             </p>
           )}
         </GlassCard>

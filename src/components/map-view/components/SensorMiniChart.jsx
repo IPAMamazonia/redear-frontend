@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
+import { useTranslation, getLocale } from '@/i18n';
 import { calcularYMax, criarPluginFaixas, faixasVisiveis } from '@/components/chart/utils/faixas-plugin';
 
 const PMS_COLORS = {
@@ -13,7 +14,7 @@ function extractPmsPair(readings, field) {
   return { pms1, pms2 };
 }
 
-function buildDatasets(variable, data) {
+function buildDatasets(variable, data, t) {
   const readings = data.map((r) => r);
 
   if (variable.key === 'pm25') {
@@ -43,7 +44,7 @@ function buildDatasets(variable, data) {
   const values = readings.map((r) => variable.extract(r));
   return [
     {
-      label: variable.label,
+      label: t(variable.labelKey),
       data: values,
       borderColor: '#00E400',
       backgroundColor: 'rgba(0,228,0,0.08)',
@@ -57,6 +58,7 @@ function buildDatasets(variable, data) {
 }
 
 export function SensorMiniChart({ readings, variable }) {
+  const { t, language } = useTranslation();
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
 
@@ -71,10 +73,15 @@ export function SensorMiniChart({ readings, variable }) {
 
     const labels = data.map((r) => {
       const d = new Date(r.datetime);
-      return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+      return d.toLocaleDateString(getLocale(language), {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
     });
 
-    const datasets = buildDatasets(variable, data);
+    const datasets = buildDatasets(variable, data, t);
 
     const allValues = datasets.flatMap((ds) => ds.data).filter((v) => v != null);
     const dataMax = allValues.length > 0 ? Math.max(...allValues) : 0;
@@ -123,12 +130,12 @@ export function SensorMiniChart({ readings, variable }) {
     return () => {
       if (chartRef.current) chartRef.current.destroy();
     };
-  }, [readings, variable]);
+  }, [readings, variable, t, language]);
 
   if (!readings || readings.length < 2) {
     return (
       <div className="SensorMiniChartComponent h-[240px] flex items-center justify-center text-xs text-text-light">
-        Dados insuficientes para o gráfico
+        {t('common.noDataShort')}
       </div>
     );
   }

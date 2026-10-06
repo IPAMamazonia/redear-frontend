@@ -1,3 +1,5 @@
+import { getLocale } from '@/i18n/translate';
+
 export const MODO = {
   SENSORES: 'sensores',
   MUNICIPIO: 'municipio',
@@ -13,7 +15,7 @@ export const SELECAO_INICIAL = () => ({
 
 export function opcoesDistintas(sensors, campo) {
   const set = new Set(sensors.map((s) => s[campo]).filter(Boolean));
-  return [...set].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  return [...set].sort((a, b) => a.localeCompare(b, getLocale()));
 }
 
 export function resolverIds(sensors, selecao) {

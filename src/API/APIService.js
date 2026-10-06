@@ -1,4 +1,5 @@
 import { baseBackEnd } from './baseBackend';
+import { t } from '@/i18n/translate';
 
 class APIService {
   /**
@@ -48,7 +49,9 @@ class APIService {
 
     if (!res.ok) {
       const erro = body?.error ?? {};
-      throw new Error(`${erro.code ?? 'ERRO'}: ${erro.message ?? 'Falha na requisição'}`);
+      const message = erro.message ?? t('errors.requestFailed');
+      const prefix = erro.code ? `${erro.code}: ` : '';
+      throw new Error(`${prefix}${message}`);
     }
     return body;
   }

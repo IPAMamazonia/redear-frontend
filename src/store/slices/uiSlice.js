@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { getLanguage } from '@/i18n/translate';
 
 const uiSlice = createSlice({
   name: 'ui',
@@ -7,8 +8,12 @@ const uiSlice = createSlice({
     activeFaqIndex: null,
     scrolled: false,
     selectedVariable: 'pm25',
+    language: getLanguage(),
   },
   reducers: {
+    setLanguage: (state, action) => {
+      state.language = action.payload;
+    },
     toggleMobileMenu: (state) => {
       state.mobileMenuOpen = !state.mobileMenuOpen;
     },
@@ -27,5 +32,12 @@ const uiSlice = createSlice({
   },
 });
 
-export const { toggleMobileMenu, closeMobileMenu, setActiveFaq, setScrolled, setSelectedVariable } = uiSlice.actions;
+export const {
+  toggleMobileMenu,
+  closeMobileMenu,
+  setActiveFaq,
+  setScrolled,
+  setSelectedVariable,
+  setLanguage,
+} = uiSlice.actions;
 export default uiSlice.reducer;

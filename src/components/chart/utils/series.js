@@ -1,4 +1,5 @@
 import { calcularYMax } from './faixas-plugin';
+import { getLocale } from '@/i18n/translate';
 
 /**
  * Monta as séries do gráfico a partir das leituras reais.
@@ -43,7 +44,7 @@ export function montarSeries(readings, sensors, variable) {
     });
   }
 
-  datasets.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+  datasets.sort((a, b) => a.name.localeCompare(b.name, getLocale()));
 
   yMax = calcularYMax(yMax, variable.faixasYMax);
 

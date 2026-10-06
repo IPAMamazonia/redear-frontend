@@ -69,10 +69,10 @@ function parseDataLocal(iso) {
  *
  * @param {string} de - Data inicial.
  * @param {string} ate - Data final.
- * @returns {{ ok: false, mensagem: string } | { ok: true, startDate: string, endDate: string }}
+ * @returns {{ ok: false, chave: string } | { ok: true, startDate: string, endDate: string }}
  */
 export function validarIntervaloManual(de, ate) {
-  if (!de || !ate) return { ok: false, mensagem: 'Informe as datas inicial e final.' };
+  if (!de || !ate) return { ok: false, chave: 'chart.interval.required' };
 
   const inicio = parseDataLocal(de);
   const fim = parseDataLocal(ate);
@@ -80,13 +80,13 @@ export function validarIntervaloManual(de, ate) {
   hoje.setHours(23, 59, 59, 999);
 
   if (inicio > hoje || fim > hoje) {
-    return { ok: false, mensagem: 'As datas não podem ser futuras.' };
+    return { ok: false, chave: 'chart.interval.futureDates' };
   }
   if (fim < inicio) {
-    return { ok: false, mensagem: 'A data final deve ser posterior à inicial.' };
+    return { ok: false, chave: 'chart.interval.endAfterStart' };
   }
   if (adicionarMeses(inicio, 6) < fim) {
-    return { ok: false, mensagem: 'O intervalo máximo permitido é de 6 meses.' };
+    return { ok: false, chave: 'chart.interval.maxSixMonths' };
   }
 
   return {

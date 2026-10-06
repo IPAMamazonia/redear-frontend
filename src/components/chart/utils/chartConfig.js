@@ -1,5 +1,6 @@
 import { criarPluginFaixas } from './faixas-plugin';
 import { MODO_POR_HORARIO, lerInstanteDoCursor } from './modo-por-horario';
+import { getLocale } from '@/i18n/translate';
 
 const CORES_PALETA = [
   '#2C3E50',
@@ -43,20 +44,20 @@ function criarDataset(serie, cor) {
   };
 }
 
-function formataValor(v) {
+function formataValor(v, locale) {
   if (v == null || Number.isNaN(v)) return '—';
-  return v.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+  return v.toLocaleString(locale, { maximumFractionDigits: 1 });
 }
 
-function formataInstante(x, comData = true) {
-  return new Date(x).toLocaleString('pt-BR', {
+function formataInstante(x, locale, comData = true) {
+  return new Date(x).toLocaleString(locale, {
     ...(comData ? { day: '2-digit', month: '2-digit' } : {}),
     hour: '2-digit',
     minute: '2-digit',
   });
 }
 
-function criarTooltip(unit) {
+function criarTooltip(unit, locale) {
   return {
     backgroundColor: 'rgba(44,62,80,0.5)',
     titleFont: { size: 13 },
@@ -69,7 +70,7 @@ function criarTooltip(unit) {
         // o x de `items[0]` é arbitrário.
         const x = lerInstanteDoCursor(items[0]?.chart) ?? items[0]?.parsed?.x;
         if (x == null) return '';
-        return new Date(x).toLocaleString('pt-BR', {
+        return new Date(x).toLocaleString(locale, {
           day: '2-digit',
           month: '2-digit',
           year: '2-digit',
@@ -78,7 +79,7 @@ function criarTooltip(unit) {
         });
       },
       label(ctx) {
-        const base = `${ctx.dataset.label}: ${formataValor(ctx.parsed?.y)} ${unit}`.trim();
+        const base = `${ctx.dataset.label}: ${formataValor(ctx.parsed?.y, locale)} ${unit}`.trim();
 
         // Só desvia o horário da leitura quando ela realmente não coincide com o
         // instante do cursor — normalmente a diferença é menor que a cadência.
@@ -87,13 +88,13 @@ function criarTooltip(unit) {
         if (instante == null || cursor == null) return base;
         if (Math.abs(instante - cursor) < 60000) return base;
 
-        return `${base} · ${formataInstante(instante, false)}`;
+        return `${base} · ${formataInstante(instante, locale, false)}`;
       },
     },
   };
 }
 
-function criarEscalas(spanMs, yMax) {
+function criarEscalas(spanMs, yMax, locale) {
   return {
     x: {
       type: 'linear',
@@ -105,14 +106,14 @@ function criarEscalas(spanMs, yMax) {
         callback(value) {
           const d = new Date(value);
           if (spanMs <= 3 * 86400000) {
-            return d.toLocaleString('pt-BR', {
+            return d.toLocaleString(locale, {
               day: '2-digit',
               month: '2-digit',
               hour: '2-digit',
               minute: '2-digit',
             });
           }
-          return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+          return d.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' });
         },
       },
     },
@@ -136,6 +137,7 @@ function criarEscalas(spanMs, yMax) {
  * @param {number} params.spanMs - Tamanho do intervalo em ms (formato dos ticks do eixo X).
  * @param {number} params.totalPontos - Total de pontos do gráfico (decimation quando alto).
  * @param {boolean} params.dadosContinuos - True se nenhuma série tem lacunas (null) — requisito do LTTB.
+ * @param {string} [params.locale] - Locale BCP-47 para datas/números (padrão: `getLocale()`).
  */
 export function criarConfigChart({
   datasets = [],
@@ -145,6 +147,7 @@ export function criarConfigChart({
   spanMs = 0,
   totalPontos = 0,
   dadosContinuos = false,
+  locale = getLocale(),
 }) {
   const usarDecimation = totalPontos > 1500 && dadosContinuos;
   const amostrasAlvo = Math.min(Math.max(Math.round(totalPontos / 10), 300), 1500);
@@ -169,7 +172,7 @@ export function criarConfigChart({
           position: 'top',
           labels: { font: { size: 11 }, boxWidth: 14, padding: 12, color: '#5a6d7a' },
         },
-        tooltip: criarTooltip(unit),
+        tooltip: criarTooltip(unit, locale),
         zoom,
         decimation: usarDecimation
           ? {
@@ -180,7 +183,7 @@ export function criarConfigChart({
             }
           : undefined,
       },
-      scales: criarEscalas(spanMs, yMax),
+      scales: criarEscalas(spanMs, yMax, locale),
       elements: { line: { tension: 0.15 }, point: { radius: 0 } },
     },
     plugins: mostrarFaixas ? [criarPluginFaixas(faixas)] : [],

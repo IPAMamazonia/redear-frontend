@@ -1,10 +1,12 @@
 import { setSelectedVariable } from '@/store/slices/uiSlice';
 import { MAP_VARIABLES } from '@/rules';
+import { useTranslation } from '@/i18n';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect, useRef } from 'react';
 
 export function VariableSelector({ openDown = false }) {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const selected = useSelector((state) => state.ui.selectedVariable);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -28,10 +30,10 @@ export function VariableSelector({ openDown = false }) {
             cursor-pointer text-text-dark text-xs font-medium hover:shadow-hover transition-all ease-[cubic-bezier(0.4,0,0.2,1)] 
             duration-300 ${open ? 'scale-90 opacity-0 pointer-events-none' : 'scale-100 opacity-100'}`}
           onClick={() => setOpen(true)}
-          title="Selecionar variável"
+          title={t('map.selectVariable')}
         >
           <i className="fas fa-layer-group text-[10px]" />
-          <span>{current.label}</span>
+          <span>{t(current.labelKey)}</span>
           <i className="fas fa-chevron-up text-[10px]" />
         </button>
 
@@ -57,7 +59,7 @@ export function VariableSelector({ openDown = false }) {
                 setOpen(false);
               }}
             >
-              {v.label}
+              {t(v.labelKey)}
               <span className="ml-1 opacity-50">{v.unit}</span>
             </button>
           ))}

@@ -63,7 +63,7 @@ const readingsSlice = createSlice({
       .addCase(fetchReadings.rejected, (state, action) => {
         if (action.meta.arg._sig !== state.signature) return;
         state.loading = false;
-        state.error = action.error.message ?? 'Erro ao buscar leituras';
+        state.error = action.error.message ?? 'errors.fetchReadings';
       });
   },
 });
