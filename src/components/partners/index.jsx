@@ -2,31 +2,31 @@ import { Section, FadeUp, GradientText, GlassCard } from '@/components';
 import { useTranslation } from '@/i18n';
 
 //IPAM
-import logoIpam from '@/assets/partners/Logo - IPAM.svg';
-
-//Partners and Sponsors
-import logoCapacream from '@/assets/partners/Logo - CAPACREAM.png';
-import logoConexao from '@/assets/partners/Logo - Rede Conexão Povos da Floresta.png';
-import logoSema from '@/assets/partners/Logo - SEMA MT.png';
-import logoUfac from '@/assets/partners/Logo - UFAC.png';
-import logoUFMT from '@/assets/partners/Logo - UFMT.png';
-import logoUEA from '@/assets/partners/Logo - UEA.png';
-
-//Developers
-import logoUFPA from '@/assets/partners/Logo - UFPA.png';
-import logoGuama from '@/assets/partners/Logo - Guama.png';
-import logoLasse from '@/assets/partners/Logo - LASSE.png';
-import logoWoodwell from '@/assets/partners/Logo - Woodwell.png';
-import RespiraAm from '@/assets/partners/Respira amazonia.png';
+import {
+  logoCapacream,
+  logoGuama,
+  logoIpam,
+  logoLasse,
+  logoRCPF,
+  logoSEMAMT,
+  logoUEA,
+  logoUFAC,
+  logoUFMT,
+  logoUFPA,
+  logoUNC,
+  logoWoodwell,
+  logoRespiraAmazonia,
+} from '@/assets/partners';
 
 const PARTNERS = [
   { src: logoCapacream, nome: 'CAPACREAM' },
-  { src: logoConexao, nome: 'Rede Conexão Povos da Floresta' },
-  { src: RespiraAm, nome: 'Respira Amazonia' },
-  { src: logoSema, nome: 'SEMA MT' },
-  { src: logoUfac, nome: 'UFAC' },
+  { src: logoRCPF, nome: 'Rede Conexão Povos da Floresta' },
+  { src: logoRespiraAmazonia, nome: 'Respira Amazonia' },
+  { src: logoSEMAMT, nome: 'SEMA MT' },
+  { src: logoUFAC, nome: 'UFAC' },
   { src: logoUEA, nome: 'UEA' },
   { src: logoUFMT, nome: 'UFMT' },
+  { src: logoUNC, nome: 'University of Chicago' },
 ];
 
 const DEVELOPERS = [
@@ -49,7 +49,9 @@ export function Partners() {
 
       <FadeUp>
         <GlassCard className="flex flex-col justify-center text-center p-[40px] mb-[10px]">
-          <p className="text-sm font-semibold text-text-light uppercase tracking-widest mb-2">{t('partners.developedBy')}</p>
+          <p className="text-sm font-semibold text-text-light uppercase tracking-widest mb-2">
+            {t('partners.developedBy')}
+          </p>
           <img src={logoIpam} alt={'IPAM'} className="h-[200px]" loading="lazy" />
         </GlassCard>
       </FadeUp>
