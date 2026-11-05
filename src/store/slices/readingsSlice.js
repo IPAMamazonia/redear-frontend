@@ -24,20 +24,19 @@ function normalizeReading(r) {
   if (!r || typeof r !== 'object') return null;
 
   const reading = { ...r, datetime: parseReadingDatetime(r.datetime) };
+
   if (r.source === 'purpleAir') {
     reading.bme_temperature = purpleAirTempParaCelsius(r.bme_temperature);
   }
+
   return reading;
 }
 
-export const fetchReadings = createAsyncThunk(
-  'readings/fetchReadings',
-  async ({ _sig, ...params }) => {
-    const data = await api.fetchSensorReadings(params);
-    const items = (data?.readings ?? [])?.map(normalizeReading).filter(Boolean) ?? [];
-    return { items, _sig };
-  },
-);
+export const fetchReadings = createAsyncThunk('readings/fetchReadings', async ({ _sig, ...params }) => {
+  const data = await api.fetchSensorReadings(params);
+  const items = (data?.readings ?? [])?.map(normalizeReading).filter(Boolean) ?? [];
+  return { items, _sig };
+});
 
 const readingsSlice = createSlice({
   name: 'readings',
