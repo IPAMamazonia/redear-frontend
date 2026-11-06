@@ -2,7 +2,8 @@ import { Section, SectionHeading, GlassCard, GradientText, FadeUp } from '@/comp
 import { selectSensors } from '@/store/slices/sensorsSlice';
 import { useTranslation } from '@/i18n';
 import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
+import { buildStats } from './stats';
 
 /**
  * Seção "Sobre" com texto institucional e cards de estatísticas.
@@ -11,34 +12,7 @@ export function About() {
   const sensors = useSelector(selectSensors);
   const { t } = useTranslation();
 
-  const [stats, setStats] = useState([
-    { id: 'sensors-total', number: '-', labelKey: 'about.stats.sensorsTotal' },
-    { id: 'states-monitored', number: '-', labelKey: 'about.stats.statesMonitored' },
-    { id: 'sensors-redear', number: '-', labelKey: 'about.stats.sensorsRedear' },
-    { id: 'sensors-purpleair', number: '-', labelKey: 'about.stats.sensorsPurpleair' },
-    { id: 'readings-daily', number: '10 mil+', labelKey: 'about.stats.readingsDaily' },
-    { id: 'monitoring-continuous', number: '24h/7', labelKey: 'about.stats.monitoringContinuous' },
-  ]);
-
-  useEffect(() => {
-    if (!Array.isArray(sensors) && sensors.length === 0) {
-      return;
-    }
-
-    const totalSensors = sensors.length;
-    const redeArSensors = sensors.filter((s) => s.source === 'RedeAr').length;
-    const purpleAirSensors = sensors.filter((s) => s.source === 'purpleAir').length;
-    const statesMonitored = new Set(sensors.map((s) => s.estado)).size;
-
-    setStats(() => [
-      { id: 'sensors-total', number: totalSensors.toString(), labelKey: 'about.stats.sensorsTotal' },
-      { id: 'states-monitored', number: statesMonitored.toString(), labelKey: 'about.stats.statesMonitored' },
-      { id: 'sensors-redear', number: redeArSensors.toString(), labelKey: 'about.stats.sensorsRedear' },
-      { id: 'sensors-purpleair', number: purpleAirSensors.toString(), labelKey: 'about.stats.sensorsPurpleair' },
-      { id: 'readings-daily', number: '10 mil+', labelKey: 'about.stats.readingsDaily' },
-      { id: 'monitoring-continuous', number: '24h/7', labelKey: 'about.stats.monitoringContinuous' },
-    ]);
-  }, [sensors]);
+  const stats = useMemo(() => buildStats(sensors), [sensors]);
 
   return (
     <Section id="sobre" className="AboutComponent">
