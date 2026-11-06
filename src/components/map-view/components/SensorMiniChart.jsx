@@ -1,138 +1,32 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import Chart from 'chart.js/auto';
-import { useTranslation, getLocale } from '@/i18n';
-import { calcularYMax, criarPluginFaixas, faixasVisiveis } from '@/components/chart/utils/faixas-plugin';
-
-const PMS_COLORS = {
-  pms1: { border: '#00E400', bg: 'rgba(0,228,0,0.08)' },
-  pms2: { border: '#FF7E00', bg: 'rgba(255,126,0,0.08)' },
-};
-
-function extractPmsPair(readings, field) {
-  const pms1 = readings.map((r) => r[`pms1_${field}`] ?? null);
-  const pms2 = readings.map((r) => r[`pms2_${field}`] ?? null);
-  return { pms1, pms2 };
-}
-
-function buildDatasets(variable, data, t) {
-  const readings = data.map((r) => r);
-
-  if (variable.key === 'pm25') {
-    const { pms1, pms2 } = extractPmsPair(readings, 'pm2_5_env');
-    return [
-      { label: 'PMS1', data: pms1, borderColor: PMS_COLORS.pms1.border, backgroundColor: PMS_COLORS.pms1.bg, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.3, spanGaps: true },
-      { label: 'PMS2', data: pms2, borderColor: PMS_COLORS.pms2.border, backgroundColor: PMS_COLORS.pms2.bg, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.3, spanGaps: true },
-    ];
-  }
-
-  if (variable.key === 'pm10') {
-    const { pms1, pms2 } = extractPmsPair(readings, 'pm10_env');
-    return [
-      { label: 'PMS1', data: pms1, borderColor: PMS_COLORS.pms1.border, backgroundColor: PMS_COLORS.pms1.bg, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.3, spanGaps: true },
-      { label: 'PMS2', data: pms2, borderColor: PMS_COLORS.pms2.border, backgroundColor: PMS_COLORS.pms2.bg, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.3, spanGaps: true },
-    ];
-  }
-
-  if (variable.key === 'pm1') {
-    const { pms1, pms2 } = extractPmsPair(readings, 'pm1_0_env');
-    return [
-      { label: 'PMS1', data: pms1, borderColor: PMS_COLORS.pms1.border, backgroundColor: PMS_COLORS.pms1.bg, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.3, spanGaps: true },
-      { label: 'PMS2', data: pms2, borderColor: PMS_COLORS.pms2.border, backgroundColor: PMS_COLORS.pms2.bg, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.3, spanGaps: true },
-    ];
-  }
-
-  const values = readings.map((r) => variable.extract(r));
-  return [
-    {
-      label: t(variable.labelKey),
-      data: values,
-      borderColor: '#00E400',
-      backgroundColor: 'rgba(0,228,0,0.08)',
-      borderWidth: 1.5,
-      pointRadius: 0,
-      pointHoverRadius: 5,
-      tension: 0.3,
-      spanGaps: true,
-    },
-  ];
-}
+import { useTranslation } from '@/i18n';
+import { buildMiniChartConfig } from '../helpers/sensor-mini-chart';
 
 export function SensorMiniChart({ readings, variable }) {
   const { t, language } = useTranslation();
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
 
+  const config = useMemo(
+    () => buildMiniChartConfig(readings, variable, t, language),
+    [readings, variable, t, language],
+  );
+
   useEffect(() => {
-    if (!canvasRef.current) return;
-
-    const data = (readings || [])
-      .filter((r) => r.datetime)
-      .sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
-
-    if (data.length < 2) return;
-
-    const labels = data.map((r) => {
-      const d = new Date(r.datetime);
-      return d.toLocaleDateString(getLocale(language), {
-        day: '2-digit',
-        month: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    });
-
-    const datasets = buildDatasets(variable, data, t);
-
-    const allValues = datasets.flatMap((ds) => ds.data).filter((v) => v != null);
-    const dataMax = allValues.length > 0 ? Math.max(...allValues) : 0;
-    const yMax = calcularYMax(dataMax, variable.faixasYMax);
-    const faixas = faixasVisiveis(variable.faixas, yMax, variable.faixasYMax);
+    if (!canvasRef.current || !config) return undefined;
 
     if (chartRef.current) chartRef.current.destroy();
-
-    chartRef.current = new Chart(canvasRef.current, {
-      type: 'line',
-      data: { labels, datasets },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { intersect: false, mode: 'index' },
-        plugins: {
-          legend: {
-            display: datasets.length > 1,
-            position: 'top',
-            labels: { font: { size: 10 }, boxWidth: 12, padding: 8 },
-          },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y} ${variable.unit}`,
-            },
-          },
-        },
-        scales: {
-          x: {
-            display: true,
-            ticks: { maxTicksLimit: 10, font: { size: 9 }, color: '#999' },
-            grid: { display: false },
-          },
-          y: {
-            display: true,
-            beginAtZero: true,
-            max: yMax,
-            ticks: { font: { size: 10 }, color: '#999' },
-            grid: { color: 'rgba(0,0,0,0.04)' },
-          },
-        },
-      },
-      plugins: faixas ? [criarPluginFaixas(faixas)] : [],
-    });
+    chartRef.current = new Chart(canvasRef.current, config);
 
     return () => {
-      if (chartRef.current) chartRef.current.destroy();
+      if (!chartRef.current) return;
+      chartRef.current.destroy();
+      chartRef.current = null;
     };
-  }, [readings, variable, t, language]);
+  }, [config]);
 
-  if (!readings || readings.length < 2) {
+  if (!config) {
     return (
       <div className="SensorMiniChartComponent h-[240px] flex items-center justify-center text-xs text-text-light">
         {t('common.noDataShort')}

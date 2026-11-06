@@ -2,7 +2,8 @@ import { setSelectedVariable } from '@/store/slices/uiSlice';
 import { MAP_VARIABLES } from '@/rules';
 import { useTranslation } from '@/i18n';
 import { useDispatch, useSelector } from 'react-redux';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
+import { useClickOutside } from '@/hooks/useClickOutside';
 
 export function VariableSelector({ openDown = false }) {
   const dispatch = useDispatch();
@@ -13,14 +14,7 @@ export function VariableSelector({ openDown = false }) {
 
   const current = MAP_VARIABLES.find((v) => v.key === selected) || MAP_VARIABLES[0];
 
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [open]);
+  useClickOutside(ref, () => setOpen(false), open);
 
   return (
     <div className="VariableSelectorComponent text-sm" ref={ref}>

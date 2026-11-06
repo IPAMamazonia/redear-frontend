@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
+import { useClickOutside } from '@/hooks/useClickOutside';
 import { useTranslation } from '@/i18n';
 
 export function SensorTypeLegend() {
@@ -7,14 +8,7 @@ export function SensorTypeLegend() {
   const ref = useRef(null);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [open]);
+  useClickOutside(ref, () => setOpen(false), open);
 
   return (
     <div className="SensorTypeLegendComponent text-sm">
