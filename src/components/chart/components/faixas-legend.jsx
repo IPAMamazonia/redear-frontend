@@ -1,3 +1,4 @@
+import { formatLimite } from '@/helpers/format';
 import { useTranslation } from '@/i18n';
 
 /**
@@ -11,15 +12,6 @@ import { useTranslation } from '@/i18n';
  * @param {Array<{min: number, max: number, color: string, textColor: string, label: string, labelKey: string}>} props.faixas - Faixas visíveis no gráfico.
  * @param {string} props.unit - Unidade da variável.
  */
-function formatLimite(min, max, unit) {
-  const teto = Number.isFinite(max) ? max : null;
-  const piso = Number.isFinite(min) ? min : 0;
-  const arredonda = (n) => Number(n.toFixed(1)).toString();
-
-  if (teto == null) return `≥ ${arredonda(piso)} ${unit}`;
-  return `${arredonda(piso)} – ${arredonda(teto)} ${unit}`;
-}
-
 export function FaixasLegend({ faixas, unit }) {
   const { t } = useTranslation();
   if (!Array.isArray(faixas) || faixas.length === 0) return null;

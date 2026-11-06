@@ -1,47 +1,21 @@
-// Componentes locais
-import {
-  montarFiltro,
-  montarLocalId,
-  resolverIds,
-  SELECAO_INICIAL,
-  criarConfigChart,
-  faixasVisiveis as calcularFaixasVisiveis,
-  montarSeries,
-  periodoParaIntervalo,
-} from './utils';
+import { ChartFilters, ChartState, DateRangeInput, FaixasLegend, PeriodSelector, SensorChips } from './components';
+import { selectReadings, selectReadingsLoading, selectReadingsError } from '@/store/slices/readingsSlice';
 import { VariableSelector } from '@/components/map-view/components/VariableSelector';
-import { ChartFilters, DateRangeInput, FaixasLegend, PeriodSelector, SensorChips } from './components';
-import { getVariableByKey } from '@/helpers/get-variable-by-key';
-
-// Componentes globais
 import { GlassCard, GradientText, Section, SectionHeading } from '@/components';
-
-// Redux
-import { fetchSensors, selectSensors } from '@/store/slices/sensorsSlice';
-import {
-  fetchReadings,
-  selectReadings,
-  selectReadingsLoading,
-  selectReadingsError,
-} from '@/store/slices/readingsSlice';
-
-// React
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import ChartZoom from 'chartjs-plugin-zoom';
-import { Decimation } from 'chart.js';
-import Chart from 'chart.js/auto';
-
-import { useTranslation, getLocale } from '@/i18n';
-
-Chart.register(ChartZoom, Decimation);
+import { useChartInstance } from './hooks/useChartInstance';
+import { useChartReadings } from './hooks/useChartReadings';
+import { selectSensors } from '@/store/slices/sensorsSlice';
+import { useChartData } from './hooks/useChartData';
+import { useCallback, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { SELECAO_INICIAL } from './utils';
+import { useTranslation } from '@/i18n';
 
 /**
  * Gráfico AQI com seleção de período e filtro por sensores, município ou estado.
  * Integra com o endpoint real de leituras (GET /v1/sensor-readings).
  */
 export function AQIChart() {
-  const dispatch = useDispatch();
   const { t, language } = useTranslation();
   const sensors = useSelector(selectSensors);
   const readings = useSelector(selectReadings);
@@ -50,113 +24,46 @@ export function AQIChart() {
 
   const selectedVariableKey = useSelector((state) => state.ui.selectedVariable);
 
-  const canvasRef = useRef(null);
-  const chartRef = useRef(null);
-  const fetchSigRef = useRef(0);
-
   const [periodo, setPeriodo] = useState('1D');
   const [modoPeriodo, setModoPeriodo] = useState('preset'); // 'preset' | 'manual'
   const [intervaloManual, setIntervaloManual] = useState(null);
   const [selecao, setSelecao] = useState(SELECAO_INICIAL);
 
-  const sensorMap = useMemo(() => new Map(sensors.map((s) => [s.id, s])), [sensors]);
+  const {
+    hasOptionSelection,
+    sensoresSelecionados,
+    variable,
+    intervalo,
+    filtro,
+    spanMs,
+    series,
+    totalPontos,
+    dadosContinuos,
+    faixasVisiveis,
+  } = useChartData({
+    sensors,
+    readings,
+    selecao,
+    periodo,
+    modoPeriodo,
+    intervaloManual,
+    selectedVariableKey,
+  });
 
-  const ids = useMemo(() => resolverIds(sensors, selecao), [sensors, selecao]);
-  const hasOptionSelection = ids.length > 0;
-  useMemo(() => (hasOptionSelection ? montarLocalId(selecao) : null), [hasOptionSelection, selecao]);
+  const { retry } = useChartReadings({ sensors, hasOptionSelection, filtro, intervalo });
 
-  const sensoresSelecionados = useMemo(
-    () => (selecao.modo === 'sensores' ? selecao.sensores.map((id) => sensorMap.get(id)).filter(Boolean) : []),
-    [selecao, sensorMap]
-  );
+  const mostrarGrafico = hasOptionSelection && !readingsLoading && !readingsError && series.datasets.length > 0;
 
-  const variable = useMemo(
-    () => getVariableByKey(selectedVariableKey) ?? getVariableByKey('aqi'),
-    [selectedVariableKey]
-  );
-
-  const intervalo = useMemo(() => {
-    if (modoPeriodo === 'manual') return intervaloManual;
-
-    return periodoParaIntervalo(periodo);
-  }, [modoPeriodo, periodo, intervaloManual]);
-
-  const filtro = useMemo(() => montarFiltro(sensors, selecao), [sensors, selecao]);
-
-  useEffect(() => {
-    if (!sensors.length) dispatch(fetchSensors());
-  }, [dispatch, sensors.length]);
-
-  useEffect(() => {
-    if (!hasOptionSelection || !filtro || !intervalo) return;
-
-    const sig = ++fetchSigRef.current;
-    dispatch(fetchReadings({ _sig: sig, ...filtro, ...intervalo }));
-  }, [dispatch, hasOptionSelection, filtro, intervalo]);
-
-  const spanMs = useMemo(() => {
-    if (!intervalo?.startDate || !intervalo?.endDate) return 0;
-    return new Date(intervalo.endDate).getTime() - new Date(intervalo.startDate).getTime();
-  }, [intervalo]);
-
-  const series = useMemo(() => montarSeries(readings, sensors, variable), [readings, sensors, variable]);
-
-  const totalPontos = useMemo(() => series.datasets.reduce((n, d) => n + d.data.length, 0), [series]);
-
-  const dadosContinuos = useMemo(
-    () => series.datasets.every((d) => d.data.every((p) => Number.isFinite(p.y))),
-    [series]
-  );
-
-  // Só variáveis com topo de escala reservado desenham faixas: em pressão e contagem de partículas a escala completa achataria a série na borda do eixo.
-  // As faixas são ainda cortadas pelo yMax real, para que o gráfico não anuncie uma faixa que ficou sem altura.
-  const faixasVisiveis = useMemo(
-    () => calcularFaixasVisiveis(variable.faixas, series.yMax, variable.faixasYMax),
-    [variable, series.yMax]
-  );
-
-  const criarChart = useCallback(() => {
-    const ctx = canvasRef.current?.getContext('2d');
-    if (!ctx) return;
-
-    if (chartRef.current) {
-      chartRef.current.destroy();
-      chartRef.current = null;
-    }
-
-    chartRef.current = new Chart(
-      ctx,
-      criarConfigChart({
-        datasets: series.datasets,
-        yMax: series.yMax,
-        unit: variable.unit,
-        faixas: faixasVisiveis,
-        spanMs,
-        totalPontos,
-        dadosContinuos,
-        locale: getLocale(language),
-      })
-    );
-  }, [series, variable, spanMs, totalPontos, dadosContinuos, faixasVisiveis, language]);
-
-  useEffect(() => {
-    if (!hasOptionSelection) {
-      if (chartRef.current) {
-        chartRef.current.destroy();
-        chartRef.current = null;
-      }
-      return;
-    }
-
-    criarChart();
-
-    return () => {
-      if (chartRef.current) {
-        chartRef.current.destroy();
-        chartRef.current = null;
-      }
-    };
-  }, [criarChart, hasOptionSelection]);
+  const { canvasRef, resetZoom } = useChartInstance({
+    visible: mostrarGrafico,
+    series,
+    variable,
+    spanMs,
+    totalPontos,
+    dadosContinuos,
+    faixasVisiveis,
+    language,
+  });
 
   const removerSensor = useCallback((id) => {
     setSelecao((prev) => ({
@@ -174,22 +81,11 @@ export function AQIChart() {
     setIntervaloManual(null);
   }, []);
 
-  const handlePeriodoChange = useCallback((p) => {
-    setPeriodo(p);
+  const handlePeriodoChange = useCallback((novoPeriodo) => {
+    setPeriodo(novoPeriodo);
     setModoPeriodo('preset');
     setIntervaloManual(null);
   }, []);
-
-  const handleRetry = useCallback(() => {
-    if (!hasOptionSelection || !filtro || !intervalo) return;
-    const sig = ++fetchSigRef.current;
-    dispatch(fetchReadings({ _sig: sig, ...filtro, ...intervalo }));
-  }, [dispatch, hasOptionSelection, filtro, intervalo]);
-
-  const mostrarGrafico = hasOptionSelection && !readingsLoading && !readingsError && series.datasets.length > 0;
-  const mostrarVazio = hasOptionSelection && !readingsLoading && !readingsError && series.datasets.length === 0;
-  const mostrarLoading = hasOptionSelection && readingsLoading;
-  const mostrarErro = hasOptionSelection && !readingsLoading && readingsError;
 
   return (
     <Section id="grafico" alt className="AQIChartComponent">
@@ -222,7 +118,7 @@ export function AQIChart() {
         {mostrarGrafico && (
           <button
             type="button"
-            onClick={() => chartRef.current?.resetZoom()}
+            onClick={resetZoom}
             className="cursor-pointer px-3 py-1.5 rounded-[10px] bg-white/60 backdrop-blur border border-white/50 text-xs font-semibold text-text-light hover:text-[#FF6D00] transition-all"
             title={t('chart.resetZoom')}
           >
@@ -239,46 +135,13 @@ export function AQIChart() {
 
       <div className="max-w-[1280px] mx-auto">
         <GlassCard className="p-6">
-          {!hasOptionSelection && (
-            <div className="h-[420px] flex flex-col items-center justify-center gap-3 text-center px-4">
-              <i className="fas fa-chart-line text-4xl text-text-light/40" />
-              <p className="text-text-light max-w-md">
-                {t('chart.emptyBefore')} <strong>{t('chart.emptySensors')}</strong> {t('chart.emptyMid')}{' '}
-                <strong>{t('chart.emptyMunicipality')}</strong> {t('chart.emptyMid2')}{' '}
-                <strong>{t('chart.emptyState')}</strong> {t('chart.emptyAfter')}
-              </p>
-            </div>
-          )}
-
-          {mostrarLoading && (
-            <div className="h-[420px] flex flex-col items-center justify-center gap-3 text-center px-4">
-              <i className="fas fa-spinner fa-spin text-3xl text-[#FF6D00]" />
-              <p className="text-text-light">{t('chart.loading')}</p>
-            </div>
-          )}
-
-          {mostrarErro && (
-            <div className="h-[420px] flex flex-col items-center justify-center gap-3 text-center px-4">
-              <i className="fas fa-exclamation-triangle text-3xl text-red-600" />
-              <p className="text-text-light max-w-md">{t(readingsError)}</p>
-              <button
-                type="button"
-                onClick={handleRetry}
-                className="cursor-pointer px-4 py-2 rounded-[10px] bg-[#FF6D00] text-white font-semibold shadow hover:bg-[#FF7F33] transition-colors"
-              >
-                {t('common.retry')}
-              </button>
-            </div>
-          )}
-
-          {mostrarVazio && (
-            <div className="h-[420px] flex flex-col items-center justify-center gap-3 text-center px-4">
-              <i className="fas fa-inbox text-3xl text-text-light/40" />
-              <p className="text-text-light max-w-md">
-                {t('chart.noReadings')}
-              </p>
-            </div>
-          )}
+          <ChartState
+            hasSelection={hasOptionSelection}
+            loading={readingsLoading}
+            error={readingsError}
+            empty={series.datasets.length === 0}
+            onRetry={retry}
+          />
 
           {mostrarGrafico && (
             <div className="h-[420px]">

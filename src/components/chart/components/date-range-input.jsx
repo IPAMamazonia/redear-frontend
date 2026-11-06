@@ -1,16 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { useTranslation } from '@/i18n';
+import { formatarDataInput } from '../utils/date';
 import { validarIntervaloManual } from '../utils/intervalo';
-
-function formatoYYYYMMDD(d) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
 
 const DEFAULT_DE = () => {
   const d = new Date();
   d.setDate(d.getDate() - 7);
-  return formatoYYYYMMDD(d);
+  return formatarDataInput(d);
 };
 
 /**
@@ -23,9 +20,10 @@ const DEFAULT_DE = () => {
 export function DateRangeInput({ onChange, onReset }) {
   const { t } = useTranslation();
   const hoje = useMemo(() => new Date(), []);
+  const hojeFormatado = useMemo(() => formatarDataInput(hoje), [hoje]);
 
   const [de, setDe] = useState(DEFAULT_DE);
-  const [ate, setAte] = useState(() => formatoYYYYMMDD(hoje));
+  const [ate, setAte] = useState(hojeFormatado);
 
   const erro = useMemo(() => {
     if (!de || !ate) return null;
@@ -51,7 +49,7 @@ export function DateRangeInput({ onChange, onReset }) {
       <input
         type="date"
         value={de}
-        max={formatoYYYYMMDD(hoje)}
+        max={hojeFormatado}
         onChange={(e) => setDe(e.target.value)}
         className={inputClass}
       />
@@ -59,7 +57,7 @@ export function DateRangeInput({ onChange, onReset }) {
       <input
         type="date"
         value={ate}
-        max={formatoYYYYMMDD(hoje)}
+        max={hojeFormatado}
         onChange={(e) => setAte(e.target.value)}
         className={inputClass}
       />

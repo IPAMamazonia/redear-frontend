@@ -1,11 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
+import { useClickOutside } from '@/hooks/useClickOutside';
 import { useTranslation } from '@/i18n';
-
-function pluralDe(palavra, quantidade) {
-  if (palavra === 'sensor') return quantidade === 1 ? 'sensor' : 'sensores';
-  return quantidade === 1 ? palavra : `${palavra}s`;
-}
+import {
+  alternarSelecao,
+  alternarVisiveisSelecionados,
+  filtrarOpcoes,
+  tituloSelecao,
+  todosVisiveisSelecionados,
+} from '../utils/sensor-select';
+import { SensorSelectPanel } from './sensor-select-panel';
 
 /**
  * Dropdown estilizado dos filtros do gráfico. Suporta multi- ou single-select.
@@ -34,71 +38,38 @@ export function SensorSelect({
   const [busca, setBusca] = useState('');
   const ref = useRef(null);
 
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [open]);
+  useClickOutside(ref, () => setOpen(false), open);
 
-  const filtrados = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
-    if (!termo) return options;
-    return options.filter((o) => {
-      const rotulo = (o.label || '').toLowerCase();
-      const sub = (o.sublabel || '').toLowerCase();
-      return rotulo.includes(termo) || sub.includes(termo);
-    });
-  }, [options, busca]);
+  const filtrados = useMemo(() => filtrarOpcoes(options, busca), [options, busca]);
 
   const quantidade = multiple ? value.length : 0;
-  const opcaoAtiva = multiple ? null : options.find((o) => o.id === value);
+  const opcaoAtiva = multiple ? null : options.find((option) => option.id === value);
   const temValor = multiple ? quantidade > 0 : Boolean(opcaoAtiva);
 
-  const tituloBotao = () => {
-    if (multiple) {
-      if (!quantidade) return placeholder;
-      const sufixo = t(quantidade === 1 ? 'chart.selectedSingular' : 'chart.selectedPlural');
-      return `${quantidade} ${pluralDe(itemWord, quantidade)} ${sufixo}`;
-    }
-    return opcaoAtiva ? opcaoAtiva.label : placeholder;
-  };
+  const tituloBotao = () =>
+    tituloSelecao({ multiple, quantidade, opcaoAtiva, placeholder, itemWord, t });
 
   const toggle = (id) => {
     if (multiple) {
-      const atual = value;
-      const novo = atual.includes(id)
-        ? atual.filter((x) => x !== id)
-        : [...atual, id];
-      onChange(novo);
+      onChange(alternarSelecao(value, id));
     } else {
       onChange(id);
       setOpen(false);
     }
   };
 
-  const todosVisiveis =
-    multiple && filtrados.length > 0 && filtrados.every((o) => value.includes(o.id));
+  const todosVisiveis = multiple && todosVisiveisSelecionados(filtrados, value);
 
   const alternarVisiveis = () => {
-    if (!filtrados.length || !multiple) return;
-    const ids = new Set(value);
-    const visiveis = new Set(filtrados.map((o) => o.id));
-    if (todosVisiveis) visiveis.forEach((id) => ids.delete(id));
-    else visiveis.forEach((id) => ids.add(id));
-    onChange([...ids]);
+    if (!multiple || !filtrados.length) return;
+    onChange(alternarVisiveisSelecionados(value, filtrados, todosVisiveis));
   };
 
   return (
-    <div
-      className="SensorSelectComponent relative min-w-[220px] max-md:w-full"
-      ref={ref}
-    >
+    <div className="SensorSelectComponent relative min-w-[220px] max-md:w-full" ref={ref}>
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setOpen((current) => !current)}
         aria-haspopup="listbox"
         aria-expanded={open}
         className={`w-full flex items-center justify-between gap-2 px-3 py-2 border border-black/10 rounded-[10px] text-sm bg-card backdrop-blur cursor-pointer focus:outline-none focus:border-[#FF6D00] transition-colors duration-[0.35s] ${
@@ -117,90 +88,18 @@ export function SensorSelect({
       </button>
 
       {open && (
-        <div
-          role="listbox"
-          aria-multiselectable={multiple}
-          className="absolute left-0 top-full z-30 mt-1 w-[340px] max-w-[calc(100vw-2rem)] bg-card backdrop-blur-xl border border-white/35 rounded-lg shadow-glass py-2"
-        >
-          <div className="px-3 pb-2 border-b border-black/5">
-            <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-white/60 border border-black/10 focus-within:border-[#FF6D00]">
-              <i className="fas fa-search text-[11px] text-text-light" />
-              <input
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
-                placeholder={t('chart.search')}
-                className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-text-light"
-              />
-            </div>
-            {multiple && filtrados.length > 0 && (
-              <div className="flex justify-between mt-2 text-xs">
-                <button
-                  type="button"
-                  onClick={alternarVisiveis}
-                  className="cursor-pointer text-[#FF6D00] font-semibold bg-transparent border-none hover:underline"
-                >
-                  {todosVisiveis ? t('chart.unmarkVisible') : t('chart.markVisible')}
-                </button>
-                {quantidade > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => onChange([])}
-                    className="cursor-pointer text-text-light bg-transparent border-none hover:text-red-600"
-                  >
-                    {t('chart.clearCount', { count: quantidade })}
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div className="max-h-[240px] overflow-y-auto mt-1" role="group">
-            {filtrados.length === 0 ? (
-              <p className="px-3 py-3 text-xs text-text-light">
-                {options.length === 0
-                  ? t('chart.noOptions')
-                  : t('chart.noResults', { search: busca })}
-              </p>
-            ) : (
-              filtrados.map((o) => (
-                <label
-                  key={o.id}
-                  className={`flex items-center gap-2 px-3 py-1.5 cursor-pointer transition-colors ${
-                    multiple ? 'hover:bg-black/5' : ''
-                  } ${!multiple && o.id === value ? 'bg-black/5' : ''}`}
-                >
-                  {multiple ? (
-                    <input
-                      type="checkbox"
-                      checked={value.includes(o.id)}
-                      onChange={() => toggle(o.id)}
-                      className="w-3.5 h-3.5 cursor-pointer accent-[#FF6D00]"
-                    />
-                  ) : (
-                    <span className="block w-[14px]">
-                      {o.id === value && (
-                        <i className="fas fa-check text-[11px] text-[#FF6D00]" />
-                      )}
-                    </span>
-                  )}
-                  <span
-                    className="flex-1 min-w-0"
-                    onClick={() => !multiple && toggle(o.id)}
-                  >
-                    <span className="block text-sm font-medium text-text-dark truncate">
-                      {o.label}
-                    </span>
-                    {o.sublabel && (
-                      <span className="block text-[11px] text-text-light truncate">
-                        {o.sublabel}
-                      </span>
-                    )}
-                  </span>
-                </label>
-              ))
-            )}
-          </div>
-        </div>
+        <SensorSelectPanel
+          options={options}
+          filtered={filtrados}
+          multiple={multiple}
+          value={value}
+          search={busca}
+          onSearchChange={setBusca}
+          onToggle={toggle}
+          onToggleVisible={alternarVisiveis}
+          onClear={() => onChange([])}
+          allVisible={todosVisiveis}
+        />
       )}
     </div>
   );
