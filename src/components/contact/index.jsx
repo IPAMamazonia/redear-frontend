@@ -1,5 +1,7 @@
 import { Section, SectionHeading, FadeUp, FormInput, FormTextarea, SocialLinks, GradientText } from '@/components';
 import { contactAddress, contactMail, contactPhone } from '@/rules';
+import { CONTACT_FORM_INITIAL, validateContactForm } from './form';
+import { useForm } from '@/hooks/useForm';
 import { useTranslation } from '@/i18n';
 import { useState } from 'react';
 
@@ -8,26 +10,25 @@ import { useState } from 'react';
  */
 export function Contact() {
   const { t } = useTranslation();
-  const [form, setForm] = useState({ nome: '', email: '', assunto: '', msg: '' });
+  const { values: form, handleChange: handleFormChange, reset } = useForm(CONTACT_FORM_INITIAL);
   const [status, setStatus] = useState(null);
 
   const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    handleFormChange(e);
+    if (status) setStatus(null);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { nome, email, msg } = form;
-    if (!nome.trim() || !email.trim() || !msg.trim()) {
-      setStatus({ type: 'error', key: 'contact.status.missingFields' });
+
+    const erro = validateContactForm(form);
+    if (erro) {
+      setStatus(erro);
       return;
     }
-    if (!email.includes('@') || !email.includes('.')) {
-      setStatus({ type: 'error', key: 'contact.status.invalidEmail' });
-      return;
-    }
+
     setStatus({ type: 'success', key: 'contact.status.sent' });
-    setForm({ nome: '', email: '', assunto: '', msg: '' });
+    reset();
   };
 
   return (

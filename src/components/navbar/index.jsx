@@ -1,6 +1,7 @@
 import { toggleMobileMenu, closeMobileMenu, setScrolled } from '@/store/slices/uiSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { SegmentedControl } from '@/components';
+import { scrollToAnchor } from '@/helpers/scroll-to-anchor';
 import { useTranslation } from '@/i18n';
 import { useEffect } from 'react';
 import logo from '@/assets/png/Logo RedeAR - IPAM vetores-01.png';
@@ -33,8 +34,7 @@ export function Navbar() {
 
   const handleNav = (e, href) => {
     e.preventDefault();
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    scrollToAnchor(href);
     dispatch(closeMobileMenu());
   };
 

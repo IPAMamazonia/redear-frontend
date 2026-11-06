@@ -1,15 +1,6 @@
-import { useState, useCallback } from 'react';
-import { useInterval } from '@/hooks/useInterval';
+import { useCarousel } from './useCarousel';
 import { useTranslation } from '@/i18n';
-import fire1 from '@/assets/carousel/fire-1.jpeg';
-import fire2 from '@/assets/carousel/fire-2-PCT.jpeg';
-import fire3 from '@/assets/carousel/fire-3.jpeg';
-
-const SLIDES = [
-  { img: fire1, key: 0 },
-  { img: fire2, key: 1 },
-  { img: fire3, key: 2 },
-];
+import { SLIDES } from './slides';
 
 /**
  * Slider/carrossel full-screen com transição automática, navegação por setas e dots.
@@ -18,40 +9,7 @@ const SLIDES = [
  */
 export function HeroSlider() {
   const { t } = useTranslation();
-  const [current, setCurrent] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  const goTo = useCallback((index) => {
-    setCurrent(index);
-  }, []);
-
-  const next = useCallback(() => {
-    setCurrent((c) => (c + 1) % SLIDES.length);
-  }, []);
-
-  const prev = useCallback(() => {
-    setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length);
-  }, []);
-
-  useInterval(next, paused ? null : 10000);
-
-  const handleDot = (idx) => {
-    goTo(idx);
-    setPaused(true);
-    setTimeout(() => setPaused(false), 10000);
-  };
-
-  const handlePrev = () => {
-    prev();
-    setPaused(true);
-    setTimeout(() => setPaused(false), 10000);
-  };
-
-  const handleNext = () => {
-    next();
-    setPaused(true);
-    setTimeout(() => setPaused(false), 10000);
-  };
+  const { current, goTo, prev, next } = useCarousel(SLIDES.length);
 
   return (
     <section id="hero" className="HeroSliderComponent mt-[72px]">
@@ -110,14 +68,14 @@ export function HeroSlider() {
           </div>
 
           <button
-            onClick={handlePrev}
+            onClick={prev}
             className="absolute top-1/2 -translate-y-1/2 z-[3] left-6 max-md:left-3 w-[52px] h-[52px] max-md:w-[44px] max-md:h-[44px] rounded-full bg-white/12 backdrop-blur-xl border border-white/20 text-white text-[1.4rem] max-md:text-[1.1rem] cursor-pointer flex items-center justify-center transition-all duration-[0.35s] ease-out hover:bg-white/25 hover:scale-108"
             aria-label={t('hero.prev')}
           >
             &#10094;
           </button>
           <button
-            onClick={handleNext}
+            onClick={next}
             className="absolute top-1/2 -translate-y-1/2 z-[3] right-6 max-md:right-3 w-[52px] h-[52px] max-md:w-[44px] max-md:h-[44px] rounded-full bg-white/12 backdrop-blur-xl border border-white/20 text-white text-[1.4rem] max-md:text-[1.1rem] cursor-pointer flex items-center justify-center transition-all duration-[0.35s] ease-out hover:bg-white/25 hover:scale-108"
             aria-label={t('hero.next')}
           >
@@ -128,7 +86,7 @@ export function HeroSlider() {
             {SLIDES.map((_, i) => (
               <span
                 key={i}
-                onClick={() => handleDot(i)}
+                onClick={() => goTo(i)}
                 className={`w-[10px] h-[10px] rounded-full border-2 border-white/60 bg-transparent cursor-pointer transition-all duration-[0.35s] ease-out ${
                   i === current ? 'bg-white scale-130 border-white shadow-[0_0_12px_rgba(255,255,255,0.4)]' : ''
                 }`}

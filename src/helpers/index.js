@@ -9,3 +9,4 @@ export * from './aqi-color.js';
 export * from './get-variable-by-key.js';
 export * from './get-sensor-value.js';
 export * from './format.js';
+export * from './scroll-to-anchor.js';

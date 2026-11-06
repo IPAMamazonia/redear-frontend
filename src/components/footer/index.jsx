@@ -1,4 +1,5 @@
 import { GradientText } from '@/components';
+import { scrollToAnchor } from '@/helpers/scroll-to-anchor';
 import { useTranslation } from '@/i18n';
 import { contactGithub, contactMail } from '@/rules';
 
@@ -6,8 +7,7 @@ function FooterLink({ href, children }) {
   const handleClick = (e) => {
     if (href.startsWith('#')) {
       e.preventDefault();
-      const el = document.querySelector(href);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      scrollToAnchor(href);
     }
   };
 
