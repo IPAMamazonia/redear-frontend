@@ -21,6 +21,7 @@ export function Navbar() {
     { href: '#sobre', label: t('nav.about') },
     { href: '#mapa', label: t('nav.map') },
     { href: '#grafico', label: t('nav.chart') },
+    { href: '#dados', label: t('nav.data') },
     { href: '#faq', label: t('nav.faq') },
     { href: '#contato', label: t('nav.contact') },
     { href: '#parceiros', label: t('nav.partners') },

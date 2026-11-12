@@ -1,5 +1,5 @@
 /**
- * Helpers puros do dropdown de filtros do gráfico.
+ * Helpers puros do dropdown de seleção compartilhado.
  */
 
 /**
@@ -82,12 +82,23 @@ export function alternarVisiveisSelecionados(value, opcoesVisiveis, todosVisivei
  * @param {string} params.placeholder - Texto quando nada está selecionado.
  * @param {string} params.itemWord - Substantivo usado no resumo múltiplo.
  * @param {(key: string) => string} params.t - Função de tradução.
+ * @param {string} [params.selectedSingularKey] - Chave i18n do singular.
+ * @param {string} [params.selectedPluralKey]   - Chave i18n do plural.
  * @returns {string}
  */
-export function tituloSelecao({ multiple, quantidade, opcaoAtiva, placeholder, itemWord, t }) {
+export function tituloSelecao({
+  multiple,
+  quantidade,
+  opcaoAtiva,
+  placeholder,
+  itemWord,
+  t,
+  selectedSingularKey = 'chart.selectedSingular',
+  selectedPluralKey = 'chart.selectedPlural',
+}) {
   if (!multiple) return opcaoAtiva ? opcaoAtiva.label : placeholder;
   if (!quantidade) return placeholder;
 
-  const sufixo = t(quantidade === 1 ? 'chart.selectedSingular' : 'chart.selectedPlural');
+  const sufixo = t(quantidade === 1 ? selectedSingularKey : selectedPluralKey);
   return `${quantidade} ${pluralDe(itemWord, quantidade)} ${sufixo}`;
 }

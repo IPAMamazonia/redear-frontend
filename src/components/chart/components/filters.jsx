@@ -1,12 +1,10 @@
-import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
-
 import { SegmentedControl } from '@/components/segmented-control';
 import { selectSensors } from '@/store/slices/sensorsSlice';
-
+import { SensorSelect } from '@/components/sensor-select';
 import { opcoesDistintas } from '../utils/selection';
-import { SensorSelect } from './SensorSelect';
+import { useSelector } from 'react-redux';
 import { useTranslation } from '@/i18n';
+import { useMemo } from 'react';
 
 const MODOS = [
   { value: 'sensores', labelKey: 'chart.modeSensors' },
@@ -56,7 +54,7 @@ export function ChartFilters({ selecao, onChange }) {
       municipio: municipios.map((m) => ({ id: m, label: m })),
       estado: estados.map((e) => ({ id: e, label: e })),
     }),
-    [sensors, municipios, estados],
+    [sensors, municipios, estados]
   );
 
   const { modo } = selecao;

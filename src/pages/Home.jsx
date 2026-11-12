@@ -1,4 +1,15 @@
-import { Navbar, HeroSlider, About, AQIChart, MapView, FAQ, Contact, Partners, Footer } from '@/components';
+import {
+  Navbar,
+  HeroSlider,
+  About,
+  AQIChart,
+  MapView,
+  ReadingsExport,
+  FAQ,
+  Contact,
+  Partners,
+  Footer,
+} from '@/components';
 
 export function HomePage() {
   return (
@@ -15,6 +26,7 @@ export function HomePage() {
       <About />
       <MapView />
       <AQIChart />
+      <ReadingsExport />
       <FAQ />
       <Contact />
       <Partners />

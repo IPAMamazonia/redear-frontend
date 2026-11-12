@@ -4,6 +4,3 @@ export * from './faixas-legend';
 export * from './filters';
 export * from './period-select';
 export * from './sensor-chips';
-export * from './sensor-select-option';
-export * from './sensor-select-panel';
-export * from './SensorSelect';

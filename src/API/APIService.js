@@ -1,6 +1,65 @@
 import { baseBackEnd } from './baseBackend';
 import { t } from '@/i18n/translate';
 
+/**
+ * Erro específico da exportação de leituras.
+ *
+ * O endpoint de exportação não responde no formato JSON de sucesso, então o
+ * `_request` genérico não pode ser usado: os erros também chegam como JSON,
+ * porém o sucesso é um stream CSV.
+ */
+class ExportApiError extends Error {
+  constructor(code, message, status, details = null) {
+    super(message);
+    this.name = 'ExportApiError';
+    this.code = code;
+    this.status = status;
+    this.details = details;
+  }
+}
+
+/** Extrai o filename de um header `Content-Disposition`. */
+function parseExportFilename(disposition) {
+  if (!disposition) return null;
+
+  const utf8 = /filename\*=UTF-8''([^;]+)/i.exec(disposition);
+  if (utf8) {
+    try {
+      return decodeURIComponent(utf8[1]);
+    } catch {
+      return utf8[1];
+    }
+  }
+
+  const plain = /filename="?([^";]+)"?/i.exec(disposition);
+  return plain?.[1] ?? null;
+}
+
+/**
+ * Reconstrói o nome do arquivo a partir do `X-Export-Metadata`.
+ *
+ * Necessário em cross-origin, onde o navegador não expõe
+ * `Content-Disposition` para o JavaScript.
+ */
+export function buildExportFilename(metadata) {
+  const parts = ['readings', metadata.startDate, metadata.endDate];
+
+  if (metadata.estadoId !== null && metadata.estadoId !== undefined) {
+    parts.push(`estado-${metadata.estadoId}`);
+  }
+  if (metadata.municipioId !== null && metadata.municipioId !== undefined) {
+    parts.push(`municipio-${metadata.municipioId}`);
+  }
+  if (metadata.redeArIds?.length > 0) {
+    parts.push(`redear-${metadata.redeArIds.length}`);
+  }
+  if (metadata.purpleAirIds?.length > 0) {
+    parts.push(`purpleair-${metadata.purpleAirIds.length}`);
+  }
+
+  return `${parts.join('_')}.csv`;
+}
+
 class APIService {
   /**
    * @param {Object}        [config]                Configuration object for APIService
@@ -97,6 +156,110 @@ class APIService {
       headers: this._headers('application/json'),
     });
   }
+
+  /**
+   * Exporta leituras de sensores em CSV via `POST /v1/sensor-readings/export`.
+   *
+   * Particularidades em relação aos outros métodos:
+   * - o sucesso é um stream CSV, não JSON;
+   * - o corpo é lido em chunks para permitir progresso e cancelamento;
+   * - o header `X-Export-Metadata` é obrigatório;
+   * - em cross-origin, `Content-Disposition` pode não estar exposto.
+   *
+   * @param {Object} filters - Body aceito pela rota de exportação.
+   * @param {Object} [options]
+   * @param {AbortSignal} [options.signal]
+   * @param {(bytes: number) => void} [options.onProgress]
+   * @returns {Promise<{
+   *   blob: Blob,
+   *   filename: string,
+   *   metadata: Object,
+   *   bytes: number,
+   * }>}
+   */
+  async exportSensorReadings(filters, { signal, onProgress } = {}) {
+    const res = await fetch(`${baseBackEnd}/v1/sensor-readings/export`, {
+      method: 'POST',
+      headers: this._headers('application/json'),
+      body: JSON.stringify(filters),
+      signal,
+    });
+
+    if (!res.ok) {
+      let code = 'UNKNOWN';
+      let message = `HTTP ${res.status}`;
+      let details = null;
+
+      try {
+        const body = await res.json();
+        code = body?.error?.code ?? code;
+        message = body?.error?.message ?? message;
+        details = body?.error?.details ?? null;
+      } catch {
+        // Resposta não-JSON (proxy, gateway, etc.): mantém a mensagem genérica.
+      }
+
+      throw new ExportApiError(code, message, res.status, details);
+    }
+
+    const metadataHeader = res.headers.get('X-Export-Metadata');
+    if (!metadataHeader) {
+      // Sem metadata não há como validar o arquivo; encerra o stream para não
+      // deixar o backend gerando um CSV que será descartado.
+      void res.body?.cancel().catch(() => {});
+      throw new ExportApiError(
+        'METADATA_MISSING',
+        'Response is missing X-Export-Metadata; check CORS exposedHeaders.',
+        res.status
+      );
+    }
+
+    let metadata;
+    try {
+      metadata = JSON.parse(metadataHeader);
+    } catch {
+      void res.body?.cancel().catch(() => {});
+      throw new ExportApiError('METADATA_MISSING', 'Invalid X-Export-Metadata header.', res.status);
+    }
+
+    const reader = res.body?.getReader();
+    const chunks = [];
+    let bytes = 0;
+
+    if (reader) {
+      try {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (value) {
+            chunks.push(value);
+            bytes += value.byteLength;
+            onProgress?.(bytes);
+          }
+        }
+      } catch (error) {
+        if (error?.name === 'AbortError') throw error;
+
+        throw new ExportApiError(
+          'TRUNCATED',
+          'The export stream was interrupted before completion.',
+          res.status
+        );
+      }
+
+      const blob = new Blob(chunks, { type: 'text/csv;charset=utf-8' });
+      const filename =
+        parseExportFilename(res.headers.get('Content-Disposition')) ?? buildExportFilename(metadata);
+
+      return { blob, filename, metadata, bytes };
+    }
+
+    const blob = await res.blob();
+    const filename =
+      parseExportFilename(res.headers.get('Content-Disposition')) ?? buildExportFilename(metadata);
+
+    return { blob, filename, metadata, bytes: blob.size };
+  }
 }
 
-export { APIService };
+export { APIService, ExportApiError, parseExportFilename };

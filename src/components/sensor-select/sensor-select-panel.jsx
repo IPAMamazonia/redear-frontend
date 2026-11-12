@@ -2,7 +2,7 @@ import { useTranslation } from '@/i18n';
 import { SensorSelectOption } from './sensor-select-option';
 
 /**
- * Painel aberto do dropdown de filtros, com busca e ações de seleção.
+ * Painel aberto do dropdown de seleção compartilhado, com busca e ações.
  *
  * @param {object} props
  * @param {Array<{id: string, label: string, sublabel?: string}>} props.options - Todas as opções.

@@ -1,6 +1,7 @@
 export * from './about';
 export * from './chart';
 export * from './contact';
+export * from './export-readings';
 export * from './fade-up';
 export * from './faq';
 export * from './footer';
@@ -13,5 +14,6 @@ export * from './partners';
 export * from './section';
 export * from './section-heading';
 export * from './segmented-control';
+export * from './sensor-select';
 export * from './social-links';
 export * from './text';

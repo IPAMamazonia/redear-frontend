@@ -84,11 +84,21 @@ function normalizeSensor(s) {
   };
 }
 
-export const fetchSensors = createAsyncThunk('sensors/fetchSensors', async () => {
-  const data = await api.fetchSensors();
-  if (!Array.isArray(data)) return [];
-  return data.map(normalizeSensor).filter(Boolean);
-});
+export const fetchSensors = createAsyncThunk(
+  'sensors/fetchSensors',
+  async () => {
+    const data = await api.fetchSensors();
+    // `_fetchJson` devolve `undefined` em falha de rede e o corpo de erro em
+    // respostas HTTP inválidas; nenhum dos dois é uma lista de sensores.
+    if (!Array.isArray(data)) throw new Error('errors.fetchSensors');
+    return data.map(normalizeSensor).filter(Boolean);
+  },
+  {
+    // Mapa, gráfico e exportação montam juntos e podem solicitar a lista ao
+    // mesmo tempo; evita três requisições concorrentes idênticas.
+    condition: (_, { getState }) => !getState().sensors.loading,
+  }
+);
 
 const sensorsSlice = createSlice({
   name: 'sensors',

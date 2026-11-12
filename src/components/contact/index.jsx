@@ -65,12 +65,12 @@ export function Contact() {
               onChange={handleChange}
               placeholder={t('contact.placeholders.name')}
               required
-              autocomplete="name"
+              autoComplete="name"
             />
             <FormInput
               name="email"
               type="email"
-              autocomplete="email"
+              autoComplete="email"
               value={form.email}
               onChange={handleChange}
               placeholder={t('contact.placeholders.email')}
@@ -78,7 +78,7 @@ export function Contact() {
             />
             <FormInput
               name="assunto"
-              autocomplete="subject"
+              autoComplete="subject"
               value={form.assunto}
               onChange={handleChange}
               placeholder={t('contact.placeholders.subject')}

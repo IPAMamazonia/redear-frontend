@@ -8,21 +8,24 @@ import {
   filtrarOpcoes,
   tituloSelecao,
   todosVisiveisSelecionados,
-} from '../utils/sensor-select';
+} from './utils';
 import { SensorSelectPanel } from './sensor-select-panel';
 
 /**
- * Dropdown estilizado dos filtros do gráfico. Suporta multi- ou single-select.
- * Formato visual sempre o mesmo (botão + painel com busca), conforme usados
- * em sensores, municípios e estados.
+ * Dropdown estilizado de seleção compartilhado. Suporta multi- ou single-select.
+ * Formato visual sempre o mesmo (botão + painel com busca), usado tanto no
+ * gráfico quanto na exportação para sensores, municípios e estados.
  *
- * @param {Array<{id: string, label: string, sublabel?: string}>} props.options   - Opções.
- * @param {string[] | string} props.value - Lista de ids (multi) ou id único (single).
- * @param {(value: string[] | string) => void} props.onChange - Callback com a nova seleção.
+ * @param {Array<{id: string|number, label: string, sublabel?: string}>} props.options - Opções.
+ * @param {Array<string|number> | string | number | null} props.value - Ids (multi) ou id único (single).
+ * @param {(value: Array<string|number> | string | number) => void} props.onChange - Callback com a nova seleção.
  * @param {string} props.placeholder - Texto quando nada selecionado.
  * @param {string} [props.icon]      - Ícone (Font Awesome) exibido no botão.
  * @param {boolean} [props.multiple] - Se true, permite multi-seleção com checkboxes.
  * @param {string} [props.itemWord]  - Substantivo usado no resumo do multi-select.
+ * @param {boolean} [props.disabled] - Desabilita o dropdown.
+ * @param {string}  [props.selectedSingularKey] - Chave i18n do singular do resumo.
+ * @param {string}  [props.selectedPluralKey]   - Chave i18n do plural do resumo.
  */
 export function SensorSelect({
   options,
@@ -32,6 +35,9 @@ export function SensorSelect({
   icon = 'fa-microchip',
   multiple = false,
   itemWord = 'sensor',
+  disabled = false,
+  selectedSingularKey = 'chart.selectedSingular',
+  selectedPluralKey = 'chart.selectedPlural',
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -47,9 +53,19 @@ export function SensorSelect({
   const temValor = multiple ? quantidade > 0 : Boolean(opcaoAtiva);
 
   const tituloBotao = () =>
-    tituloSelecao({ multiple, quantidade, opcaoAtiva, placeholder, itemWord, t });
+    tituloSelecao({
+      multiple,
+      quantidade,
+      opcaoAtiva,
+      placeholder,
+      itemWord,
+      t,
+      selectedSingularKey,
+      selectedPluralKey,
+    });
 
   const toggle = (id) => {
+    if (disabled) return;
     if (multiple) {
       onChange(alternarSelecao(value, id));
     } else {
@@ -70,11 +86,12 @@ export function SensorSelect({
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
+        disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className={`w-full flex items-center justify-between gap-2 px-3 py-2 border border-black/10 rounded-[10px] text-sm bg-card backdrop-blur cursor-pointer focus:outline-none focus:border-[#FF6D00] transition-colors duration-[0.35s] ${
-          temValor ? 'text-text-dark' : 'text-text-light'
-        }`}
+        className={`w-full flex items-center justify-between gap-2 px-3 py-2 border border-black/10 rounded-[10px] text-sm bg-card backdrop-blur focus:outline-none focus:border-[#FF6D00] transition-colors duration-[0.35s] ${
+          disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
+        } ${temValor ? 'text-text-dark' : 'text-text-light'}`}
       >
         <span className="flex items-center gap-2 truncate">
           <i className={`fas ${icon} text-[12px] text-verde-escuro`} />
@@ -87,7 +104,7 @@ export function SensorSelect({
         />
       </button>
 
-      {open && (
+      {open && !disabled && (
         <SensorSelectPanel
           options={options}
           filtered={filtrados}

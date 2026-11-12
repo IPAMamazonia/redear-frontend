@@ -1,5 +1,5 @@
 /**
- * Item do dropdown de filtros.
+ * Item do dropdown de seleção compartilhado.
  *
  * @param {object} props
  * @param {{id: string, label: string, sublabel?: string}} props.option - Opção renderizada.
