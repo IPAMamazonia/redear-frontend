@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setLanguage as setLanguageAction } from '@/store/slices/uiSlice';
+import { selectLanguage, setLanguage as setLanguageAction } from '@/store/slices/uiSlice';
 import { translate, syncLanguage, getLocale, getLanguage, LANGUAGES } from './translate';
 
 /**
@@ -17,7 +17,7 @@ import { translate, syncLanguage, getLocale, getLanguage, LANGUAGES } from './tr
  * }}
  */
 export function useTranslation() {
-  const language = useSelector((state) => state.ui.language);
+  const language = useSelector(selectLanguage);
   const dispatch = useDispatch();
 
   const t = useCallback((key, params) => translate(language, key, params), [language]);

@@ -1,4 +1,4 @@
-import { setSelectedVariable } from '@/store/slices/uiSlice';
+import { selectSelectedVariable, setSelectedVariable } from '@/store/slices/uiSlice';
 import { MAP_VARIABLES } from '@/rules';
 import { useTranslation } from '@/i18n';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,7 +8,7 @@ import { useClickOutside } from '@/hooks/useClickOutside';
 export function VariableSelector({ openDown = false }) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const selected = useSelector((state) => state.ui.selectedVariable);
+  const selected = useSelector(selectSelectedVariable);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 

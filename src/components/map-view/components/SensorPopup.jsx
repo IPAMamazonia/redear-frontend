@@ -1,6 +1,7 @@
 import { getVariableByKey, getSensorValue } from '@/helpers';
 import { OFFLINE } from '@/rules/faixas';
 import { SensorMiniChart } from './SensorMiniChart';
+import { selectSelectedVariable } from '@/store/slices/uiSlice';
 import { useTranslation, getLocale } from '@/i18n';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
@@ -8,7 +9,7 @@ import { useState } from 'react';
 export function SensorPopup({ sensor, onClose }) {
   const { t, language } = useTranslation();
   const [showChart, setShowChart] = useState(false);
-  const selectedVariableKey = useSelector((state) => state.ui.selectedVariable);
+  const selectedVariableKey = useSelector(selectSelectedVariable);
 
   const variable = getVariableByKey(selectedVariableKey);
   const value = getSensorValue(sensor, variable);

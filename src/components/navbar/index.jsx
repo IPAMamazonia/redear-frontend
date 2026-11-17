@@ -1,20 +1,18 @@
-import { toggleMobileMenu, closeMobileMenu, setScrolled } from '@/store/slices/uiSlice';
-import { useSelector, useDispatch } from 'react-redux';
 import { SegmentedControl } from '@/components';
 import { scrollToAnchor } from '@/helpers/scroll-to-anchor';
 import { useTranslation } from '@/i18n';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import logo from '@/assets/png/Logo RedeAR - IPAM vetores-01.png';
 
 /**
  * Barra de navegação fixa no topo com menu mobile, links de âncora,
  * seletor de idioma e efeito de scroll.
  *
- * Estados globais usados: ui.mobileMenuOpen, ui.scrolled, ui.language.
+ * O menu mobile e o efeito de scroll são estado local do componente.
  */
 export function Navbar() {
-  const { mobileMenuOpen, scrolled } = useSelector((s) => s.ui);
-  const dispatch = useDispatch();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { language, t, setLanguage } = useTranslation();
 
   const LINKS = [
@@ -28,15 +26,15 @@ export function Navbar() {
   ];
 
   useEffect(() => {
-    const onScroll = () => dispatch(setScrolled(window.scrollY > 50));
+    const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [dispatch]);
+  }, []);
 
   const handleNav = (e, href) => {
     e.preventDefault();
     scrollToAnchor(href);
-    dispatch(closeMobileMenu());
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -55,7 +53,7 @@ export function Navbar() {
 
       <button
         className="md:hidden flex flex-col gap-[5px] cursor-pointer bg-transparent border-none p-[5px]"
-        onClick={() => dispatch(toggleMobileMenu())}
+        onClick={() => setMobileMenuOpen((open) => !open)}
         aria-label={t('nav.menu')}
       >
         <span

@@ -4,8 +4,6 @@ import { getLanguage } from '@/i18n/translate';
 const uiSlice = createSlice({
   name: 'ui',
   initialState: {
-    mobileMenuOpen: false,
-    scrolled: false,
     selectedVariable: 'pm25',
     language: getLanguage(),
   },
@@ -13,26 +11,15 @@ const uiSlice = createSlice({
     setLanguage: (state, action) => {
       state.language = action.payload;
     },
-    toggleMobileMenu: (state) => {
-      state.mobileMenuOpen = !state.mobileMenuOpen;
-    },
-    closeMobileMenu: (state) => {
-      state.mobileMenuOpen = false;
-    },
-    setScrolled: (state, action) => {
-      state.scrolled = action.payload;
-    },
     setSelectedVariable: (state, action) => {
       state.selectedVariable = action.payload;
     },
   },
 });
 
-export const {
-  toggleMobileMenu,
-  closeMobileMenu,
-  setScrolled,
-  setSelectedVariable,
-  setLanguage,
-} = uiSlice.actions;
+export const { setSelectedVariable, setLanguage } = uiSlice.actions;
+
+export const selectSelectedVariable = (state) => state.ui.selectedVariable;
+export const selectLanguage = (state) => state.ui.language;
+
 export default uiSlice.reducer;

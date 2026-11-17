@@ -1,6 +1,7 @@
 import { ChartFilters, ChartState, DateRangeInput, FaixasLegend, PeriodSelector, SensorChips } from './components';
 import { selectReadings, selectReadingsLoading, selectReadingsError } from '@/store/slices/readingsSlice';
-import { VariableSelector } from '@/components/map-view/components/VariableSelector';
+import { VariableSelector } from '@/components/map-view/components';
+import { selectSelectedVariable } from '@/store/slices/uiSlice';
 import { GlassCard, GradientText, Section, SectionHeading } from '@/components';
 import { useChartInstance } from './hooks/useChartInstance';
 import { useChartReadings } from './hooks/useChartReadings';
@@ -22,7 +23,7 @@ export function AQIChart() {
   const readingsLoading = useSelector(selectReadingsLoading);
   const readingsError = useSelector(selectReadingsError);
 
-  const selectedVariableKey = useSelector((state) => state.ui.selectedVariable);
+  const selectedVariableKey = useSelector(selectSelectedVariable);
 
   const [periodo, setPeriodo] = useState('1D');
   const [modoPeriodo, setModoPeriodo] = useState('preset'); // 'preset' | 'manual'

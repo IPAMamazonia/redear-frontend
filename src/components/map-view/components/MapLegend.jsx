@@ -1,11 +1,12 @@
 import { COR_SEM_DADOS, OFFLINE } from '@/rules/faixas';
 import { getVariableByKey } from '@/helpers';
+import { selectSelectedVariable } from '@/store/slices/uiSlice';
 import { useTranslation } from '@/i18n';
 import { useSelector } from 'react-redux';
 
 export function MapLegend() {
   const { t } = useTranslation();
-  const selectedVariableKey = useSelector((state) => state.ui.selectedVariable);
+  const selectedVariableKey = useSelector(selectSelectedVariable);
   const variable = getVariableByKey(selectedVariableKey);
 
   return (

@@ -10,6 +10,7 @@ import {
   VariableSelector,
 } from './components';
 import { fetchSensors, selectSensors, selectSensorsError, selectSensorsLoading } from '@/store/slices/sensorsSlice';
+import { selectSelectedVariable } from '@/store/slices/uiSlice';
 import { createMapInstance, createSensorFeatures, createSpiderfyController } from './helpers';
 import { CLUSTER_DISTANCE, NODE_RADIUS } from './rules';
 import { GradientText, Section, SectionHeading } from '@/components';
@@ -27,7 +28,7 @@ export function MapView() {
   const sensors = useSelector(selectSensors);
   const loading = useSelector(selectSensorsLoading);
   const error = useSelector(selectSensorsError);
-  const selectedVariableKey = useSelector((state) => state.ui.selectedVariable);
+  const selectedVariableKey = useSelector(selectSelectedVariable);
 
   const mapRef = useRef(null);
   const wrapperRef = useRef(null);
