@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
 
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { useTranslation } from '@/i18n';
@@ -15,6 +15,9 @@ import { SensorSelectPanel } from './sensor-select-panel';
  * Dropdown estilizado de seleção compartilhado. Suporta multi- ou single-select.
  * Formato visual sempre o mesmo (botão + painel com busca), usado tanto no
  * gráfico quanto na exportação para sensores, municípios e estados.
+ *
+ * O painel segue o padrão ARIA listbox: setas navegam, Enter/Espaço alternam a
+ * opção e Escape fecha devolvendo o foco ao botão.
  *
  * @param {Array<{id: string|number, label: string, sublabel?: string}>} props.options - Opções.
  * @param {Array<string|number> | string | number | null} props.value - Ids (multi) ou id único (single).
@@ -43,6 +46,9 @@ export function SensorSelect({
   const [open, setOpen] = useState(false);
   const [busca, setBusca] = useState('');
   const ref = useRef(null);
+  const triggerRef = useRef(null);
+  const listboxId = useId();
+  const searchId = useId();
 
   useClickOutside(ref, () => setOpen(false), open);
 
@@ -64,13 +70,24 @@ export function SensorSelect({
       selectedPluralKey,
     });
 
+  const closeAndFocus = () => {
+    setOpen(false);
+    triggerRef.current?.focus();
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key !== 'Escape' || !open) return;
+    event.stopPropagation();
+    closeAndFocus();
+  };
+
   const toggle = (id) => {
     if (disabled) return;
     if (multiple) {
       onChange(alternarSelecao(value, id));
     } else {
       onChange(id);
-      setOpen(false);
+      closeAndFocus();
     }
   };
 
@@ -82,30 +99,35 @@ export function SensorSelect({
   };
 
   return (
-    <div className="SensorSelectComponent relative min-w-[220px] max-md:w-full" ref={ref}>
+    <div className="SensorSelectComponent relative min-w-[220px] max-md:w-full" ref={ref} onKeyDown={handleKeyDown}>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((current) => !current)}
         disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}
+        aria-controls={open ? listboxId : undefined}
         className={`w-full flex items-center justify-between gap-2 px-3 py-2 border border-black/10 rounded-[10px] text-sm bg-card backdrop-blur focus:outline-none focus:border-laranja transition-colors duration-[0.35s] ${
           disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
         } ${temValor ? 'text-text-dark' : 'text-text-light'}`}
       >
         <span className="flex items-center gap-2 truncate">
-          <i className={`fas ${icon} text-[12px] text-verde-escuro`} />
+          <i className={`fas ${icon} text-[12px] text-verde-escuro`} aria-hidden="true" />
           <span className="truncate">{tituloBotao()}</span>
         </span>
         <i
           className={`fas fa-chevron-down text-[10px] text-text-light transition-transform duration-300 ${
             open ? 'rotate-180' : ''
           }`}
+          aria-hidden="true"
         />
       </button>
 
       {open && !disabled && (
         <SensorSelectPanel
+          id={listboxId}
+          searchId={searchId}
           options={options}
           filtered={filtrados}
           multiple={multiple}

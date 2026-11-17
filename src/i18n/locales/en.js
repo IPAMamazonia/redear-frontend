@@ -33,6 +33,10 @@ export default {
   hero: {
     prev: 'Previous',
     next: 'Next',
+    pause: 'Pause slideshow',
+    play: 'Resume slideshow',
+    goToSlide: 'Go to slide {index}',
+    slideNavigation: 'Slide navigation',
     slides: [
       {
         title: 'RedeAr: Monitoring Air Quality',
@@ -234,6 +238,7 @@ export default {
     placeholderMunicipality: 'Select a municipality',
     placeholderState: 'Select a state',
     search: 'Search...',
+    options: 'Options',
     unmarkVisible: 'Unmark visible',
     markVisible: 'Mark visible',
     clearCount: 'Clear ({count})',

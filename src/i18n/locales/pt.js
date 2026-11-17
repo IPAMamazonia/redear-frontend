@@ -35,6 +35,10 @@ export default {
   hero: {
     prev: 'Anterior',
     next: 'Próximo',
+    pause: 'Pausar apresentação',
+    play: 'Retomar apresentação',
+    goToSlide: 'Ir para o slide {index}',
+    slideNavigation: 'Navegação dos slides',
     slides: [
       {
         title: 'RedeAr: Monitorando a Qualidade do Ar',
@@ -236,6 +240,7 @@ export default {
     placeholderMunicipality: 'Selecione um município',
     placeholderState: 'Selecione um estado',
     search: 'Buscar...',
+    options: 'Opções',
     unmarkVisible: 'Desmarcar visíveis',
     markVisible: 'Marcar visíveis',
     clearCount: 'Limpar ({count})',

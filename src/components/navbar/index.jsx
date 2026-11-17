@@ -1,7 +1,8 @@
 import { SegmentedControl } from '@/components';
+import { useClickOutside } from '@/hooks/useClickOutside';
 import { scrollToAnchor } from '@/helpers/scroll-to-anchor';
 import { useTranslation } from '@/i18n';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import logo from '@/assets/png/Logo RedeAR - IPAM vetores-01.png';
 
 /**
@@ -13,7 +14,24 @@ import logo from '@/assets/png/Logo RedeAR - IPAM vetores-01.png';
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const navRef = useRef(null);
+  const menuButtonRef = useRef(null);
   const { language, t, setLanguage } = useTranslation();
+
+  useClickOutside(navRef, () => setMobileMenuOpen(false), mobileMenuOpen);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return undefined;
+
+    const onKeyDown = (event) => {
+      if (event.key !== 'Escape') return;
+      setMobileMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [mobileMenuOpen]);
 
   const LINKS = [
     { href: '#sobre', label: t('nav.about') },
@@ -39,6 +57,7 @@ export function Navbar() {
 
   return (
     <nav
+      ref={navRef}
       className={`NavbarComponent fixed top-0 left-0 right-0 z-50 h-[72px] flex items-center justify-between px-[5%] transition-all duration-[0.35s] ease-out
         ${scrolled ? 'bg-white/85 shadow-[0_1px_30px_rgba(0,0,0,0.08)]' : 'bg-white/70'}
         backdrop-blur-xl backdrop-saturate-150 border-b border-white/25`}
@@ -52,9 +71,13 @@ export function Navbar() {
       </a>
 
       <button
+        ref={menuButtonRef}
+        type="button"
         className="md:hidden flex flex-col gap-[5px] cursor-pointer bg-transparent border-none p-[5px]"
         onClick={() => setMobileMenuOpen((open) => !open)}
         aria-label={t('nav.menu')}
+        aria-expanded={mobileMenuOpen}
+        aria-controls="mobile-nav"
       >
         <span
           className={`block w-[26px] h-[2.5px] bg-text-dark rounded transition-all duration-[0.35s] ease-out ${
@@ -74,6 +97,7 @@ export function Navbar() {
       </button>
 
       <ul
+        id="mobile-nav"
         className={`list-none flex items-center gap-8 m-0
           ${mobileMenuOpen ? 'flex' : 'hidden md:flex'}
           ${

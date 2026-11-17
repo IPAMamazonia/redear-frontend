@@ -7,14 +7,17 @@ import { AUTOPLAY_MS } from './slides';
  * Controla o slide ativo e a pausa temporária do autoplay.
  *
  * Qualquer navegação manual pausa o autoplay por `autoplayMs` e reinicia a
- * contagem a cada clique, sem empilhar timeouts.
+ * contagem a cada clique, sem empilhar timeouts. A pausa externa (`paused`)
+ * cobre hover, foco, aba oculta e preferência por menos movimento.
  *
  * @param {number} total - Quantidade de slides.
- * @param {number} [autoplayMs=AUTOPLAY_MS] - Intervalo do autoplay em ms.
+ * @param {object} [options]
+ * @param {number} [options.autoplayMs=AUTOPLAY_MS] - Intervalo do autoplay em ms.
+ * @param {boolean} [options.paused=false] - Pausa externa, aplicada enquanto verdadeira.
  */
-export function useCarousel(total, autoplayMs = AUTOPLAY_MS) {
+export function useCarousel(total, { autoplayMs = AUTOPLAY_MS, paused = false } = {}) {
   const [current, setCurrent] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [manuallyPaused, setManuallyPaused] = useState(false);
   const resumeTimeoutRef = useRef(null);
 
   const clearResume = useCallback(() => {
@@ -32,17 +35,17 @@ export function useCarousel(total, autoplayMs = AUTOPLAY_MS) {
   }, [total]);
 
   const pauseTemporarily = useCallback(() => {
-    setPaused(true);
+    setManuallyPaused(true);
     clearResume();
     resumeTimeoutRef.current = setTimeout(() => {
       resumeTimeoutRef.current = null;
-      setPaused(false);
+      setManuallyPaused(false);
     }, autoplayMs);
   }, [autoplayMs, clearResume]);
 
   useEffect(() => clearResume, [clearResume]);
 
-  useInterval(next, paused ? null : autoplayMs);
+  useInterval(next, paused || manuallyPaused ? null : autoplayMs);
 
   const goTo = useCallback(
     (index) => {
