@@ -85,15 +85,14 @@ class APIService {
   }
 
   /**
-   * Lightweight fetch wrapper that parses JSON and swallows network errors.
+   * Lightweight fetch wrapper that parses JSON and propagates network errors.
    * @param {string}  url
    * @param {Object}  [options]
-   * @returns {Promise<Object|undefined>}
+   * @returns {Promise<Object>}
    */
   async _fetchJson(url, options = {}) {
-    return fetch(url, options)
-      .then((r) => r.json())
-      .catch((e) => console.error(e));
+    const res = await fetch(url, options);
+    return res.json();
   }
 
   /**
