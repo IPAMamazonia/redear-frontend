@@ -11,7 +11,7 @@ import {
 } from './components';
 import { fetchSensors, selectSensors, selectSensorsError, selectSensorsLoading } from '@/store/slices/sensorsSlice';
 import { createMapInstance, createSensorFeatures, createSpiderfyController } from './helpers';
-import { CLUSTER_DISTANCE, NODE_RADIUS, NODE_RADIUS_CLUSTER_OFF } from './rules';
+import { CLUSTER_DISTANCE, NODE_RADIUS } from './rules';
 import { GradientText, Section, SectionHeading } from '@/components';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -168,7 +168,7 @@ export function MapView() {
       clusterSourceRef.current.setDistance(clusterEnabled ? CLUSTER_DISTANCE : 0);
     }
 
-    setNodeRadiusRef.current?.(clusterEnabled ? NODE_RADIUS : NODE_RADIUS_CLUSTER_OFF);
+    setNodeRadiusRef.current?.(NODE_RADIUS);
 
     buildFeatures(sensors);
   }, [clusterEnabled, buildFeatures, sensors]);

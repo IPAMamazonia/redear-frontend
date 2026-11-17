@@ -70,14 +70,3 @@ export function montarFiltro(sensors, selecao) {
 
   return null;
 }
-
-export function montarLocalId(selecao) {
-  const { modo, sensores, municipio, estado } = selecao;
-
-  if (modo === MODO.MUNICIPIO && municipio) return `municipio:${municipio}`;
-  if (modo === MODO.ESTADO && estado) return `estado:${estado}`;
-  if (modo === MODO.SENSORES && sensores?.length === 1) return `sensor:${sensores[0]}`;
-  if (modo === MODO.SENSORES && sensores?.length > 1) return `sensores:${sensores.length}`;
-
-  return null;
-}
