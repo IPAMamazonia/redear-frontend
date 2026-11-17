@@ -25,7 +25,10 @@ function normalizeSensor(s) {
   const minutesInMs = 60 * 1000;
   const onlineWindow = 15 * minutesInMs; // 15 minutes in milliseconds
 
-  const latestReading = readings[0];
+  // A confiabilidade deve olhar a mesma leitura que define `latest_reading`.
+  const latestReading = readings.find(
+    (reading) => reading.datetime && new Date(reading.datetime).getTime() === latestTimestamp
+  );
   const v1 = latestReading?.pms1_pm2_5_env;
   const v2 = latestReading?.pms2_pm2_5_env;
   const maxVal = Math.max(v1 ?? 0, v2 ?? 0);
@@ -56,9 +59,13 @@ function normalizeSensor(s) {
 export const fetchSensors = createAsyncThunk(
   'sensors/fetchSensors',
   async () => {
-    const data = await api.fetchSensors();
-    // `_fetchJson` devolve `undefined` em falha de rede e o corpo de erro em
-    // respostas HTTP inválidas; nenhum dos dois é uma lista de sensores.
+    let data;
+    try {
+      data = await api.fetchSensors();
+    } catch {
+      throw new Error('errors.fetchSensors');
+    }
+
     if (!Array.isArray(data)) throw new Error('errors.fetchSensors');
     return data.map(normalizeSensor).filter(Boolean);
   },

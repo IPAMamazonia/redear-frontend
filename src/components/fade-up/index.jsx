@@ -13,18 +13,23 @@ export function FadeUp({ children, delay = 0 }) {
     const el = ref.current;
     if (!el) return;
 
+    let timeoutId;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => el.classList.add('visible'), delay);
-          observer.unobserve(el);
-        }
+        if (!entry.isIntersecting) return;
+
+        timeoutId = setTimeout(() => el.classList.add('visible'), delay);
+        observer.unobserve(el);
       },
       { threshold: 0.15 }
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      clearTimeout(timeoutId);
+    };
   }, [delay]);
 
   return (

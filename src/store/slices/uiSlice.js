@@ -5,7 +5,6 @@ const uiSlice = createSlice({
   name: 'ui',
   initialState: {
     mobileMenuOpen: false,
-    activeFaqIndex: null,
     scrolled: false,
     selectedVariable: 'pm25',
     language: getLanguage(),
@@ -20,9 +19,6 @@ const uiSlice = createSlice({
     closeMobileMenu: (state) => {
       state.mobileMenuOpen = false;
     },
-    setActiveFaq: (state, action) => {
-      state.activeFaqIndex = action.payload;
-    },
     setScrolled: (state, action) => {
       state.scrolled = action.payload;
     },
@@ -35,7 +31,6 @@ const uiSlice = createSlice({
 export const {
   toggleMobileMenu,
   closeMobileMenu,
-  setActiveFaq,
   setScrolled,
   setSelectedVariable,
   setLanguage,

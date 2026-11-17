@@ -40,6 +40,18 @@ export function ExportFeedback({ formError, error, result, onRetry, onDownloadAg
     );
   }
 
+  if (error?.code === 'CANCELLED') {
+    return (
+      <div
+        role="status"
+        className="mt-5 flex items-center gap-2 rounded-[10px] border border-black/10 bg-white/60 px-4 py-3 text-sm text-text-light"
+      >
+        <i className="fas fa-circle-info" />
+        <span>{t(error.messageKey)}</span>
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div
