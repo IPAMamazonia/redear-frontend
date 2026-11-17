@@ -1,4 +1,4 @@
-import { calcularYMax, criarPluginFaixas, faixasVisiveis } from '@/components/chart/utils/faixas-plugin';
+import { calcularYMax, criarPluginFaixas, faixasVisiveis } from '@/components/chart/utils';
 import { getLocale } from '@/i18n/translate';
 
 const PMS_COLORS = {

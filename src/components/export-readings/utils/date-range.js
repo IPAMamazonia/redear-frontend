@@ -38,6 +38,29 @@ export function addMonthsClamped(isoDate, months) {
   return new Date(Date.UTC(targetYear, normalizedMonth, targetDay)).toISOString().slice(0, 10);
 }
 
+/**
+ * Formata uma data `YYYY-MM-DD` no padrão curto do locale.
+ *
+ * O horário é fixado ao meio-dia de São Paulo para evitar deslocamento de dia
+ * ao converter a data para UTC.
+ *
+ * @param {string} date - Data no formato `YYYY-MM-DD`.
+ * @param {string} locale - Locale BCP-47 usado na formatação.
+ * @returns {string} Data formatada ou o valor original quando inválida.
+ */
+export function formatDate(date, locale) {
+  if (!date) return '—';
+
+  const parsed = new Date(`${date}T12:00:00-03:00`);
+  if (Number.isNaN(parsed.getTime())) return date;
+
+  return parsed.toLocaleDateString(locale, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}
+
 /** Período padrão exibido no formulário: últimos 2 meses de calendário. */
 export function defaultDateRange() {
   const endDate = todayInSaoPaulo();

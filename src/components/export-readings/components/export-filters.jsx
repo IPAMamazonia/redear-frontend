@@ -13,6 +13,45 @@ const MODES = [
 const INPUT_CLASS =
   'w-full px-3 py-2 border border-black/10 rounded-[10px] text-sm text-text-dark bg-card backdrop-blur focus:outline-none focus:border-laranja transition-colors disabled:opacity-60 disabled:cursor-not-allowed';
 
+const PRECISION_OPTIONS = Array.from({ length: 11 }, (_, value) => value);
+
+/**
+ * Monta a configuração do `SensorSelect` para o modo de abrangência ativo.
+ *
+ * @param {object} params
+ * @param {object} params.selecao - Modo e seleção atual.
+ * @param {Array<{id: number, label: string, sublabel?: string}>} params.sensorOptions
+ * @param {Record<string, Array<{id: number, label: string, sublabel?: string}>>} params.locationOptions
+ * @param {(selecao: object) => void} params.onSelectionChange
+ * @returns {Record<string, object>} Configuração por modo de exportação.
+ */
+function buildModeConfig({ selecao, sensorOptions, locationOptions, onSelectionChange }) {
+  return {
+    [EXPORT_MODE.SENSORS]: {
+      multiple: true,
+      icon: 'fa-microchip',
+      placeholderKey: 'exportData.placeholderSensors',
+      options: sensorOptions,
+      value: selecao.sensores,
+      onChange: (sensores) => onSelectionChange({ ...selecao, sensores }),
+    },
+    [EXPORT_MODE.MUNICIPALITY]: {
+      icon: 'fa-map-marker-alt',
+      placeholderKey: 'exportData.placeholderMunicipality',
+      options: locationOptions.municipio,
+      value: selecao.municipioId,
+      onChange: (municipioId) => onSelectionChange({ ...selecao, municipioId }),
+    },
+    [EXPORT_MODE.STATE]: {
+      icon: 'fa-flag',
+      placeholderKey: 'exportData.placeholderState',
+      options: locationOptions.estado,
+      value: selecao.estadoId,
+      onChange: (estadoId) => onSelectionChange({ ...selecao, estadoId }),
+    },
+  };
+}
+
 /**
  * Formulário de filtros da exportação.
  *
@@ -42,30 +81,12 @@ export function ExportFilters({
 }) {
   const { t } = useTranslation();
 
-  const modeConfig = {
-    [EXPORT_MODE.SENSORS]: {
-      multiple: true,
-      icon: 'fa-microchip',
-      placeholderKey: 'exportData.placeholderSensors',
-      options: sensorOptions,
-      value: selecao.sensores,
-      onChange: (sensores) => onSelectionChange({ ...selecao, sensores }),
-    },
-    [EXPORT_MODE.MUNICIPALITY]: {
-      icon: 'fa-map-marker-alt',
-      placeholderKey: 'exportData.placeholderMunicipality',
-      options: locationOptions.municipio,
-      value: selecao.municipioId,
-      onChange: (municipioId) => onSelectionChange({ ...selecao, municipioId }),
-    },
-    [EXPORT_MODE.STATE]: {
-      icon: 'fa-flag',
-      placeholderKey: 'exportData.placeholderState',
-      options: locationOptions.estado,
-      value: selecao.estadoId,
-      onChange: (estadoId) => onSelectionChange({ ...selecao, estadoId }),
-    },
-  };
+  const modeConfig = buildModeConfig({
+    selecao,
+    sensorOptions,
+    locationOptions,
+    onSelectionChange,
+  });
 
   const config = modeConfig[selecao.modo] ?? modeConfig[EXPORT_MODE.SENSORS];
 
@@ -152,7 +173,7 @@ export function ExportFilters({
           onChange={(event) => onPrecisionChange(Number(event.target.value))}
           className={INPUT_CLASS}
         >
-          {Array.from({ length: 11 }, (_, value) => (
+          {PRECISION_OPTIONS.map((value) => (
             <option key={value} value={value}>
               {value}
             </option>

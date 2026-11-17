@@ -1,18 +1,8 @@
 import { useTranslation } from '@/i18n';
 
+import { ExportErrorAlert } from './export-error-alert';
+import { formatDate } from '../utils/date-range';
 import { formatBytes } from '../utils/download';
-
-function formatDate(date, locale) {
-  if (!date) return '—';
-  const parsed = new Date(`${date}T12:00:00-03:00`);
-  if (Number.isNaN(parsed.getTime())) return date;
-
-  return parsed.toLocaleDateString(locale, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-}
 
 /**
  * Mensagens de erro de validação/API e confirmação de download.
@@ -54,23 +44,12 @@ export function ExportFeedback({ formError, error, result, onRetry, onDownloadAg
 
   if (error) {
     return (
-      <div
-        role="alert"
-        className="mt-5 flex flex-wrap items-center gap-3 rounded-[10px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-      >
-        <i className="fas fa-triangle-exclamation" />
-        <span className="flex-1 min-w-[220px]">{t(error.messageKey)}</span>
-        {error.code !== 'CANCELLED' && (
-          <button
-            type="button"
-            onClick={onRetry}
-            className="cursor-pointer rounded-[10px] border border-red-300 bg-white/70 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-white transition-colors"
-          >
-            <i className="fas fa-rotate-right mr-1" />
-            {t('exportData.retry')}
-          </button>
-        )}
-      </div>
+      <ExportErrorAlert
+        className="mt-5"
+        message={t(error.messageKey)}
+        onRetry={onRetry}
+        retryLabel={t('exportData.retry')}
+      />
     );
   }
 

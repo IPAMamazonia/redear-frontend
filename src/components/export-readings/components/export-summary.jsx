@@ -1,17 +1,5 @@
+import { formatDate } from '../utils/date-range';
 import { useTranslation } from '@/i18n';
-
-function formatDate(date, locale) {
-  if (!date) return '—';
-
-  const parsed = new Date(`${date}T12:00:00-03:00`);
-  if (Number.isNaN(parsed.getTime())) return date;
-
-  return parsed.toLocaleDateString(locale, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-}
 
 /**
  * Resumo da seleção antes do download.

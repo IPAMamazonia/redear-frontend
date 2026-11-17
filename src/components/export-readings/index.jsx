@@ -6,8 +6,15 @@ import {
   prepareExportRequest,
   resolveSelectedSensors,
 } from './utils/build-export-payload';
+import {
+  ExportErrorAlert,
+  ExportFeedback,
+  ExportFilters,
+  ExportHelp,
+  ExportProgress,
+  ExportSummary,
+} from './components';
 import { fetchSensors, selectSensors, selectSensorsError, selectSensorsLoading } from '@/store/slices/sensorsSlice';
-import { ExportFeedback, ExportFilters, ExportHelp, ExportProgress, ExportSummary } from './components';
 import { GlassCard, GradientText, Section, SectionHeading } from '@/components';
 import { defaultDateRange, todayInSaoPaulo } from './utils/date-range';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -130,21 +137,12 @@ export function ReadingsExport() {
       <div className="max-w-[1280px] mx-auto">
         <GlassCard className="p-6 max-md:p-4">
           {sensorsError && (
-            <div
-              role="alert"
-              className="mb-5 flex flex-wrap items-center gap-3 rounded-[10px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            >
-              <i className="fas fa-triangle-exclamation" />
-              <span className="flex-1">{t(sensorsError)}</span>
-              <button
-                type="button"
-                onClick={() => dispatch(fetchSensors())}
-                className="cursor-pointer rounded-[10px] border border-red-300 bg-white/70 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-white transition-colors"
-              >
-                <i className="fas fa-rotate-right mr-1" />
-                {t('common.retry')}
-              </button>
-            </div>
+            <ExportErrorAlert
+              className="mb-5"
+              message={t(sensorsError)}
+              onRetry={() => dispatch(fetchSensors())}
+              retryLabel={t('common.retry')}
+            />
           )}
 
           <form onSubmit={handleSubmit} aria-busy={exporting}>
