@@ -1,40 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { APIService } from '@/API/APIService';
-import { purpleAirTempParaCelsius } from '@/helpers/readings';
+import { normalizeReading } from '@/helpers/readings';
 
 const api = new APIService();
 
-function parseReadingDatetime(value) {
-  if (value instanceof Date) {
-    return Number.isNaN(value.getTime()) ? null : value.toISOString();
-  }
-  if (typeof value !== 'string') return null;
-
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-
-  const hasTimezone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(trimmed);
-  const candidate = hasTimezone ? trimmed : `${trimmed.replace(/\s+/g, 'T')}Z`;
-  const date = new Date(candidate);
-
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
-}
-
-function normalizeReading(r) {
-  if (!r || typeof r !== 'object') return null;
-
-  const reading = { ...r, datetime: parseReadingDatetime(r.datetime) };
-
-  if (r.source === 'purpleAir') {
-    reading.bme_temperature = purpleAirTempParaCelsius(r.bme_temperature);
-  }
-
-  return reading;
-}
-
 export const fetchReadings = createAsyncThunk('readings/fetchReadings', async ({ _sig, ...params }) => {
   const data = await api.fetchSensorReadings(params);
-  const items = (data?.readings ?? [])?.map(normalizeReading).filter(Boolean) ?? [];
+  const items = (data?.readings ?? []).map((reading) => normalizeReading(reading, reading.source)).filter(Boolean);
   return { items, _sig };
 });
 

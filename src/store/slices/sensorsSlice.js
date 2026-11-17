@@ -1,39 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { APIService } from '@/API/APIService';
-import { purpleAirTempParaCelsius } from '@/helpers/readings';
+import { normalizeReadings } from '@/helpers/readings';
 
 const api = new APIService();
-
-function parseReadingDatetime(value) {
-  if (value instanceof Date) {
-    return Number.isNaN(value.getTime()) ? null : value.toISOString();
-  }
-
-  if (typeof value !== 'string') return null;
-
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-
-  const hasTimezone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(trimmed);
-  const candidate = hasTimezone ? trimmed : `${trimmed.replace(/\s+/g, 'T')}Z`;
-  const date = new Date(candidate);
-
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
-}
-
-function normalizeReadings(readings, source) {
-  if (!Array.isArray(readings)) return [];
-
-  return readings
-    .filter((r) => r && typeof r === 'object')
-    .map((r) => {
-      const normalized = { ...r, datetime: parseReadingDatetime(r.datetime) };
-      if (source === 'purpleAir') {
-        normalized.bme_temperature = purpleAirTempParaCelsius(normalized.bme_temperature);
-      }
-      return normalized;
-    });
-}
 
 function normalizeSensor(s) {
   if (!s || typeof s !== 'object') return null;
@@ -63,7 +32,7 @@ function normalizeSensor(s) {
   const absDiff = Math.abs((v1 ?? 0) - (v2 ?? 0));
   const relDiff = maxVal === 0 ? 0 : absDiff / maxVal;
 
-  const isTrustworthy = absDiff <= 10 || relDiff < 0.40;
+  const isTrustworthy = absDiff <= 10 || relDiff < 0.4;
 
   return {
     id: s.sensor_id,
