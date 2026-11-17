@@ -89,7 +89,7 @@ export function SensorSelect({
         disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className={`w-full flex items-center justify-between gap-2 px-3 py-2 border border-black/10 rounded-[10px] text-sm bg-card backdrop-blur focus:outline-none focus:border-[#FF6D00] transition-colors duration-[0.35s] ${
+        className={`w-full flex items-center justify-between gap-2 px-3 py-2 border border-black/10 rounded-[10px] text-sm bg-card backdrop-blur focus:outline-none focus:border-laranja transition-colors duration-[0.35s] ${
           disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
         } ${temValor ? 'text-text-dark' : 'text-text-light'}`}
       >

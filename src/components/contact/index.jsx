@@ -41,16 +41,16 @@ export function Contact() {
         <FadeUp>
           <div>
             <h3 className="mb-4 text-lg">
-              <i className="fas fa-comments text-[#22A64A] mr-2"></i> {t('contact.infoTitle')}
+              <i className="fas fa-comments text-verde-marca mr-2"></i> {t('contact.infoTitle')}
             </h3>
             <p className="text-text-light mb-2">
-              <i className="fas fa-envelope text-[#22A64A] w-6"></i> {contactMail}
+              <i className="fas fa-envelope text-verde-marca w-6"></i> {contactMail}
             </p>
             <p className="text-text-light mb-2">
-              <i className="fas fa-phone text-[#22A64A] w-6"></i> {contactPhone}
+              <i className="fas fa-phone text-verde-marca w-6"></i> {contactPhone}
             </p>
             <p className="text-text-light mb-2">
-              <i className="fas fa-map-marker-alt text-[#22A64A] w-6"></i> {contactAddress}
+              <i className="fas fa-map-marker-alt text-verde-marca w-6"></i> {contactAddress}
             </p>
             <p className="text-text-light mt-6 text-sm">{t('contact.partnershipText')}</p>
             <SocialLinks className="mt-4" />
@@ -91,13 +91,13 @@ export function Contact() {
               required
             />
             {status && (
-              <p className={`text-sm ${status.type === 'success' ? 'text-green-600' : 'text-[#22A64A]'}`}>
+              <p className={`text-sm ${status.type === 'success' ? 'text-green-600' : 'text-verde-marca'}`}>
                 {t(status.key)}
               </p>
             )}
             <button
               type="submit"
-              className="px-8 py-[0.85rem] bg-[#22A64A] text-white border-none rounded-[10px] text-base font-semibold cursor-pointer transition-all duration-[0.35s] ease-out hover:-translate-y-[2px] hover:shadow-[0_6px_24px_rgba(255,109,0,0.3)] active:translate-y-0"
+              className="px-8 py-[0.85rem] bg-verde-marca text-white border-none rounded-[10px] text-base font-semibold cursor-pointer transition-all duration-[0.35s] ease-out hover:-translate-y-[2px] hover:shadow-[0_6px_24px_rgba(255,109,0,0.3)] active:translate-y-0"
             >
               {t('contact.submit')}
             </button>

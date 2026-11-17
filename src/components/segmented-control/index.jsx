@@ -21,7 +21,7 @@ export function SegmentedControl({ options, value, onChange, className = '' }) {
             ${
               value === opt.value
                 ? 'text-text-dark bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)]'
-                : 'text-text-light hover:text-[#FF6D00]'
+                : 'text-text-light hover:text-laranja'
             }`}
         >
           {opt.label}

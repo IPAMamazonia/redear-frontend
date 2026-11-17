@@ -91,8 +91,8 @@ export function Navbar() {
               onClick={(e) => handleNav(e, href)}
               className="no-underline text-text-dark text-sm font-medium transition-colors duration-[0.35s] ease-out relative py-1
                 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2.5px]
-                after:bg-gradient-to-r after:from-[#00E676] after:to-[#FF6D00] after:rounded after:transition-all after:duration-[0.35s]
-                hover:text-[#FF6D00] hover:after:w-full"
+                after:bg-gradient-to-r after:from-verde after:to-laranja after:rounded after:transition-all after:duration-[0.35s]
+                hover:text-laranja hover:after:w-full"
             >
               {label}
             </a>

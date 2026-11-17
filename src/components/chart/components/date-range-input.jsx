@@ -41,7 +41,7 @@ export function DateRangeInput({ onChange, onReset }) {
   }, [de, ate, onChange]);
 
   const inputClass =
-    'px-3 py-1.5 border border-black/10 rounded-[10px] text-sm text-text-dark bg-card backdrop-blur focus:outline-none focus:border-[#FF6D00] transition-colors';
+    'px-3 py-1.5 border border-black/10 rounded-[10px] text-sm text-text-dark bg-card backdrop-blur focus:outline-none focus:border-laranja transition-colors';
 
   return (
     <div className="DateRangeInputComponent flex flex-wrap items-center gap-2 text-sm">
@@ -65,7 +65,7 @@ export function DateRangeInput({ onChange, onReset }) {
         type="button"
         onClick={onReset}
         title={t('chart.backToPresets')}
-        className="cursor-pointer border-none bg-transparent text-sm font-semibold text-[#FF6D00] hover:underline"
+        className="cursor-pointer border-none bg-transparent text-sm font-semibold text-laranja hover:underline"
       >
         <i className="fas fa-rotate-left mr-1" />
         {t('chart.presets')}

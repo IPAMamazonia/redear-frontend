@@ -15,7 +15,7 @@ function FooterLink({ href, children }) {
     <a
       href={href}
       onClick={handleClick}
-      className="block text-white/60 no-underline mb-2 text-sm transition-colors duration-[0.35s] hover:text-[#FF9100]"
+      className="block text-white/60 no-underline mb-2 text-sm transition-colors duration-[0.35s] hover:text-laranja-claro"
     >
       {children}
     </a>
@@ -39,8 +39,8 @@ function FooterColumn({ title, children }) {
 export function Footer() {
   const { t } = useTranslation();
   return (
-    <footer className="FooterComponent bg-bg-dark text-white px-[5%] pt-16 pb-6 relative">
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#00E676] to-[#FF6D00]" />
+    <footer className="FooterComponent bg-dark text-white px-[5%] pt-16 pb-6 relative">
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-verde to-laranja" />
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-10 max-w-[1100px] mx-auto mb-10">
         <FooterColumn title={t('footer.columns.network')}>
@@ -81,7 +81,7 @@ export function Footer() {
       <div className="text-center pt-6 border-t border-white/10 text-sm text-white/35">
         &copy; 2026 RedeAr. {t('footer.rights')}{' '}
         {t('footer.developedWith')}
-        <i className="fas fa-heart text-[#FF0000]"></i>
+        <i className="fas fa-heart text-vermelho-vivo"></i>
         {t('footer.byTeam')}
       </div>
     </footer>

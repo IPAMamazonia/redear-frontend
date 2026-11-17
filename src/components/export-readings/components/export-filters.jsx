@@ -11,7 +11,7 @@ const MODES = [
 ];
 
 const INPUT_CLASS =
-  'w-full px-3 py-2 border border-black/10 rounded-[10px] text-sm text-text-dark bg-card backdrop-blur focus:outline-none focus:border-[#FF6D00] transition-colors disabled:opacity-60 disabled:cursor-not-allowed';
+  'w-full px-3 py-2 border border-black/10 rounded-[10px] text-sm text-text-dark bg-card backdrop-blur focus:outline-none focus:border-laranja transition-colors disabled:opacity-60 disabled:cursor-not-allowed';
 
 /**
  * Formulário de filtros da exportação.

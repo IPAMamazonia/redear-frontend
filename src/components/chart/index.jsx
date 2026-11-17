@@ -104,7 +104,7 @@ export function AQIChart() {
             <button
               type="button"
               onClick={entrarModoManual}
-              className="cursor-pointer border-none bg-transparent text-sm font-semibold text-[#FF6D00] hover:underline"
+              className="cursor-pointer border-none bg-transparent text-sm font-semibold text-laranja hover:underline"
             >
               <i className="fas fa-calendar-alt mr-1" />
               {t('chart.manualDates')}
@@ -119,7 +119,7 @@ export function AQIChart() {
           <button
             type="button"
             onClick={resetZoom}
-            className="cursor-pointer px-3 py-1.5 rounded-[10px] bg-white/60 backdrop-blur border border-white/50 text-xs font-semibold text-text-light hover:text-[#FF6D00] transition-all"
+            className="cursor-pointer px-3 py-1.5 rounded-[10px] bg-white/60 backdrop-blur border border-white/50 text-xs font-semibold text-text-light hover:text-laranja transition-all"
             title={t('chart.resetZoom')}
           >
             <i className="fas fa-crosshairs mr-1" />

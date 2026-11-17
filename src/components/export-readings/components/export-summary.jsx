@@ -40,7 +40,7 @@ export function ExportSummary({ redeArCount, purpleAirCount, startDate, endDate,
             })}
           </span>
           <span>
-            <i className="fas fa-calendar-alt mr-1.5 text-[#FF6D00]" />
+            <i className="fas fa-calendar-alt mr-1.5 text-laranja" />
             {formatDate(startDate, locale)} – {formatDate(endDate, locale)}
           </span>
           <span>

@@ -56,7 +56,7 @@ export function Partners() {
         </GlassCard>
       </FadeUp>
 
-      <h3 className="text-center text-[1.4rem] font-bold text-[#22A64A]">{t('partners.ourPartners')}</h3>
+      <h3 className="text-center text-[1.4rem] font-bold text-verde-marca">{t('partners.ourPartners')}</h3>
 
       <FadeUp delay={100}>
         <div className="flex flex-wrap items-center justify-center gap-2 max-w-[1200px] mb-[10px]">
@@ -72,7 +72,7 @@ export function Partners() {
         </div>
       </FadeUp>
 
-      <h3 className="text-center text-[1.4rem] font-bold text-[#22A64A]">{t('partners.sensorDevelopment')}</h3>
+      <h3 className="text-center text-[1.4rem] font-bold text-verde-marca">{t('partners.sensorDevelopment')}</h3>
 
       <FadeUp delay={100}>
         <div className="flex flex-wrap items-center justify-center gap-2 max-w-[1200px] mb-[10px]">

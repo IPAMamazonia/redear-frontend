@@ -38,7 +38,7 @@ export function SensorSelectPanel({
       className="absolute left-0 top-full z-30 mt-1 w-[340px] max-w-[calc(100vw-2rem)] bg-card backdrop-blur-xl border border-white/35 rounded-lg shadow-glass py-2"
     >
       <div className="px-3 pb-2 border-b border-black/5">
-        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-white/60 border border-black/10 focus-within:border-[#FF6D00]">
+        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-white/60 border border-black/10 focus-within:border-laranja">
           <i className="fas fa-search text-[11px] text-text-light" />
           <input
             value={search}
@@ -52,7 +52,7 @@ export function SensorSelectPanel({
             <button
               type="button"
               onClick={onToggleVisible}
-              className="cursor-pointer text-[#FF6D00] font-semibold bg-transparent border-none hover:underline"
+              className="cursor-pointer text-laranja font-semibold bg-transparent border-none hover:underline"
             >
               {allVisible ? t('chart.unmarkVisible') : t('chart.markVisible')}
             </button>

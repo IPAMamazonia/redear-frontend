@@ -19,7 +19,7 @@ export function SocialLinks({ className = '' }) {
         <a
           key={link.icon}
           href={link.href}
-          className="text-text-light text-2xl hover:text-[#FF6D00] transition-colors"
+          className="text-text-light text-2xl hover:text-laranja transition-colors"
           aria-label={link.icon.replace('fab fa-', '')}
         >
           <i className={link.icon} />

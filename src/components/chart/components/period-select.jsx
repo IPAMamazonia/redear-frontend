@@ -24,8 +24,8 @@ export function PeriodSelector({ value, onChange }) {
           className={`px-[1.1rem] py-2 border-none bg-transparent cursor-pointer text-sm font-semibold transition-all duration-[0.35s] ease-out relative rounded-lg
             ${
               value === p.value
-                ? 'text-[#FF6D00] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] after:content-[""] after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-[60%] after:h-[3px] after:rounded after:bg-[#FF6D00]'
-                : 'text-text-light hover:text-[#FF6D00]'
+                ? 'text-laranja bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] after:content-[""] after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-[60%] after:h-[3px] after:rounded after:bg-laranja'
+                : 'text-text-light hover:text-laranja'
             }`}
           title={p.label.replace(' ', '')}
         >

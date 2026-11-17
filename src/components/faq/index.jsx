@@ -31,7 +31,7 @@ export function FAQ() {
             >
               {t(`faq.items.${idx}.q`)}
               <span
-                className={`shrink-0 text-xl font-light text-[#22A64A] leading-none transition-transform duration-[0.35s] ease-out ${
+                className={`shrink-0 text-xl font-light text-verde-marca leading-none transition-transform duration-[0.35s] ease-out ${
                   activeIndex === idx ? 'rotate-[135deg]' : ''
                 }`}
               >

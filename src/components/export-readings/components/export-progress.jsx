@@ -22,9 +22,9 @@ export function ExportProgress({ downloadedBytes, elapsedMs, onCancel }) {
     <div
       role="status"
       aria-live="polite"
-      className="ExportProgressComponent mt-5 flex flex-wrap items-center gap-3 rounded-[10px] border border-[#FF6D00]/20 bg-[#FF6D00]/5 px-4 py-3 text-sm text-text-dark"
+      className="ExportProgressComponent mt-5 flex flex-wrap items-center gap-3 rounded-[10px] border border-laranja/20 bg-laranja/5 px-4 py-3 text-sm text-text-dark"
     >
-      <i className="fas fa-spinner fa-spin text-[#FF6D00]" />
+      <i className="fas fa-spinner fa-spin text-laranja" />
       <span className="font-semibold">{t('exportData.downloading')}</span>
       <span className="text-text-light">
         {t('exportData.downloadedBytes', { bytes: formatBytes(downloadedBytes) })}

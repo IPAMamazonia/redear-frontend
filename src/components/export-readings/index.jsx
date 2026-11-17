@@ -173,7 +173,7 @@ export function ReadingsExport() {
               <button
                 type="submit"
                 disabled={exporting || sensorsLoading}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-[10px] bg-[#FF6D00] px-5 py-2.5 text-sm font-semibold text-white shadow transition-colors hover:bg-[#FF7F33] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex cursor-pointer items-center gap-2 rounded-[10px] bg-laranja px-5 py-2.5 text-sm font-semibold text-white shadow transition-colors hover:bg-laranja-hover disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <i className={`fas ${exporting ? 'fa-spinner fa-spin' : 'fa-download'}`} />
                 {exporting ? t('exportData.downloadingButton') : t('exportData.download')}

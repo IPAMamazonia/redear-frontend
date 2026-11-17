@@ -36,7 +36,7 @@ export function ChartState({ hasSelection, loading, error, empty, onRetry }) {
 
   if (loading) {
     return (
-      <ChartMessage icon="fas fa-spinner fa-spin text-3xl text-[#FF6D00]">
+      <ChartMessage icon="fas fa-spinner fa-spin text-3xl text-laranja">
         <p className="text-text-light">{t('chart.loading')}</p>
       </ChartMessage>
     );
@@ -49,7 +49,7 @@ export function ChartState({ hasSelection, loading, error, empty, onRetry }) {
         <button
           type="button"
           onClick={onRetry}
-          className="cursor-pointer px-4 py-2 rounded-[10px] bg-[#FF6D00] text-white font-semibold shadow hover:bg-[#FF7F33] transition-colors"
+          className="cursor-pointer px-4 py-2 rounded-[10px] bg-laranja text-white font-semibold shadow hover:bg-laranja-hover transition-colors"
         >
           {t('common.retry')}
         </button>

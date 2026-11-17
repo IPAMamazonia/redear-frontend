@@ -15,14 +15,14 @@ export function SensorChips({ sensors, onRemove }) {
       {sensors.map((sensor) => (
         <span
           key={sensor.id}
-          className="inline-flex items-center gap-2 px-2.5 py-1 text-xs font-medium text-[#FF6D00] bg-[#FF6D00]/10 rounded-full border border-[#FF6D00]/20"
+          className="inline-flex items-center gap-2 px-2.5 py-1 text-xs font-medium text-laranja bg-laranja/10 rounded-full border border-laranja/20"
         >
           {sensor.name}
           <button
             type="button"
             onClick={() => onRemove(sensor.id)}
             aria-label={t('chart.removeSensor', { name: sensor.name })}
-            className="cursor-pointer border-none bg-transparent text-[#FF6D00] hover:text-red-600"
+            className="cursor-pointer border-none bg-transparent text-laranja hover:text-red-600"
           >
             <i className="fas fa-times" />
           </button>

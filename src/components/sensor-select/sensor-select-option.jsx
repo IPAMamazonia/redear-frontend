@@ -19,11 +19,11 @@ export function SensorSelectOption({ option, selected, multiple, onToggle }) {
           type="checkbox"
           checked={selected}
           onChange={onToggle}
-          className="w-3.5 h-3.5 cursor-pointer accent-[#FF6D00]"
+          className="w-3.5 h-3.5 cursor-pointer accent-laranja"
         />
       ) : (
         <span className="block w-[14px]">
-          {selected && <i className="fas fa-check text-[11px] text-[#FF6D00]" />}
+          {selected && <i className="fas fa-check text-[11px] text-laranja" />}
         </span>
       )}
       <span className="flex-1 min-w-0" onClick={() => !multiple && onToggle()}>
